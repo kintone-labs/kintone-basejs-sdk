@@ -16,15 +16,15 @@ $ npm install -g kintone-basejs-sdk
 ```bashshell
 
 $ cd your-dev-folder
-$ git clone https://github.dev.cybozu.co.jp/SC/kintone-basejs-sdk/
+$ git clone https://github.com/kintone/kintone-basejs-sdk
 $ cd kintone-basejs-sdk
 $ npm link
 ```
 
 ## References
 
-- [kintone-nodejs-sdk](https://github.dev.cybozu.co.jp/pages/SC/kintone-nodejs-sdk/)
-- kintone-js-sdk (not support yet)
+- [kintone-nodejs-sdk](https://github.com/kintone/kintone-nodejs-sdk)
+- kintone-js-sdk (not supported yet)
 
 ## License
 
