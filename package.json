@@ -1,6 +1,6 @@
 {
   "name": "kintone-basejs-sdk",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "The SDK of kintone REST API client use for kintone-nodejs-sdk and kintone-js-sdk",
   "main": "src/kintone-basejs-sdk.js",
   "scripts": {
@@ -8,6 +8,10 @@
   },
   "engines": {
     "node": ">=8.9.3"
+  },
+  "dependencies": {
+    "request": "^2.85.0",
+    "request-promise": "^4.2.2"
   },
   "devDependencies": {
     "chai": "^4.1.2",
