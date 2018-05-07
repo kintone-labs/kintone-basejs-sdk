@@ -1,13 +1,13 @@
 {
   "name": "kintone-basejs-sdk",
   "version": "0.1.0",
-  "description": "The SDK of kintone REST API client use for kintone-nodejs-sdk and kintone-browser-sdk",
+  "description": "The SDK of kintone REST API client use for kintone-nodejs-sdk and kintone-js-sdk",
   "main": "src/kintone-basejs-sdk.js",
   "scripts": {
     "test": "mocha $(find test -name 'test.*.js')"
   },
   "engines": {
-    "node": ">=6.10.3"
+    "node": ">=8.9.3"
   },
   "devDependencies": {
     "chai": "^4.1.2",
@@ -18,24 +18,6 @@
     "nyc": "11.3.0",
     "request": "^2.85.0",
     "request-promise": "^4.2.2"
-  },
-  "ENV": {
-    "test": {
-      "domain": "dtduc.cybozu-dev.com",
-      "username": "cybozu",
-      "password": "cybozu",
-      "app": 36,
-      "guestSpaceID": 3,
-      "appGuest": 18,
-      "proxy": "http://dc-ty3-squid-1.cb.local:3128",
-      "apiToken": {
-        "view": "glkV7FRnHrS87KN0WVWEhOXKksoEL1CeZFuBnc9d",
-        "add": "csgssxNQXJNBueRmLGuFVWUCjMoMBHIMSZQ9CyPY",
-        "edit": "rJLNvvo58xDTDpvdqILFo1sXM7G4XcuRm2saXyoQ",
-        "delete": "0gis8FpZUf32b3RecxY804i66L54qf3QVPjMaYzs",
-        "manageApp": "3RSyM4nWcvlTYOEFkVt2RAKCNFGFPII2Cd2i8JNl"
-      }
-    }
   },
   "keywords": [
     "kintone",
