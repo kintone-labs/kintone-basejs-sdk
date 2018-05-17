@@ -6,7 +6,7 @@
 const request = require('request-promise');
 
 const KintoneAuth = require('../auth/auth');
-const KintoneHTTPHeader = require('../model/http/HTTPHeader');
+const KintoneHTTPHeader = require('../model/http/httpHeader');
 
 const CONNECTION_CONST = require('./constant');
 

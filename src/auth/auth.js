@@ -4,7 +4,7 @@
 
 const AUTH_CONST = require('./constant');
 const KintoneCredential = require('../model/authentication/credential');
-const KintoneHTTPHeader = require('../model/http/HTTPHeader');
+const KintoneHTTPHeader = require('../model/http/httpHeader');
 
 let basicAuth = new WeakMap();
 let passwordAuth = new WeakMap();
