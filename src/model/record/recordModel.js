@@ -20,7 +20,7 @@ let Record = {
     UpdateRecordsRequest: require('./updateRecordsRequest'),
 
     // TODO: Write unit test
-    DeleteRecordsRequest: require('./DeleteRecordsRequest'),
+    DeleteRecordsRequest: require('./deleteRecordsRequest'),
 
     // TODO: Write unit test
     UpdateRecordStatusRequest: require('./updateRecordStatusRequest'),
