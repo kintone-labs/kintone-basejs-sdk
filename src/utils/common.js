@@ -2,8 +2,8 @@
  * kintone api - nodejs client
  * Common function
  */
-class KintoneCommon {
+class Common {
 
 }
 
-module.exports = new KintoneCommon();
+module.exports = new Common();

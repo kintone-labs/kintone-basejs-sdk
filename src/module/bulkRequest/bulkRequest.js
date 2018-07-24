@@ -2,13 +2,13 @@
  * kintone api - nodejs client
  */
 
-const KintoneExeption = require('../../exception/kintoneException');
-const KintoneConnection = require('../../connection/connection');
-const BulkRequestModel = require('../../model/bulkRequest/bulkRequest');
-const BulkRequestItemModel = require('../../model/bulkRequest/bulkRequestItem');
+const KintoneExeption = require('../../exception/KintoneAPIException');
+const KintoneConnection = require('../../connection/Connection');
+const BulkRequestModel = require('../../model/bulkRequest/BulkRequest');
+const BulkRequestItemModel = require('../../model/bulkRequest/BulkRequestItem');
 const RecordModel = require('../../model/record/recordModel');
 
-const connection = new WeakMap();
+const kintoneConnection = new WeakMap();
 const bulkRequests = new WeakMap();
 /**
  * BulkRequest module
@@ -23,7 +23,7 @@ class BulkRequest {
       throw new Error(`${connectionInput} \
                 not an instance of KintoneConnection`);
     }
-    connection.set(this, connectionInput);
+    kintoneConnection.set(this, connectionInput);
     bulkRequests.set(this, new BulkRequestModel());
   }
 
@@ -38,7 +38,7 @@ class BulkRequest {
             new RecordModel.AddRecordRequest(app, record);
     const bulkRequestItem = new BulkRequestItemModel(
       'POST',
-      connection.get(this).getPathURI('RECORD'),
+      kintoneConnection.get(this).getPathURI('RECORD'),
       addRecordRequest
     );
     bulkRequests.get(this).addRequest(bulkRequestItem);
@@ -58,7 +58,7 @@ class BulkRequest {
 
     const bulkRequestItem = new BulkRequestItemModel(
       'POST',
-      connection.get(this).getPathURI('RECORDS'),
+      kintoneConnection.get(this).getPathURI('RECORDS'),
       addRecordsRequest
     );
     bulkRequests.get(this).addRequest(bulkRequestItem);
@@ -69,21 +69,21 @@ class BulkRequest {
      * Update the specific record by ID
      * @param {Integer} app
      * @param {Integer} id
-     * @param {Record} recordData
+     * @param {Record} record
      * @param {Integer} revision
      * @return {this}
      */
-  updateRecordById(app, id, recordData, revision) {
+  updateRecordById(app, id, record, revision) {
     const updateRecordRequest =
             new RecordModel.UpdateRecordRequest(app);
     updateRecordRequest
       .setID(id)
-      .setRecord(recordData)
+      .setRecord(record)
       .setRevision(revision || 0);
 
     const bulkRequestItem = new BulkRequestItemModel(
       'PUT',
-      connection.get(this).getPathURI('RECORD'),
+      kintoneConnection.get(this).getPathURI('RECORD'),
       updateRecordRequest
     );
     bulkRequests.get(this).addRequest(bulkRequestItem);
@@ -94,21 +94,21 @@ class BulkRequest {
      * Update the specific record by updateKey
      * @param {Integer} app
      * @param {RecordUpdateKey} updateKey
-     * @param {Record} recordData
+     * @param {Record} record
      * @param {Integer} revision
      * @return {this}
      */
-  updateRecordByUpdateKey(app, updateKey, recordData, revision) {
+  updateRecordByUpdateKey(app, updateKey, record, revision) {
     const updateRecordRequest =
             new RecordModel.UpdateRecordRequest(app);
     updateRecordRequest
       .setUpdateKey(updateKey.field, updateKey.value)
-      .setRecord(recordData)
+      .setRecord(record)
       .setRevision(revision || 0);
 
     const bulkRequestItem = new BulkRequestItemModel(
       'PUT',
-      connection.get(this).getPathURI('RECORD'),
+      kintoneConnection.get(this).getPathURI('RECORD'),
       updateRecordRequest
     );
     bulkRequests.get(this).addRequest(bulkRequestItem);
@@ -127,7 +127,7 @@ class BulkRequest {
 
     const bulkRequestItem = new BulkRequestItemModel(
       'PUT',
-      connection.get(this).getPathURI('RECORDS'),
+      kintoneConnection.get(this).getPathURI('RECORDS'),
       updateRecordsRequest
     );
     bulkRequests.get(this).addRequest(bulkRequestItem);
@@ -146,7 +146,7 @@ class BulkRequest {
     deleteRecordsRequest.setIDs(ids);
     const bulkRequestItem = new BulkRequestItemModel(
       'DELETE',
-      connection.get(this).getPathURI('RECORDS'),
+      kintoneConnection.get(this).getPathURI('RECORDS'),
       deleteRecordsRequest
     );
     bulkRequests.get(this).addRequest(bulkRequestItem);
@@ -166,7 +166,7 @@ class BulkRequest {
 
     const bulkRequestItem = new BulkRequestItemModel(
       'DELETE',
-      connection.get(this).getPathURI('RECORDS'),
+      kintoneConnection.get(this).getPathURI('RECORDS'),
       deleteRecordsRequest
     );
     bulkRequests.get(this).addRequest(bulkRequestItem);
@@ -188,7 +188,7 @@ class BulkRequest {
 
     const bulkRequestItem = new BulkRequestItemModel(
       'PUT',
-      connection.get(this).getPathURI('RECORD_ASSIGNEES'),
+      kintoneConnection.get(this).getPathURI('RECORD_ASSIGNEES'),
       updateRecordRequest
     );
     bulkRequests.get(this).addRequest(bulkRequestItem);
@@ -211,7 +211,7 @@ class BulkRequest {
 
     const bulkRequestItem = new BulkRequestItemModel(
       'PUT',
-      connection.get(this).getPathURI('RECORD_STATUS'),
+      kintoneConnection.get(this).getPathURI('RECORD_STATUS'),
       updateRecordRequest
     );
     bulkRequests.get(this).addRequest(bulkRequestItem);
@@ -224,13 +224,13 @@ class BulkRequest {
      * @param {Array<RecordStatusUpdate>} recordsStatusUpdate
      * @return {this}
      */
-  updateRecordsStatus(app, recordsStatusUpdate) {
+  updateRecordsStatus(app, records) {
     const updateRecordsRequest = new RecordModel.UpdateRecordsRequest(
-      app, recordsStatusUpdate);
+      app, records);
 
     const bulkRequestItem = new BulkRequestItemModel(
       'PUT',
-      connection.get(this).getPathURI('RECORDS_STATUS'),
+      kintoneConnection.get(this).getPathURI('RECORDS_STATUS'),
       updateRecordsRequest
     );
     bulkRequests.get(this).addRequest(bulkRequestItem);
@@ -242,7 +242,7 @@ class BulkRequest {
      * @return {promise}
      */
   execute() {
-    return connection.get(this)
+    return kintoneConnection.get(this)
       .addRequestOption('json', true)
       .request('POST', 'BULK_REQUEST', bulkRequests.get(this).toJSON())
       .then((result) => {

@@ -2,7 +2,7 @@
  * kintone api - nodejs client
  */
 
-const RecordUpdateKey = require('./recordUpdateKey');
+const RecordUpdateKey = require('./RecordUpdateKey');
 
 const id = new WeakMap();
 const revision = new WeakMap();

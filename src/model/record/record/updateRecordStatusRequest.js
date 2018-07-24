@@ -2,7 +2,7 @@
  * kintone api - nodejs client
  */
 
-const RecordUpdateStatusItem = require('./recordUpdateStatusItem');
+const RecordUpdateStatusItem = require('./RecordUpdateStatusItem');
 
 const appID = new WeakMap();
 

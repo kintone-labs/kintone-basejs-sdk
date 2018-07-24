@@ -3,11 +3,11 @@
  * Record module
  */
 
-const KintoneExeption = require('../../exception/kintoneException');
-const KintoneConnection = require('../../connection/connection');
+const KintoneExeption = require('../../exception/KintoneAPIException');
+const KintoneConnection = require('../../connection/Connection');
 const RecordModel = require('../../model/record/recordModel');
 
-const connection = new WeakMap();
+const kintoneConnection = new WeakMap();
 
 /**
  * Record module
@@ -15,14 +15,14 @@ const connection = new WeakMap();
 class Record {
   /**
      * The constructor for Record module
-     * @param {Connection} connectionInput
+     * @param {Connection} connection
      */
-  constructor(connectionInput) {
-    if (!(connectionInput instanceof KintoneConnection)) {
-      throw new Error(`${connectionInput}` +
+  constructor(connection) {
+    if (!(connection instanceof KintoneConnection)) {
+      throw new Error(`${connection}` +
                 `not an instance of kintoneConnection`);
     }
-    connection.set(this, connectionInput);
+    kintoneConnection.set(this, connection);
   }
 
   /**
@@ -33,7 +33,7 @@ class Record {
      */
   getDataBy(method, url, model) {
     const body = model.toJSON ? model.toJSON() : model;
-    return connection.get(this)
+    return kintoneConnection.get(this)
       .addRequestOption('json', true)
       .request(method, url, body)
       .then((result) => {
@@ -96,17 +96,17 @@ class Record {
      * Update the specific record by ID
      * @param {Integer} app
      * @param {Integer} id
-     * @param {Record} recordData
+     * @param {Record} record
      * @param {Integer} revision
      * @return {Promise} Promise
      */
-  updateRecordById(app, id, recordData, revision) {
+  updateRecordById(app, id, record, revision) {
     const updateRecordRequest =
             new RecordModel.UpdateRecordRequest(app);
 
     updateRecordRequest
       .setID(id)
-      .setRecord(recordData)
+      .setRecord(record)
       .setRevision(revision || 0);
 
     return this.getDataBy('PUT', 'record', updateRecordRequest);
@@ -117,17 +117,17 @@ class Record {
      * Update the specific record by updateKey
      * @param {Integer} app
      * @param {RecordUpdateKey} updateKey
-     * @param {Record} recordData
+     * @param {Record} record
      * @param {Integer} revision
      * @return {Promise} Promise
      */
-  updateRecordByUpdateKey(app, updateKey, recordData, revision) {
+  updateRecordByUpdateKey(app, updateKey, record, revision) {
     const updateRecordRequest =
             new RecordModel.UpdateRecordRequest(app);
 
     updateRecordRequest
       .setUpdateKey(updateKey.field, updateKey.value)
-      .setRecord(recordData)
+      .setRecord(record)
       .setRevision(revision || 0);
 
     return this.getDataBy('PUT', 'record', updateRecordRequest);
@@ -201,15 +201,15 @@ class Record {
   /**
      * Update assignees of the specific record
      * @param {*} app
-     * @param {*} record
+     * @param {*} id
      * @param {Array<String>} assignees
      * @param {Integer} revision
      * @return {Promise}
      */
-  updateRecordAssignees(app, record, assignees, revision) {
+  updateRecordAssignees(app, id, assignees, revision) {
     const updateRecordRequest =
             new RecordModel.UpdateRecordAssigneesRequest(
-              app, record, assignees, revision);
+              app, id, assignees, revision);
 
     return this.getDataBy('PUT', 'RECORD_ASSIGNEES', updateRecordRequest);
   }
@@ -234,12 +234,12 @@ class Record {
   /**
      * Update status of the multi records
      * @param {Integer} app
-     * @param {Array <RecordStatusUpdate>} recordsStatusUpdate
+     * @param {Array <RecordStatusUpdate>} records
      * @return {Promise}
      */
-  updateRecordsStatus(app, recordsStatusUpdate) {
+  updateRecordsStatus(app, records) {
     const updateRecordsRequest = new RecordModel.UpdateRecordsRequest(
-      app, recordsStatusUpdate);
+      app, records);
 
     return this.getDataBy('PUT', 'RECORDS_STATUS', updateRecordsRequest);
   }

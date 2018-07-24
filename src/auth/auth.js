@@ -3,12 +3,12 @@
  */
 
 const AUTH_CONST = require('./constant');
-const KintoneCredential = require('../model/authentication/credential');
-const KintoneHTTPHeader = require('../model/http/httpHeader');
+const KintoneCredential = require('../model/authentication/Credential');
+const KintoneHTTPHeader = require('../model/http/HTTPHeader');
 
 const basicAuth = new WeakMap();
 const passwordAuth = new WeakMap();
-const apiToken = new WeakMap();
+const kintoneApiToken = new WeakMap();
 /**
  * Authentication module
  */
@@ -53,11 +53,11 @@ class Auth {
 
   /**
      * setApiToken
-     * @param {String} apiTokenString
+     * @param {String} apiToken
      * @return {this}
      */
-  setApiToken(apiTokenString) {
-    apiToken.set(this, apiTokenString);
+  setApiToken(apiToken) {
+    kintoneApiToken.set(this, apiToken);
     return this;
   }
 
@@ -67,7 +67,7 @@ class Auth {
      * @return {String}
      */
   getApiToken() {
-    return apiToken.get(this);
+    return kintoneApiToken.get(this);
   }
   /**
      * createHeaderCredentials
@@ -75,9 +75,9 @@ class Auth {
      */
   createHeaderCredentials() {
     const headerCredentials = [];
-    if (apiToken.get(this)) {
+    if (kintoneApiToken.get(this)) {
       headerCredentials.push(new KintoneHTTPHeader(
-        AUTH_CONST.HEADER_KEY_AUTH_APITOKEN, apiToken.get(this)));
+        AUTH_CONST.HEADER_KEY_AUTH_APITOKEN, kintoneApiToken.get(this)));
     }
     if (basicAuth.get(this)) {
       headerCredentials.push(new KintoneHTTPHeader(

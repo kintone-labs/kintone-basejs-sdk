@@ -3,8 +3,7 @@
  * File models
  */
 
-const FileModels = {
+module.exports = {
   // TODO: Write unit test
-  GetFileRequest: require('./getFileRequest'),
+  GetFileRequest: require('./GetFileRequest'),
 };
-module.exports = FileModels;

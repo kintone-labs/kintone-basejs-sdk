@@ -3,7 +3,7 @@
  * Member constants
  */
 
-const kintoneMemberConst = function() {
+const constant = function() {
   return {
     USER: 'USER', // user
     GROUP: 'GROUP', // Group
@@ -11,4 +11,4 @@ const kintoneMemberConst = function() {
   };
 };
 
-module.exports = kintoneMemberConst();
+module.exports = constant();

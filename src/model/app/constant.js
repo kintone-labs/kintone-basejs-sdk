@@ -3,7 +3,7 @@
  * Member constants
  */
 
-const kintoneAppConst = function() {
+const constant = function() {
   const CONST = {};
   // FIELD TYPE constant
   CONST.FIELD = {
@@ -57,4 +57,4 @@ const kintoneAppConst = function() {
   return CONST;
 };
 
-module.exports = kintoneAppConst();
+module.exports = constant();

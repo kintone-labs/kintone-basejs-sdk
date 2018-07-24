@@ -3,9 +3,9 @@
  * App module
  */
 
-const KintoneExeption = require('../../exception/kintoneException');
-const KintoneConnection = require('../../connection/connection');
-const AppModel = require('../../model/app/appModel');
+const KintoneExeption = require('../../exception/KintoneAPIException');
+const KintoneConnection = require('../../connection/Connection');
+const AppModel = require('../../model/app/AppModel');
 
 const connection = new WeakMap();
 
@@ -64,54 +64,54 @@ class App {
   }
   /**
      * Get multiple apps details
-     * @param {Array<String>} appCodes
+     * @param {Array<String>} codes
      * @param {Integer} offset
      * @param {Integer} limit
      * @return {Promise} Promise
      */
-  getAppsByCodes(appCodes, offset, limit) {
+  getAppsByCodes(codes, offset, limit) {
     const dataRequest =
             new AppModel.GetAppsRequest(offset, limit);
-    dataRequest.setAppCodes(appCodes);
+    dataRequest.setAppCodes(codes);
     return this.getDataBy('GET', 'apps', dataRequest);
   }
   /**
      * Get multiple apps details
-     * @param {String} appName
+     * @param {String} name
      * @param {Integer} offset
      * @param {Integer} limit
      * @return {Promise} Promise
      */
-  getAppsByName(appName, offset, limit) {
+  getAppsByName(name, offset, limit) {
     const dataRequest =
             new AppModel.GetAppsRequest(offset, limit);
-    dataRequest.setAppName(appName);
+    dataRequest.setAppName(name);
     return this.getDataBy('GET', 'apps', dataRequest);
   }
   /**
      * Get multiple apps details
-     * @param {Array<Integer>} appIDs
+     * @param {Array<Integer>} ids
      * @param {Integer} offset
      * @param {Integer} limit
      * @return {Promise} Promise
      */
-  getAppsByIDs(appIDs, offset, limit) {
+  getAppsByIDs(ids, offset, limit) {
     const dataRequest =
             new AppModel.GetAppsRequest(offset, limit);
-    dataRequest.setAppIDs(appIDs);
+    dataRequest.setAppIDs(ids);
     return this.getDataBy('GET', 'apps', dataRequest);
   }
   /**
      * Get multiple apps details
-     * @param {Array<String>} appSpaceIDs
+     * @param {Array<String>} spaceIds
      * @param {Integer} offset
      * @param {Integer} limit
      * @return {Promise} Promise
      */
-  getAppsBySpaceIDs(appSpaceIDs, offset, limit) {
+  getAppsBySpaceIDs(spaceIds, offset, limit) {
     const dataRequest =
             new AppModel.GetAppsRequest(offset, limit);
-    dataRequest.setAppSpaceIDs(appSpaceIDs);
+    dataRequest.setAppSpaceIDs(spaceIds);
     return this.getDataBy('GET', 'apps', dataRequest);
   }
   /**

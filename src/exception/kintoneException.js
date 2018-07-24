@@ -2,9 +2,9 @@
  * kintone api - nodejs client
  */
 
-const KintoneErrorResponseModel = require('../model/exception/errorResponse');
+const KintoneErrorResponseModel = require('../model/exception/ErrorResponse');
 const KintoneAPIExceptionModel =
-    require('../model/exception/kintoneAPIException');
+    require('../model/exception/KintoneAPIException');
 
 const error = new WeakMap();
 const errorRaw = new WeakMap();
@@ -98,11 +98,11 @@ class KintoneAPIException {
     //         }
     //     }
     // }
-    return response.id ? new KintoneErrorResponseModel(
+    return response && response.id ? new KintoneErrorResponseModel(
       response.id,
       response.code,
       response.message,
-      response.errors) : response;
+      response.errors) : new KintoneErrorResponseModel('cuc response.errors');
   }
 }
 

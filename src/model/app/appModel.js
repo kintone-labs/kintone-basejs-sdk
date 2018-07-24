@@ -5,12 +5,12 @@
 
 const AppModels = {
   // TODO: Write unit test
-  GetAppRequest: require('./getAppRequest'),
+  GetAppRequest: require('./app/GetAppRequest'),
   // TODO: Write unit test
-  GetAppsRequest: require('./getAppsRequest'),
+  GetAppsRequest: require('./app/GetAppsRequest'),
   // TODO: Write unit test
-  GetFormFieldsRequest: require('./getFormFieldsRequest'),
+  GetFormFieldsRequest: require('./form/GetFormFieldsRequest'),
   // TODO: Write unit test
-  GetFormLayoutsRequest: require('./getFormLayoutRequest'),
+  GetFormLayoutsRequest: require('./form/GetFormLayoutRequest'),
 };
 module.exports = AppModels;

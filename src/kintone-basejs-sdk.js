@@ -3,15 +3,13 @@
  * kintoneSDK
  */
 
-const kintoneSDK = {
-  Record: require('./module/record/record'),
-  BulkRequest: require('./module/bulkRequest/bulkRequest'),
-  App: require('./module/app/app'),
-  Comment: require('./module/comment/comment'),
-  Connection: require('./connection/connection'),
-  Auth: require('./auth/auth'),
-  File: require('./module/file/file'),
-  KintoneException: require('./exception/kintoneException'),
+module.exports = {
+  Record: require('./module/record/Record'),
+  BulkRequest: require('./module/bulkRequest/BulkRequest'),
+  App: require('./module/app/App'),
+  Comment: require('./module/comment/Comment'),
+  Connection: require('./connection/Connection'),
+  Auth: require('./auth/Auth'),
+  File: require('./module/file/File'),
+  KintoneException: require('./exception/KintoneAPIException'),
 };
-
-module.exports = kintoneSDK;

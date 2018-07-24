@@ -3,46 +3,45 @@
  * Record model
  */
 
-const Record = {
+module.exports = {
   // TODO: Write unit test
-  GetRecordRequest: require('./getRecordRequest'),
+  GetRecordRequest: require('./record/GetRecordRequest'),
   // TODO: Write unit test
-  GetRecordsRequest: require('./getRecordsRequest'),
+  GetRecordsRequest: require('./records/GetRecordsRequest'),
 
   // TODO: Write unit test
-  AddRecordRequest: require('./addRecordRequest'),
+  AddRecordRequest: require('./record/AddRecordRequest'),
   // TODO: Write unit test
-  AddRecordsRequest: require('./addRecordsRequest'),
+  AddRecordsRequest: require('./records/AddRecordsRequest'),
 
   // TODO: Write unit test
-  UpdateRecordRequest: require('./updateRecordRequest'),
+  UpdateRecordRequest: require('./record/UpdateRecordRequest'),
   // TODO: Write unit test
-  UpdateRecordsRequest: require('./updateRecordsRequest'),
+  UpdateRecordsRequest: require('./records/UpdateRecordsRequest'),
 
   // TODO: Write unit test
-  DeleteRecordsRequest: require('./deleteRecordsRequest'),
+  DeleteRecordsRequest: require('./records/DeleteRecordsRequest'),
 
   // TODO: Write unit test
-  UpdateRecordStatusRequest: require('./updateRecordStatusRequest'),
+  UpdateRecordStatusRequest: require('./record/UpdateRecordStatusRequest'),
   // TODO: Write unit test
 
   // TODO: Write unit test
-  UpdateRecordAssigneesRequest: require('./updateRecordAssigneesRequest'),
+  UpdateRecordAssigneesRequest: require('./record/UpdateRecordAssigneesRequest'),
 
   // TODO: Write unit test
-  RecordUpdateStatusItem: require('./recordUpdateStatusItem'),
+  RecordUpdateStatusItem: require('./record/RecordUpdateStatusItem'),
   // TODO: Write unit test
-  RecordsUpdateItem: require('./recordUpdateItem'),
+  RecordsUpdateItem: require('./record/RecordUpdateItem'),
   // TODO: Write unit test
-  RecordsUpdateStatusItem: require('./recordUpdateStatusItem'),
+  RecordsUpdateStatusItem: require('./record/RecordUpdateStatusItem'),
   // TODO: Write unit test
-  RecordsUpdateKey: require('./recordUpdateKey'),
+  RecordsUpdateKey: require('./record/RecordUpdateKey'),
 
   // TODO: Write unit test
-  DeleteCommentRequest: require('./deleteCommentRequest'),
+  DeleteCommentRequest: require('./comment/DeleteCommentRequest'),
   // TODO: Write unit test
-  GetCommentsRequest: require('./getCommentsRequest'),
+  GetCommentsRequest: require('./comments/GetCommentsRequest'),
   // TODO: Write unit test
-  AddCommentRequest: require('./addCommentRequest'),
+  AddCommentRequest: require('./comment/AddCommentRequest'),
 };
-module.exports = Record;

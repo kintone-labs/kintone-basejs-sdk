@@ -5,14 +5,14 @@
 
 const request = require('request-promise');
 
-const KintoneAuth = require('../auth/auth');
-const KintoneHTTPHeader = require('../model/http/httpHeader');
+const KintoneAuth = require('../authentication/Auth');
+const KintoneHTTPHeader = require('../model/http/HTTPHeader');
 
 const CONNECTION_CONST = require('./constant');
 
 
-const domain = new WeakMap();
-const auth = new WeakMap();
+const kintoneDomain = new WeakMap();
+const kintoneAuth = new WeakMap();
 const guestSpaceID = new WeakMap();
 const headers = new WeakMap();
 const options = new WeakMap();
@@ -22,17 +22,17 @@ const options = new WeakMap();
  */
 class Connection {
   /**
-     * @param {String} domainInput
-     * @param {KintoneAuth} authInput
+     * @param {String} domain
+     * @param {KintoneAuth} auth
      * @param {Integer} guestSpaceIDInput
      */
-  constructor(domainInput, authInput, guestSpaceIDInput) {
-    domain.set(this, domainInput);
+  constructor(domain, auth, guestSpaceIDInput) {
+    kintoneDomain.set(this, domain);
     guestSpaceID.set(this, parseInt(guestSpaceIDInput, 10));
 
     headers.set(this, []);
     options.set(this, {});
-    this.setAuth(authInput);
+    this.setAuth(auth);
     // set default user-agent
     this.setHeader(
       CONNECTION_CONST.BASE.USER_AGENT,
@@ -50,11 +50,11 @@ class Connection {
      * @param {String} body
      * @return {Promise}
      */
-  request(method, restAPIName, body) {
+  request(methodName, restAPIName, body) {
     // Set Header
     const headersRequet = {};
     // set header with credentials
-    auth.get(this).createHeaderCredentials().forEach((httpHeaderObj) => {
+    kintoneAuth.get(this).createHeaderCredentials().forEach((httpHeaderObj) => {
       headersRequet[httpHeaderObj.getKey()] = httpHeaderObj.getValue();
     });
     headers.get(this).forEach((httpHeaderObj) => {
@@ -69,7 +69,7 @@ class Connection {
 
     // Set request options
     const requestOptions = options.get(this);
-    requestOptions.method = String(method).toUpperCase();
+    requestOptions.method = String(methodName).toUpperCase();
     requestOptions.uri = this.getUri(restAPIName);
     requestOptions.headers = headersRequet;
     requestOptions.body = body;
@@ -82,7 +82,7 @@ class Connection {
      * @return {String}
      */
   getUri(url) {
-    let urlFQDN = CONNECTION_CONST.BASE.SCHEMA + '://' + domain.get(this);
+    let urlFQDN = CONNECTION_CONST.BASE.SCHEMA + '://' + kintoneDomain.get(this);
     const apiNameUpperCase = String(url).toUpperCase();
     if (CONNECTION_CONST.PATH.hasOwnProperty(apiNameUpperCase)) {
       urlFQDN += this.getPathURI(apiNameUpperCase);
@@ -138,14 +138,14 @@ class Connection {
   }
   /**
      * set auth for connection
-     * @param {Auth} authInput
+     * @param {Auth} auth
      * @return {this}
      */
-  setAuth(authInput) {
-    if (!(authInput instanceof KintoneAuth)) {
-      throw new Error(`${authInput} not an instance of KintoneAuth`);
+  setAuth(auth) {
+    if (!(auth instanceof KintoneAuth)) {
+      throw new Error(`${auth} not an instance of KintoneAuth`);
     }
-    auth.set(this, authInput);
+    kintoneAuth.set(this, auth);
     return this;
   }
 }

@@ -5,9 +5,9 @@
 
 const Comment = {
   // TODO: Write unit test
-  CommentContent: require('./commentContent'),
+  CommentContent: require('./CommentContent'),
   // TODO: Write unit test
-  CommentMention: require('./commentMention'),
+  CommentMention: require('./CommentMention'),
   //
 };
 module.exports = Comment;

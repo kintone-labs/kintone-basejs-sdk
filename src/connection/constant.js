@@ -3,7 +3,7 @@
  * Connection constants
  */
 
-const kintoneConnectionConst = function() {
+const constant = function() {
   return {
     BASE: {
       SCHEMA: 'https',
@@ -57,4 +57,4 @@ const kintoneConnectionConst = function() {
   };
 };
 
-module.exports = kintoneConnectionConst();
+module.exports = constant();

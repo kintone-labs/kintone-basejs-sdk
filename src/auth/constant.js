@@ -4,7 +4,7 @@
  */
 
 
-const kintoneAuthenticationConst = function() {
+const constant = function() {
   return {
     HEADER_KEY_AUTH_PASSWORD: 'X-Cybozu-Authorization',
     HEADER_KEY_AUTH_APITOKEN: 'X-Cybozu-API-Token',
@@ -12,4 +12,4 @@ const kintoneAuthenticationConst = function() {
   };
 };
 
-module.exports = kintoneAuthenticationConst();
+module.exports = constant();
