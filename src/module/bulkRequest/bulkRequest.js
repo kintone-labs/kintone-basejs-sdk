@@ -6,7 +6,7 @@ const KintoneExeption = require('../../exception/KintoneAPIException');
 const KintoneConnection = require('../../connection/Connection');
 const BulkRequestModel = require('../../model/bulkRequest/BulkRequest');
 const BulkRequestItemModel = require('../../model/bulkRequest/BulkRequestItem');
-const RecordModel = require('../../model/record/recordModel');
+const RecordModel = require('../../model/record/RecordModels');
 
 const kintoneConnection = new WeakMap();
 const bulkRequests = new WeakMap();

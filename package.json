@@ -2,7 +2,7 @@
   "name": "kintone-basejs-sdk",
   "version": "0.1.5",
   "description": "The SDK of kintone REST API client use for kintone-nodejs-sdk and kintone-js-sdk",
-  "main": "src/kintone-basejs-sdk.js",
+  "main": "src/main.js",
   "scripts": {
     "test": "mocha $(find test -name 'test.*.js')"
   },
@@ -16,7 +16,6 @@
   "devDependencies": {
     "@cybozu/eslint-config": "^2.0.0",
     "eslint": "^4.19.1",
-    "eslint-config-google": "^0.9.1",
     "request": "^2.85.0",
     "request-promise": "^4.2.2"
   },

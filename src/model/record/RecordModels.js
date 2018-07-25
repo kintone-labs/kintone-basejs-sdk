@@ -30,18 +30,18 @@ module.exports = {
   UpdateRecordAssigneesRequest: require('./record/UpdateRecordAssigneesRequest'),
 
   // TODO: Write unit test
-  RecordUpdateStatusItem: require('./record/RecordUpdateStatusItem'),
+  RecordUpdateStatusItem: require('./record/UpdateRecordStatusItem'),
   // TODO: Write unit test
   RecordsUpdateItem: require('./record/RecordUpdateItem'),
   // TODO: Write unit test
-  RecordsUpdateStatusItem: require('./record/RecordUpdateStatusItem'),
+  RecordsUpdateStatusItem: require('./record/UpdateRecordStatusItem'),
   // TODO: Write unit test
   RecordsUpdateKey: require('./record/RecordUpdateKey'),
 
   // TODO: Write unit test
   DeleteCommentRequest: require('./comment/DeleteCommentRequest'),
   // TODO: Write unit test
-  GetCommentsRequest: require('./comments/GetCommentsRequest'),
+  GetCommentsRequest: require('./comments/GetCommentRequest'),
   // TODO: Write unit test
   AddCommentRequest: require('./comment/AddCommentRequest'),
 };
