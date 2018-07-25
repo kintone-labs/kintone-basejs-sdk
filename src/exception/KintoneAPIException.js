@@ -102,7 +102,7 @@ class KintoneAPIException {
       response.id,
       response.code,
       response.message,
-      response.errors) : new KintoneErrorResponseModel('cuc response.errors');
+      response.errors) : response;
   }
 }
 
