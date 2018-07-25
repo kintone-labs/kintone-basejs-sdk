@@ -3,11 +3,10 @@
  * Comment model
  */
 
-const Comment = {
+module.exports = {
   // TODO: Write unit test
   CommentContent: require('./CommentContent'),
   // TODO: Write unit test
   CommentMention: require('./CommentMention'),
   //
 };
-module.exports = Comment;

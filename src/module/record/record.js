@@ -5,7 +5,7 @@
 
 const KintoneExeption = require('../../exception/KintoneAPIException');
 const KintoneConnection = require('../../connection/Connection');
-const RecordModel = require('../../model/record/recordModel');
+const RecordModel = require('../../model/record/RecordModels');
 
 const kintoneConnection = new WeakMap();
 

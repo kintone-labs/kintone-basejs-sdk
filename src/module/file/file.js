@@ -3,9 +3,9 @@
  * File module
  */
 
-const KintoneExeption = require('../../exception/kintoneException');
-const KintoneConnection = require('../../connection/connection');
-const FileModel = require('../../model/file/fileModel');
+const KintoneExeption = require('../../exception/KintoneAPIException');
+const KintoneConnection = require('../../connection/Connection');
+const FileModel = require('../../model/file/FileModels');
 
 const connection = new WeakMap();
 
