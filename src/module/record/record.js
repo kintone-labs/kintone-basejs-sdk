@@ -3,9 +3,9 @@
  * Record module
  */
 
-const KintoneExeption = require('../../exception/KintoneAPIException');
 const KintoneConnection = require('../../connection/Connection');
 const RecordModel = require('../../model/record/RecordModels');
+const common = require('../../utils/Common');
 
 const kintoneConnection = new WeakMap();
 
@@ -31,16 +31,8 @@ class Record {
      * @param {RecordModle} model
      * @return {Promise} Promise
      */
-  getDataBy(method, url, model) {
-    const body = model.toJSON ? model.toJSON() : model;
-    return kintoneConnection.get(this)
-      .addRequestOption('json', true)
-      .request(method, url, body)
-      .then((result) => {
-        return result;
-      }).catch((err) => {
-        throw new KintoneExeption(err);
-      });
+  sendRequest(method, url, model) {
+    return common.sendRequest(method, url, model, kintoneConnection.get(this));
   }
   /**
      * Get record by specific ID
@@ -51,7 +43,7 @@ class Record {
      */
   getRecord(app, id) {
     const getRecordRequest = new RecordModel.GetRecordRequest(app, id);
-    return this.getDataBy('GET', 'record', getRecordRequest);
+    return this.sendRequest('GET', 'record', getRecordRequest);
   }
   /**
      * Get multi record with options
@@ -65,7 +57,7 @@ class Record {
   getRecords(app, query, fields, totalCount) {
     const getRecordsRequest =
             new RecordModel.GetRecordsRequest(app, query, fields, totalCount);
-    return this.getDataBy('GET', 'records', getRecordsRequest);
+    return this.sendRequest('GET', 'records', getRecordsRequest);
   }
   /**
      * Add the record
@@ -76,7 +68,7 @@ class Record {
   addRecord(app, record) {
     const addRecordRequest =
             new RecordModel.AddRecordRequest(app, record);
-    return this.getDataBy('POST', 'record', addRecordRequest);
+    return this.sendRequest('POST', 'record', addRecordRequest);
   }
 
   /**
@@ -89,7 +81,7 @@ class Record {
     const addRecordsRequest =
             new RecordModel.AddRecordsRequest(app);
     addRecordsRequest.setRecords(records);
-    return this.getDataBy('POST', 'records', addRecordsRequest);
+    return this.sendRequest('POST', 'records', addRecordsRequest);
   }
 
   /**
@@ -109,7 +101,7 @@ class Record {
       .setRecord(record)
       .setRevision(revision || 0);
 
-    return this.getDataBy('PUT', 'record', updateRecordRequest);
+    return this.sendRequest('PUT', 'record', updateRecordRequest);
   }
 
 
@@ -130,7 +122,7 @@ class Record {
       .setRecord(record)
       .setRevision(revision || 0);
 
-    return this.getDataBy('PUT', 'record', updateRecordRequest);
+    return this.sendRequest('PUT', 'record', updateRecordRequest);
   }
   /**
      * create record Item With id, use to update multi Record
@@ -168,7 +160,7 @@ class Record {
     const updateRecordsRequest =
             new RecordModel.UpdateRecordsRequest(app, records);
 
-    return this.getDataBy('PUT', 'records', updateRecordsRequest);
+    return this.sendRequest('PUT', 'records', updateRecordsRequest);
   }
 
   /**
@@ -181,7 +173,7 @@ class Record {
     const deleteRecordsRequest =
             new RecordModel.DeleteRecordsRequest(app);
     deleteRecordsRequest.setIDs(ids);
-    return this.getDataBy('DELETE', 'records', deleteRecordsRequest);
+    return this.sendRequest('DELETE', 'records', deleteRecordsRequest);
   }
 
   /**
@@ -195,7 +187,7 @@ class Record {
             new RecordModel.DeleteRecordsRequest(app);
     deleteRecordsRequest.setIDsWithRevision(idsWithRevision);
 
-    return this.getDataBy('DELETE', 'records', deleteRecordsRequest);
+    return this.sendRequest('DELETE', 'records', deleteRecordsRequest);
   }
 
   /**
@@ -211,7 +203,7 @@ class Record {
             new RecordModel.UpdateRecordAssigneesRequest(
               app, id, assignees, revision);
 
-    return this.getDataBy('PUT', 'RECORD_ASSIGNEES', updateRecordRequest);
+    return this.sendRequest('PUT', 'RECORD_ASSIGNEES', updateRecordRequest);
   }
 
   /**
@@ -228,7 +220,7 @@ class Record {
             new RecordModel.UpdateRecordStatusRequest(
               app, id, action, assignee, revision);
 
-    return this.getDataBy('PUT', 'RECORD_STATUS', updateRecordRequest);
+    return this.sendRequest('PUT', 'RECORD_STATUS', updateRecordRequest);
   }
 
   /**
@@ -241,7 +233,7 @@ class Record {
     const updateRecordsRequest = new RecordModel.UpdateRecordsRequest(
       app, records);
 
-    return this.getDataBy('PUT', 'RECORDS_STATUS', updateRecordsRequest);
+    return this.sendRequest('PUT', 'RECORDS_STATUS', updateRecordsRequest);
   }
   /**
      * createRecordStatusItem for use with update multi record status
@@ -269,7 +261,7 @@ class Record {
   getComments(app, record, order, offset, limit) {
     const getCommentsRequest = new RecordModel.GetCommentsRequest(
       app, record, order, offset, limit);
-    return this.getDataBy('GET', 'RECORD_COMMENTS', getCommentsRequest);
+    return this.sendRequest('GET', 'RECORD_COMMENTS', getCommentsRequest);
   }
 
   /**
@@ -282,7 +274,7 @@ class Record {
   addComment(app, record, comment) {
     const addCommentRequest = new RecordModel.AddCommentRequest(
       app, record, comment);
-    return this.getDataBy('POST', 'RECORD_COMMENT', addCommentRequest);
+    return this.sendRequest('POST', 'RECORD_COMMENT', addCommentRequest);
   }
 
   /**
@@ -295,7 +287,7 @@ class Record {
   deleteComment(app, record, comment) {
     const deleteCommentRequest = new RecordModel.DeleteCommentRequest(
       app, record, comment);
-    return this.getDataBy('DELETE', 'RECORD_COMMENT', deleteCommentRequest);
+    return this.sendRequest('DELETE', 'RECORD_COMMENT', deleteCommentRequest);
   }
 }
 module.exports = Record;
