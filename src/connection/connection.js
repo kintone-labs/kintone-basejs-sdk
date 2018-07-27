@@ -13,7 +13,7 @@ const CONNECTION_CONST = require('./constant');
 
 const kintoneDomain = new WeakMap();
 const kintoneAuth = new WeakMap();
-const guestSpaceID = new WeakMap();
+const guestSpaceIDInput = new WeakMap();
 const headers = new WeakMap();
 const options = new WeakMap();
 
@@ -26,9 +26,9 @@ class Connection {
      * @param {KintoneAuth} auth
      * @param {Integer} guestSpaceIDInput
      */
-  constructor(domain, auth, guestSpaceIDInput) {
+  constructor(domain, auth, guestSpaceID) {
     kintoneDomain.set(this, domain);
-    guestSpaceID.set(this, parseInt(guestSpaceIDInput, 10));
+    guestSpaceIDInput.set(this, parseInt(guestSpaceID, 10));
 
     headers.set(this, []);
     options.set(this, {});
@@ -98,13 +98,13 @@ class Connection {
      */
   getPathURI(apiName) {
     let pathURI = '';
-    if (guestSpaceID.get(this) > 0) {
+    if (guestSpaceIDInput.get(this) > 0) {
       pathURI +=
                 CONNECTION_CONST.BASE.BASE_GUEST_URL
                   .replace(CONNECTION_CONST.BASE.PREFIX_API_NAME,
                     CONNECTION_CONST.PATH[apiName])
                   .replace(CONNECTION_CONST.BASE.PREFIX_GUESTSPACEID,
-                    guestSpaceID.get(this));
+                    guestSpaceIDInput.get(this));
     } else {
       pathURI +=
                 CONNECTION_CONST.BASE.BASE_URL
@@ -147,6 +147,17 @@ class Connection {
     }
     kintoneAuth.set(this, auth);
     return this;
+  }
+  /**
+     * Sett proxy for request
+     * @param {String} proxyHost
+     * @param {String} proxyPort
+     * @return {this}
+     */
+  setProxy(proxyHost, proxyPort) {
+    const host = (!proxyHost.match(/http/)) ? 'http://' + proxyHost : proxyHost;
+    const proxy = host + ':' + proxyPort;
+    return this.addRequestOption(CONNECTION_CONST.BASE.PROXY, proxy);
   }
 }
 module.exports = Connection;
