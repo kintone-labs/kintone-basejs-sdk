@@ -13,7 +13,7 @@ const CONNECTION_CONST = require('./constant');
 
 const kintoneDomain = new WeakMap();
 const kintoneAuth = new WeakMap();
-const guestSpaceIDInput = new WeakMap();
+const kintoneGuestSpaceID = new WeakMap();
 const headers = new WeakMap();
 const options = new WeakMap();
 
@@ -24,11 +24,11 @@ class Connection {
   /**
      * @param {String} domain
      * @param {KintoneAuth} auth
-     * @param {Integer} guestSpaceIDInput
+     * @param {Integer} kintoneGuestSpaceID
      */
   constructor(domain, auth, guestSpaceID) {
     kintoneDomain.set(this, domain);
-    guestSpaceIDInput.set(this, parseInt(guestSpaceID, 10));
+    kintoneGuestSpaceID.set(this, parseInt(guestSpaceID, 10));
 
     headers.set(this, []);
     options.set(this, {});
@@ -98,13 +98,13 @@ class Connection {
      */
   getPathURI(apiName) {
     let pathURI = '';
-    if (guestSpaceIDInput.get(this) > 0) {
+    if (kintoneGuestSpaceID.get(this) > 0) {
       pathURI +=
                 CONNECTION_CONST.BASE.BASE_GUEST_URL
                   .replace(CONNECTION_CONST.BASE.PREFIX_API_NAME,
                     CONNECTION_CONST.PATH[apiName])
                   .replace(CONNECTION_CONST.BASE.PREFIX_GUESTSPACEID,
-                    guestSpaceIDInput.get(this));
+                    kintoneGuestSpaceID.get(this));
     } else {
       pathURI +=
                 CONNECTION_CONST.BASE.BASE_URL

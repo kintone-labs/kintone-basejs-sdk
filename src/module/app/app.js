@@ -7,7 +7,7 @@ const KintoneConnection = require('../../connection/Connection');
 const AppModel = require('../../model/app/AppModel');
 const common = require('../../utils/Common');
 
-const connection = new WeakMap();
+const kintoneConnection = new WeakMap();
 
 /**
  * App module
@@ -15,14 +15,14 @@ const connection = new WeakMap();
 class App {
   /**
      * The constructor for this module
-     * @param {Connection} connectionInput
+     * @param {Connection} connection
      */
-  constructor(connectionInput) {
-    if (!(connectionInput instanceof KintoneConnection)) {
-      throw new Error(`${connectionInput}` +
+  constructor(connection) {
+    if (!(connection instanceof KintoneConnection)) {
+      throw new Error(`${connection}` +
                 `not an instance of kintoneConnection`);
     }
-    connection.set(this, connectionInput);
+    kintoneConnection.set(this, connection);
   }
   /**
      * @param {String} method
@@ -31,7 +31,7 @@ class App {
      * @return {Promise} Promise
      */
   sendRequest(method, url, model) {
-    return common.sendRequest(method, url, model, connection.get(this));
+    return common.sendRequest(method, url, model, kintoneConnection.get(this));
   }
   /**
      * Get single app details

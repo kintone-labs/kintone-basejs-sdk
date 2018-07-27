@@ -7,7 +7,7 @@ const KintoneExeption = require('../../exception/KintoneAPIException');
 const KintoneConnection = require('../../connection/Connection');
 const FileModel = require('../../model/file/FileModels');
 
-const connection = new WeakMap();
+const kintoneConnection = new WeakMap();
 
 /**
  * File module
@@ -15,14 +15,14 @@ const connection = new WeakMap();
 class File {
   /**
      * The constructor for this module
-     * @param {Connection} connectionInput
+     * @param {Connection} connection
      */
-  constructor(connectionInput) {
-    if (!(connectionInput instanceof KintoneConnection)) {
-      throw new Error(`${connectionInput}` +
+  constructor(connection) {
+    if (!(connection instanceof KintoneConnection)) {
+      throw new Error(`${connection}` +
                 `not an instance of kintoneConnection`);
     }
-    connection.set(this, connectionInput);
+    kintoneConnection.set(this, connection);
   }
   /**
      * Download file from kintone
@@ -32,7 +32,7 @@ class File {
   download(fileKey) {
     const dataRequest =
             new FileModel.GetFileRequest(fileKey);
-    return connection.get(this)
+    return kintoneConnection.get(this)
       .addRequestOption('json', true)
       .addRequestOption('encoding', null)
       .request('GET', 'FILE', dataRequest.toJSON())
@@ -48,7 +48,7 @@ class File {
      * @return {Promise}
      */
   upload(formData) {
-    return connection.get(this)
+    return kintoneConnection.get(this)
       .addRequestOption('formData', formData)
       .request('POST', 'FILE', null)
       .then((result) => {

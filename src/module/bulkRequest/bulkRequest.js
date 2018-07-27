@@ -16,14 +16,14 @@ const bulkRequests = new WeakMap();
 class BulkRequest {
   /**
      * Constructor function of BulkRequest
-     * @param {Connection} connectionInput
+     * @param {Connection} connection
      */
-  constructor(connectionInput) {
-    if (!(connectionInput instanceof KintoneConnection)) {
-      throw new Error(`${connectionInput} \
+  constructor(connection) {
+    if (!(connection instanceof KintoneConnection)) {
+      throw new Error(`${connection} \
                 not an instance of KintoneConnection`);
     }
-    kintoneConnection.set(this, connectionInput);
+    kintoneConnection.set(this, connection);
     bulkRequests.set(this, new BulkRequestModel());
   }
 
