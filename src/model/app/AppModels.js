@@ -8,6 +8,7 @@ const AppModels = {
   GetAppRequest: require('./app/GetAppRequest'),
   // TODO: Write unit test
   GetAppsRequest: require('./app/GetAppsRequest'),
+  AddPreviewAppRequest: require('./app/AddPreviewAppRequest'),
   // TODO: Write unit test
   GetFormFieldsRequest: require('./form/GetFormFieldsRequest'),
   // TODO: Write unit test
