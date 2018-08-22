@@ -4,7 +4,7 @@
  */
 
 const KintoneConnection = require('../../connection/Connection');
-const AppModel = require('../../model/app/AppModel');
+const AppModel = require('../../model/app/AppModels');
 const common = require('../../utils/Common');
 
 const kintoneConnection = new WeakMap();
@@ -130,6 +130,42 @@ class App {
             new AppModel.GetFormLayoutsRequest(appID);
     const apiName = isPreview === true ? 'APP_LAYOUT_PREVIEW' : 'APP_LAYOUT';
     return this.sendRequest('GET', apiName, dataRequest);
+  }
+
+  /**
+   * Add form fields
+   * @param {*} app
+   * @param {*} fields
+   * @param {*} revision
+   * @returns {Promise} Promise
+   */
+  addFormFields(app, fields, revision) {
+  }
+
+  /**
+   * Add form fields
+   * @param {String} name
+   * @param {Integer} space
+   * @param {Integer} thread
+   * @returns {Promise} Promise
+   */
+  addPreviewApp(name, space, thread) {
+    const dataRequest =
+            new AppModel.AddPreviewAppRequest(name, space, thread);
+    return this.sendRequest('POST', 'APP_PREVIEW', dataRequest);
+  }
+
+  /**
+   * Deploy App Settings
+   * @param {Array} apps
+   * @param {Integer} space
+   * @param {Integer} thread
+   * @returns {Promise} Promise
+   */
+  deployAppSettings(apps, space, thread) {
+    const dataRequest =
+            new AppModel.AddPreviewAppRequest(name, space, thread);
+    return this.sendRequest('POST', 'APP_DEPLOY_PREVIEW', dataRequest);
   }
 }
 module.exports = App;
