@@ -92,7 +92,7 @@ class Record {
      * @param {Integer} revision
      * @return {Promise} Promise
      */
-  updateRecordById(app, id, record, revision) {
+  updateRecordByID(app, id, record, revision) {
     const updateRecordRequest =
             new RecordModel.UpdateRecordRequest(app);
 

@@ -73,7 +73,7 @@ class BulkRequest {
      * @param {Integer} revision
      * @return {this}
      */
-  updateRecordById(app, id, record, revision) {
+  updateRecordByID(app, id, record, revision) {
     const updateRecordRequest =
             new RecordModel.UpdateRecordRequest(app);
     updateRecordRequest
