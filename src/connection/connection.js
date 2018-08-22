@@ -10,7 +10,6 @@ const KintoneHTTPHeader = require('../model/http/HTTPHeader');
 
 const CONNECTION_CONST = require('./constant');
 
-
 const kintoneDomain = new WeakMap();
 const kintoneAuth = new WeakMap();
 const kintoneGuestSpaceID = new WeakMap();
