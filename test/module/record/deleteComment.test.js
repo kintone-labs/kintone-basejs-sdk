@@ -5,7 +5,6 @@
  */
 const nock = require('nock');
 
-const config = require('../../config');
 const common = require('../../common');
 
 const KintoneAPIException = require('../../../src/exception/KintoneAPIException');
@@ -14,17 +13,17 @@ const Auth = require('../../../src/authentication/Auth');
 const Record = require('../../../src/module/record/Record');
 
 const auth = new Auth();
-auth.setPasswordAuth(config.username, config.password);
+auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
 
-const conn = new Connection(config.domain, auth);
-if (config.hasOwnProperty('proxy') && config.proxy) {
-  conn.addRequestOption('proxy', config.proxy);
+const conn = new Connection(common.DOMAIN, auth);
+if (common.hasOwnProperty('proxy') && common.proxy) {
+  conn.addRequestOption('proxy', common.proxy);
 }
 
 describe('deleteComment function', () => {
   describe('common case', () => {
     it('should return a promisse', () => {
-      nock('https://' + config.domain)
+      nock('https://' + common.DOMAIN)
         .intercept('/k/v1/record/comment.json', 'DELETE')
         .reply(200, {});
 
@@ -44,13 +43,13 @@ describe('deleteComment function', () => {
           comment: 1
         };
 
-        nock('https://' + config.domain)
+        nock('https://' + common.DOMAIN)
           .intercept('/k/v1/record/comment.json', 'DELETE', (rqBody) => {
             expect(rqBody).toMatchObject(data);
             return true;
           })
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-            expect(authHeader).toBe(common.getPasswordAuth(config.username, config.password));
+            expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
             return true;
           })
           .matchHeader('Content-Type', (type) => {
@@ -80,7 +79,7 @@ describe('deleteComment function', () => {
           record: 1,
           comment: 444
         };
-        nock('https://' + config.domain)
+        nock('https://' + common.DOMAIN)
           .intercept('/k/v1/record/comment.json', 'DELETE', (rqBody) => {
             expect(rqBody).toMatchObject(data);
             return true;

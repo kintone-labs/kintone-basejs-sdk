@@ -5,7 +5,6 @@
  */
 const nock = require('nock');
 
-const config = require('../../config');
 const common = require('../../common');
 
 const KintoneExeption = require('../../../src/exception/KintoneAPIException');
@@ -14,9 +13,9 @@ const Auth = require('../../../src/authentication/Auth');
 const Record = require('../../../src/module/record/Record');
 
 const auth = new Auth();
-auth.setPasswordAuth(config.username, config.password);
+auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
 
-const conn = new Connection(config.domain, auth);
+const conn = new Connection(common.DOMAIN, auth);
 
 const recordModule = new Record(conn);
 
@@ -24,7 +23,7 @@ describe('addRecords function', () => {
   describe('common case', () => {
 
     it('should return a promise', () => {
-      nock('https://' + config.domain)
+      nock('https://' + common.DOMAIN)
         .post('/k/v1/records.json')
         .reply(200, {
           'ids': ['1'],
@@ -44,13 +43,13 @@ describe('addRecords function', () => {
           recordsData: [{Text_0: {value: 1}}, {Text_0: {value: 2}}]
         };
 
-        nock('https://' + config.domain)
+        nock('https://' + common.DOMAIN)
           .post('/k/v1/records.json', (rqBody) => {
             expect(rqBody.records).toEqual(expect.arrayContaining(data.recordsData));
             return rqBody.app === data.appID;
           })
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-            expect(authHeader).toBe(common.getPasswordAuth(config.username, config.password));
+            expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
             return true;
           })
           .matchHeader('Content-Type', (type) => {
@@ -81,7 +80,7 @@ describe('addRecords function', () => {
           unexistedAppID: 999,
           recordsData: [{Text_0: {value: 1}}, {Text_0: {value: 2}}]
         };
-        nock('https://' + config.domain)
+        nock('https://' + common.DOMAIN)
           .post('/k/v1/records.json', (rqBody) => {
             expect(rqBody.app).toEqual(data.unexistedAppID);
             return true;
@@ -105,7 +104,7 @@ describe('addRecords function', () => {
           'message': 'Missing or invalid input.',
           'errors': {'app': {'messages': ['must be greater than or equal to 1']}}
         }
-        nock('https://' + config.domain)
+        nock('https://' + common.DOMAIN)
           .post('/k/v1/records.json', (rqBody) => {
             expect(rqBody.app).toEqual(data.negativeAppID);
             return true;
@@ -130,7 +129,7 @@ describe('addRecords function', () => {
           'message': 'Missing or invalid input.',
           'errors': {'app': {'messages': ['must be greater than or equal to 1']}}
         };
-        nock('https://' + config.domain)
+        nock('https://' + common.DOMAIN)
           .post('/k/v1/records.json', (rqBody) => {
             expect(rqBody.app).toEqual(0);
             return true;

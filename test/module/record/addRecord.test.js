@@ -5,7 +5,6 @@
  */
 const nock = require('nock');
 
-const config = require('../../config');
 const common = require('../../common');
 
 const KintoneAPIException = require('../../../src/exception/KintoneAPIException');
@@ -14,14 +13,14 @@ const Auth = require('../../../src/authentication/Auth');
 const Record = require('../../../src/module/record/Record');
 
 const auth = new Auth();
-auth.setPasswordAuth(config.username, config.password);
+auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
 
-const conn = new Connection(config.domain, auth);
+const conn = new Connection(common.DOMAIN, auth);
 
 describe('addRecord function', () => {
   describe('common case', () => {
     it('should return a promise', () => {
-      nock('https://' + config.domain)
+      nock('https://' + common.DOMAIN)
         .post('/k/v1/record.json')
         .reply(200, {'id': '100', 'revision': '1'});
       const recordModule = new Record(conn);
@@ -44,13 +43,13 @@ describe('addRecord function', () => {
       };
 
       it('should add successfully with full data', () => {
-        nock('https://' + config.domain)
+        nock('https://' + common.DOMAIN)
           .post('/k/v1/record.json', (rqBody) => {
             expect(rqBody.record).toMatchObject(body.recordData);
             return rqBody.app === body.appID;
           })
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-            expect(authHeader).toBe(common.getPasswordAuth(config.username, config.password));
+            expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
             return true;
           })
           .matchHeader('Content-Type', (type) => {
@@ -80,7 +79,7 @@ describe('addRecord function', () => {
           'id': 'id when request to invalid app',
           'message': 'The app (ID: 999) not found. The app may have been deleted.'
         };
-        nock('https://' + config.domain, (rqBody) => {
+        nock('https://' + common.DOMAIN, (rqBody) => {
           expect(rqBody.app).toEqual(unexistedAppID);
           return true;
         })
@@ -106,7 +105,7 @@ describe('addRecord function', () => {
            }
           }
         };
-        nock('https://' + config.domain)
+        nock('https://' + common.DOMAIN)
           .post('/k/v1/record.json')
           .reply(400, expectResult);
 
@@ -128,7 +127,7 @@ describe('addRecord function', () => {
            }
           }
         };
-        nock('https://' + config.domain)
+        nock('https://' + common.DOMAIN)
           .post('/k/v1/record.json')
           .reply(400, expectResult);
 

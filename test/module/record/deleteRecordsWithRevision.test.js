@@ -5,7 +5,6 @@
  */
 const nock = require('nock');
 
-const config = require('../../config');
 const common = require('../../common');
 
 const KintoneAPIException = require('../../../src/exception/KintoneAPIException');
@@ -14,9 +13,9 @@ const Auth = require('../../../src/authentication/Auth');
 const Record = require('../../../src/module/record/Record');
 
 const auth = new Auth();
-auth.setPasswordAuth(config.username, config.password);
+auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
 
-const conn = new Connection(config.domain, auth);
+const conn = new Connection(common.DOMAIN, auth);
 
 
 const recordModule = new Record(conn);
@@ -31,7 +30,7 @@ describe('deleteRecordsWithRevision function', () => {
           2: 1
         }
       };
-      nock('https://' + config.domain)
+      nock('https://' + common.DOMAIN)
         .intercept('/k/v1/records.json', 'DELETE')
         .reply(200, {});
       const deleteRecordsWithRevisionResult = recordModule.deleteRecordsWithRevision(data.appID, data.idsWithRevision);
@@ -59,13 +58,13 @@ describe('deleteRecordsWithRevision function', () => {
         };
 
 
-        nock('https://' + config.domain)
+        nock('https://' + common.DOMAIN)
           .intercept('/k/v1/records.json', 'DELETE', (rqBody) => {
             expect(rqBody).toMatchObject(expectBody);
             return true;
           })
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-            expect(authHeader).toBe(common.getPasswordAuth(config.username, config.password));
+            expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
             return true;
           })
           .matchHeader('Content-Type', (type) => {
@@ -104,7 +103,7 @@ describe('deleteRecordsWithRevision function', () => {
         };
         const expectResult = {'code': 'GAIA_RE01', 'id': 'IBcz0R6tmn0b06i88cdt', 'message': 'The specified record (ID: 4444) is not found.'};
 
-        nock('https://' + config.domain)
+        nock('https://' + common.DOMAIN)
           .intercept('/k/v1/records.json', 'DELETE', (rqBody) => {
             expect(rqBody).toMatchObject(expectBody);
             return true;

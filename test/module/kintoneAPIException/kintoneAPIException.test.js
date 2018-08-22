@@ -1,7 +1,6 @@
 const requestPromise = require('request-promise');
 const nock = require('nock');
 
-const config = require('../../config');
 const common = require('../../common');
 const KintoneAPIException = require('../../../src/exception/KintoneAPIException');
 
@@ -12,15 +11,15 @@ const expectResult = {
   'errors': {'app': {'messages': ['must be greater than or equal to 1']}}
 };
 
-nock('https://' + config.domain)
+nock('https://' + common.DOMAIN)
   .get(`/k/v1/records.json`)
   .reply(400, expectResult);
 
 const request = requestPromise({
-  uri: 'https://' + config.domain + '/k/v1/records.json',
+  uri: 'https://' + common.DOMAIN + '/k/v1/records.json',
   method: 'GET',
   headers: {
-    [common.PASSWORD_AUTH]: common.getPasswordAuth(config.username, config.password),
+    [common.PASSWORD_AUTH]: common.getPasswordAuth(common.USERNAME, common.PASSWORD),
     'Content-Type': 'application/json'
   },
   body: {

@@ -4,8 +4,6 @@
  * test record module
  */
 const nock = require('nock');
-
-const config = require('../../config');
 const common = require('../../common');
 
 const KintoneAPIException = require('../../../src/exception/KintoneAPIException');
@@ -14,15 +12,14 @@ const Auth = require('../../../src/authentication/Auth');
 const Record = require('../../../src/module/record/Record');
 
 const auth = new Auth();
-auth.setPasswordAuth(config.username, config.password);
-
-const conn = new Connection(config.domain, auth);
+auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
+const conn = new Connection(common.DOMAIN, auth);
 
 describe('addComment function', () => {
   describe('common case', () => {
     it('should return a promise', () => {
 
-      nock('https://' + config.domain)
+      nock('https://' + common.DOMAIN)
         .post('/k/v1/record/comment.json')
         .reply(200, {'id': '1'});
       const recordModule = new Record(conn);
@@ -42,13 +39,13 @@ describe('addComment function', () => {
         }
       };
 
-      nock('https://' + config.domain)
+      nock('https://' + common.DOMAIN)
         .post('/k/v1/record/comment.json', (rqBody) => {
           expect(rqBody).toMatchObject(data);
           return true;
         })
         .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-          expect(authHeader).toBe(common.getPasswordAuth(config.username, config.password));
+          expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
           return true;
         })
         .matchHeader('Content-Type', (type) => {
@@ -84,7 +81,7 @@ describe('addComment function', () => {
         'message': 'Missing or invalid input.',
         'errors': {'comment.text': {'messages': ['Enter between 1 and 65,535 characters.', 'Required field.']}}
       };
-      nock('https://' + config.domain)
+      nock('https://' + common.DOMAIN)
         .post('/k/v1/record/comment.json', (rqBody) => {
           expect(rqBody).toMatchObject(data);
           return true;

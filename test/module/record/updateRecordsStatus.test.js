@@ -5,7 +5,6 @@
  */
 const nock = require('nock');
 
-const config = require('../../config');
 const common = require('../../common');
 
 const Connection = require('../../../src/connection/Connection');
@@ -13,9 +12,9 @@ const Auth = require('../../../src/authentication/Auth');
 const Record = require('../../../src/module/record/Record');
 
 const auth = new Auth();
-auth.setPasswordAuth(config.username, config.password);
+auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
 
-const conn = new Connection(config.domain, auth);
+const conn = new Connection(common.DOMAIN, auth);
 
 describe('updateRecordsStatus function', () => {
   describe('common case', () => {
@@ -30,7 +29,7 @@ describe('updateRecordsStatus function', () => {
     };
 
     it('should return a promise', () => {
-      nock('https://' + config.domain)
+      nock('https://' + common.DOMAIN)
         .put('/k/v1/records/status.json')
         .reply(200, {'revision': '3'});
 
@@ -71,13 +70,13 @@ describe('updateRecordsStatus function', () => {
           }]
         };
 
-        nock('https://' + config.domain)
+        nock('https://' + common.DOMAIN)
           .put('/k/v1/records/status.json', (rqBody) => {
             expect(rqBody).toMatchObject(data);
             return true;
           })
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-            expect(authHeader).toBe(common.getPasswordAuth(config.username, config.password));
+            expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
             return true;
           })
           .matchHeader('Content-Type', (type) => {
@@ -116,7 +115,7 @@ describe('updateRecordsStatus function', () => {
             'errors': {'records[0].action': {'messages': ['Required field.']}
             }};
 
-          nock('https://' + config.domain)
+          nock('https://' + common.DOMAIN)
             .put('/k/v1/records/status.json', (rqBody) => {
               expect(rqBody).toMatchObject(data);
               return true;

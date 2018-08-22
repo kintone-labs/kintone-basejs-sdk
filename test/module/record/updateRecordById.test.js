@@ -5,7 +5,6 @@
  */
 const nock = require('nock');
 
-const config = require('../../config');
 const common = require('../../common');
 
 const Connection = require('../../../src/connection/Connection');
@@ -13,9 +12,9 @@ const Auth = require('../../../src/authentication/Auth');
 const Record = require('../../../src/module/record/Record');
 
 const auth = new Auth();
-auth.setPasswordAuth(config.username, config.password);
+auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
 
-const conn = new Connection(config.domain, auth);
+const conn = new Connection(common.DOMAIN, auth);
 
 describe('updateRecordById function', () => {
   describe('common case', () => {
@@ -31,7 +30,7 @@ describe('updateRecordById function', () => {
         },
         revision: 2
       };
-      nock('https://' + config.domain)
+      nock('https://' + common.DOMAIN)
         .put('/k/v1/record.json')
         .reply(200, {'revisions': '1'});
 
@@ -55,13 +54,13 @@ describe('updateRecordById function', () => {
           },
           revision: 2
         };
-        nock('https://' + config.domain)
+        nock('https://' + common.DOMAIN)
           .put('/k/v1/record.json', (rqBody) => {
             expect(rqBody).toMatchObject(data);
             return true;
           })
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-            expect(authHeader).toBe(common.getPasswordAuth(config.username, config.password));
+            expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
             return true;
           })
           .matchHeader('Content-Type', (type) => {
@@ -85,7 +84,7 @@ describe('updateRecordById function', () => {
           },
           revision: -1
         };
-        nock('https://' + config.domain)
+        nock('https://' + common.DOMAIN)
           .put('/k/v1/record.json', (rqBody) => {
             expect(rqBody).toMatchObject(data);
             return true;
@@ -119,7 +118,7 @@ describe('updateRecordById function', () => {
           const expectResult = {'code': 'GAIA_CO02',
             'id': 'MJkW0PkiEJ3HhuPRkl3H',
             'message': '指定したrevisionは最新ではありません。ほかのユーザーがレコードを更新した可能性があります。'};
-          nock('https://' + config.domain)
+          nock('https://' + common.DOMAIN)
             .put('/k/v1/record.json', (rqBody) => {
               expect(rqBody.revision).toEqual(wrongRevison);
               return true;

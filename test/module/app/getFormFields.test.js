@@ -5,7 +5,6 @@
  */
 const nock = require('nock');
 
-const config = require('../../config');
 const common = require('../../common');
 
 const Connection = require('../../../src/connection/Connection');
@@ -13,9 +12,9 @@ const Auth = require('../../../src/authentication/Auth');
 const Record = require('../../../src/module/app/App');
 
 const auth = new Auth();
-auth.setPasswordAuth(config.username, config.password);
+auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
 
-const conn = new Connection(config.domain, auth);
+const conn = new Connection(common.DOMAIN, auth);
 
 const recordModule = new Record(conn);
 
@@ -23,7 +22,7 @@ describe('getFormFields function', () => {
   describe('common function', () => {
     const app = 1;
     it('should return promise', () => {
-      nock('https://' + config.domain)
+      nock('https://' + common.DOMAIN)
         .get('/k/v1/app/form/fields.json')
         .reply(200, {});
 
@@ -56,14 +55,14 @@ describe('getFormFields function', () => {
             },
             'revision': '2'
           }};
-        nock('https://' + config.domain)
+        nock('https://' + common.DOMAIN)
           .get('/k/v1/app/form/fields.json', (rqBody) => {
             expect(rqBody.app).toEqual(app);
             expect(rqBody.lang).toEqual(lang);
             return true;
           })
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-            expect(authHeader).toBe(common.getPasswordAuth(config.username, config.password));
+            expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
             return true;
           })
           .matchHeader('Content-Type', (type) => {
@@ -90,7 +89,7 @@ describe('getFormFields function', () => {
           'id': 'lzQPJ1hkW3Aj4iVebWCG',
           'message': 'Using this API token, you cannot run the specified API.'
         };
-        nock('https://' + config.domain)
+        nock('https://' + common.DOMAIN)
           .get('/k/v1/app/form/fields.json')
           .reply(403, expectResult);
         const getFormFieldsResult = recordModule.getFormFields(10);

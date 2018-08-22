@@ -5,7 +5,6 @@
  */
 const nock = require('nock');
 
-const config = require('../../config');
 const common = require('../../common');
 
 const KintoneAPIException = require('../../../src/exception/KintoneAPIException');
@@ -14,9 +13,9 @@ const Auth = require('../../../src/authentication/Auth');
 const Record = require('../../../src/module/app/App');
 
 const auth = new Auth();
-auth.setPasswordAuth(config.username, config.password);
+auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
 
-const conn = new Connection(config.domain, auth);
+const conn = new Connection(common.DOMAIN, auth);
 
 const recordModule = new Record(conn);
 
@@ -24,7 +23,7 @@ describe('getApp function', () => {
   describe('common function', () => {
     it('should return promise', () => {
       const id = 1;
-      nock('https://' + config.domain)
+      nock('https://' + common.DOMAIN)
         .get('/k/v1/app.json')
         .reply(200, {});
 
@@ -56,13 +55,13 @@ describe('getApp function', () => {
             'name': 'Display Name'
           }
         };
-        nock('https://' + config.domain)
+        nock('https://' + common.DOMAIN)
           .get('/k/v1/app.json', (rqBody) => {
             expect(rqBody.id).toEqual(appID);
             return true;
           })
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-            expect(authHeader).toBe(common.getPasswordAuth(config.username, config.password));
+            expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
             return true;
           })
           .matchHeader('Content-Type', (type) => {
@@ -92,7 +91,7 @@ describe('getApp function', () => {
           'errors': {'id': {'messages': ['must be greater than or equal to 1']}}
         };
 
-        nock('https://' + config.domain)
+        nock('https://' + common.DOMAIN)
           .get('/k/v1/app.json', (rqBody) => {
             expect(rqBody.id).toEqual(appID);
             return true;
@@ -113,7 +112,7 @@ describe('getApp function', () => {
           'message': 'The app (ID: 76666) not found. The app may have been deleted.'
         };
 
-        nock('https://' + config.domain)
+        nock('https://' + common.DOMAIN)
           .get('/k/v1/app.json', (rqBody) => {
             expect(rqBody.id).toEqual(unexistAppID);
             return true;

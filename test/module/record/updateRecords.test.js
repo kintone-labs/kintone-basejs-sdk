@@ -5,7 +5,6 @@
  */
 const nock = require('nock');
 
-const config = require('../../config');
 const common = require('../../common');
 
 const Connection = require('../../../src/connection/Connection');
@@ -13,9 +12,9 @@ const Auth = require('../../../src/authentication/Auth');
 const Record = require('../../../src/module/record/Record');
 
 const auth = new Auth();
-auth.setPasswordAuth(config.username, config.password);
+auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
 
-const conn = new Connection(config.domain, auth);
+const conn = new Connection(common.DOMAIN, auth);
 
 describe('updateRecords function', () => {
   describe('common case', () => {
@@ -30,7 +29,7 @@ describe('updateRecords function', () => {
     const recordsData = [recordDataUpdate];
 
     it('should return a promise', () => {
-      nock('https://' + config.domain)
+      nock('https://' + common.DOMAIN)
         .put('/k/v1/records.json')
         .reply(200, {
           'records': [{
@@ -65,14 +64,14 @@ describe('updateRecords function', () => {
           }]
         };
 
-        nock('https://' + config.domain)
+        nock('https://' + common.DOMAIN)
           .put('/k/v1/records.json', (rqBody) => {
             expect(rqBody.app).toEqual(appID);
             expect(rqBody.records).toMatchObject(recordsData);
             return true;
           })
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-            expect(authHeader).toBe(common.getPasswordAuth(config.username, config.password));
+            expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
             return true;
           })
           .matchHeader('Content-Type', (type) => {
@@ -106,7 +105,7 @@ describe('updateRecords function', () => {
             'id': '4ucJiURAv0LsXBkLCDdi',
             'message': 'The revision is not the latest. Someone may update a record.'
           };
-          nock('https://' + config.domain)
+          nock('https://' + common.DOMAIN)
             .put('/k/v1/records.json', (rqBody) => {
               expect(rqBody.records).toMatchObject(recordsData);
               return true;

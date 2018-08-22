@@ -5,7 +5,6 @@
  */
 const nock = require('nock');
 
-const config = require('../../config');
 const common = require('../../common');
 
 const KintoneAPIException = require('../../../src/exception/KintoneAPIException');
@@ -14,11 +13,11 @@ const Auth = require('../../../src/authentication/Auth');
 const Record = require('../../../src/module/record/Record');
 
 const auth = new Auth();
-auth.setPasswordAuth(config.username, config.password);
+auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
 
-const conn = new Connection(config.domain, auth);
-if (config.hasOwnProperty('proxy') && config.proxy) {
-  conn.addRequestOption('proxy', config.proxy);
+const conn = new Connection(common.DOMAIN, auth);
+if (common.hasOwnProperty('proxy') && common.proxy) {
+  conn.addRequestOption('proxy', common.proxy);
 }
 
 const recordModule = new Record(conn);
@@ -26,7 +25,7 @@ describe('common case', () => {
   it('should return a promise', () => {
     const appID = 1;
     const recordID = 1;
-    nock('https://' + config.domain)
+    nock('https://' + common.DOMAIN)
       .get(`/k/v1/record.json`)
       .reply(200, {
         'record': {}});
@@ -42,14 +41,14 @@ describe('success case', () => {
     it('should have a "record" property in the result', () => {
       const appID = 1;
       const recordID = 1;
-      nock('https://' + config.domain)
+      nock('https://' + common.DOMAIN)
         .get(`/k/v1/record.json`, (rqBody, b) => {
           expect(rqBody.app).toBe(appID);
           expect(rqBody.id).toBe(recordID);
           return true;
         })
         .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-          expect(authHeader).toBe(Buffer.from(config.username + ':' + config.password).toString('base64'));
+          expect(authHeader).toBe(Buffer.from(common.USERNAME + ':' + common.PASSWORD).toString('base64'));
           return true;
         })
         .matchHeader('Content-Type', (type) => {
@@ -79,13 +78,13 @@ describe('error case', () => {
         'errors': {'app': {'messages': ['must be greater than or equal to 1']}}
       };
 
-      nock('https://' + config.domain)
+      nock('https://' + common.DOMAIN)
         .get(`/k/v1/record.json`, (rqBody, b) => {
           expect(rqBody.app).toBe(-2);
           return true;
         })
         .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-          expect(authHeader).toBe(Buffer.from(config.username + ':' + config.password).toString('base64'));
+          expect(authHeader).toBe(Buffer.from(common.USERNAME + ':' + common.PASSWORD).toString('base64'));
           return true;
         })
         .matchHeader('Content-Type', (type) => {

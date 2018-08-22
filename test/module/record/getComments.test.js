@@ -5,7 +5,6 @@
  */
 const nock = require('nock');
 
-const config = require('../../config');
 const common = require('../../common');
 
 const KintoneAPIException = require('../../../src/exception/KintoneAPIException');
@@ -14,11 +13,11 @@ const Auth = require('../../../src/authentication/Auth');
 const Record = require('../../../src/module/record/Record');
 
 const auth = new Auth();
-auth.setPasswordAuth(config.username, config.password);
+auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
 
-const conn = new Connection(config.domain, auth);
-if (config.hasOwnProperty('proxy') && config.proxy) {
-  conn.addRequestOption('proxy', config.proxy);
+const conn = new Connection(common.DOMAIN, auth);
+if (common.hasOwnProperty('proxy') && common.proxy) {
+  conn.addRequestOption('proxy', common.proxy);
 }
 
 const recordModule = new Record(conn);
@@ -30,7 +29,7 @@ describe('getComments function', () => {
         app: 2,
         record: 1
       };
-      nock('https://' + config.domain)
+      nock('https://' + common.DOMAIN)
         .get('/k/v1/record/comments.json')
         .reply(200, {
           'comments': [
@@ -61,14 +60,14 @@ describe('getComments function', () => {
           record: 1
         };
 
-        nock('https://' + config.domain)
+        nock('https://' + common.DOMAIN)
           .get('/k/v1/record/comments.json', (rqBody) => {
             expect(rqBody.record).toEqual(data.record);
             expect(rqBody.app).toEqual(data.app);
             return true;
           })
           .matchHeader('X-Cybozu-Authorization', (authHeader) => {
-            expect(authHeader).toBe(common.getPasswordAuth(config.username, config.password));
+            expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
             return true;
           })
           .matchHeader('Content-Type', (type) => {
@@ -110,7 +109,7 @@ describe('getComments function', () => {
           order: 'dd'
         };
 
-        nock('https://' + config.domain)
+        nock('https://' + common.DOMAIN)
           .get('/k/v1/record/comments.json', (rqBody) => {
             expect(rqBody.order).toEqual(data.order);
             return true;

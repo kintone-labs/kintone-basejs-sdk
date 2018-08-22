@@ -5,7 +5,6 @@
  */
 const nock = require('nock');
 
-const config = require('../../config');
 const common = require('../../common');
 
 const Connection = require('../../../src/connection/Connection');
@@ -13,9 +12,9 @@ const Auth = require('../../../src/authentication/Auth');
 const Record = require('../../../src/module/record/Record');
 
 const auth = new Auth();
-auth.setPasswordAuth(config.username, config.password);
+auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
 
-const conn = new Connection(config.domain, auth);
+const conn = new Connection(common.DOMAIN, auth);
 
 describe('updateRecordStatus function', () => {
   describe('common case', () => {
@@ -28,7 +27,7 @@ describe('updateRecordStatus function', () => {
     };
 
     it('should return a promise', () => {
-      nock('https://' + config.domain)
+      nock('https://' + common.DOMAIN)
         .put('/k/v1/record/status.json')
         .reply(200, {'revision': '3'});
 
@@ -52,13 +51,13 @@ describe('updateRecordStatus function', () => {
 
         const expectResult = {'revision': '3'};
 
-        nock('https://' + config.domain)
+        nock('https://' + common.DOMAIN)
           .put('/k/v1/record/status.json', (rqBody) => {
             expect(rqBody).toMatchObject(data);
             return true;
           })
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-            expect(authHeader).toBe(common.getPasswordAuth(config.username, config.password));
+            expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
             return true;
           })
           .matchHeader('Content-Type', (type) => {
@@ -91,7 +90,7 @@ describe('updateRecordStatus function', () => {
 
           const expectResult = {'code': 'GAIA_NT01', 'id': '4UPEpLZKYpZfju46I3wm', 'message': 'Only Assignee can change the status.'};
 
-          nock('https://' + config.domain)
+          nock('https://' + common.DOMAIN)
             .put('/k/v1/record/status.json', (rqBody) => {
               expect(rqBody).toMatchObject(data);
               return true;

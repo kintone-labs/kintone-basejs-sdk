@@ -5,7 +5,6 @@
  */
 const nock = require('nock');
 
-const config = require('../../config');
 const common = require('../../common');
 
 const Connection = require('../../../src/connection/Connection');
@@ -13,16 +12,16 @@ const Auth = require('../../../src/authentication/Auth');
 const Record = require('../../../src/module/app/App');
 
 const auth = new Auth();
-auth.setPasswordAuth(config.username, config.password);
+auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
 
-const conn = new Connection(config.domain, auth);
+const conn = new Connection(common.DOMAIN, auth);
 
 const recordModule = new Record(conn);
 
 describe('getApps function', () => {
   describe('common function', () => {
     it('should return promise', () => {
-      nock('https://' + config.domain)
+      nock('https://' + common.DOMAIN)
         .get('/k/v1/apps.json')
         .reply(200, {});
 
@@ -59,14 +58,14 @@ describe('getApps function', () => {
             }
           ]
         };
-        nock('https://' + config.domain)
+        nock('https://' + common.DOMAIN)
           .get('/k/v1/apps.json', (rqBody) => {
             expect(rqBody.limit).toEqual(limit);
             expect(rqBody.offset).toEqual(offset);
             return true;
           })
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-            expect(authHeader).toBe(common.getPasswordAuth(config.username, config.password));
+            expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
             return true;
           })
           .matchHeader('Content-Type', (type) => {
@@ -92,7 +91,7 @@ describe('getApps function', () => {
           'id': 'lzQPJ1hkW3Aj4iVebWCG',
           'message': 'Using this API token, you cannot run the specified API.'
         };
-        nock('https://' + config.domain)
+        nock('https://' + common.DOMAIN)
           .get('/k/v1/apps.json')
           .reply(403, expectResult);
         const getAppsResult = recordModule.getApps();

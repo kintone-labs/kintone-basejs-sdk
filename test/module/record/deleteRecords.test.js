@@ -5,7 +5,6 @@
  */
 const nock = require('nock');
 
-const config = require('../../config');
 const common = require('../../common');
 
 const KintoneAPIException = require('../../../src/exception/KintoneAPIException');
@@ -14,9 +13,9 @@ const Auth = require('../../../src/authentication/Auth');
 const Record = require('../../../src/module/record/Record');
 
 const auth = new Auth();
-auth.setPasswordAuth(config.username, config.password);
+auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
 
-const conn = new Connection(config.domain, auth);
+const conn = new Connection(common.DOMAIN, auth);
 
 const recordModule = new Record(conn);
 
@@ -27,7 +26,7 @@ describe('deleteRecords function', () => {
         app: 2,
         ids: [1]
       };
-      nock('https://' + config.domain)
+      nock('https://' + common.DOMAIN)
         .intercept('/k/v1/records.json', 'DELETE')
         .reply(200, {});
       const deleteRecordsResult = recordModule.deleteRecords(data.app, data.ids);
@@ -43,14 +42,14 @@ describe('deleteRecords function', () => {
           app: 2,
           ids: [1]
         };
-        nock('https://' + config.domain)
+        nock('https://' + common.DOMAIN)
           .intercept('/k/v1/records.json', 'DELETE', (rqBody) => {
             expect(rqBody.app).toEqual(data.app);
             expect(rqBody.ids).toEqual(data.ids);
             return true;
           })
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-            expect(authHeader).toBe(common.getPasswordAuth(config.username, config.password));
+            expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
             return true;
           })
           .matchHeader('Content-Type', (type) => {
@@ -77,7 +76,7 @@ describe('deleteRecords function', () => {
           app: 2,
           ids: [1000]
         };
-        nock('https://' + config.domain)
+        nock('https://' + common.DOMAIN)
           .intercept('/k/v1/records.json', 'DELETE', (rqBody) => {
             expect(rqBody.app).toEqual(data.app);
             expect(rqBody.ids).toEqual(data.ids);

@@ -4,7 +4,6 @@
  */
 const nock = require('nock');
 
-const config = require('../../config');
 const common = require('../../common');
 
 const Connection = require('../../../src/connection/Connection');
@@ -12,15 +11,15 @@ const Auth = require('../../../src/authentication/Auth');
 const Record = require('../../../src/module/record/Record');
 
 const auth = new Auth();
-auth.setPasswordAuth(config.username, config.password);
+auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
 
-const conn = new Connection(config.domain, auth);
+const conn = new Connection(common.DOMAIN, auth);
 
 const recordModule = new Record(conn);
 describe('getRecords function', () => {
   describe('common case', () => {
     it('should return a promise', () => {
-      nock('https://' + config.domain)
+      nock('https://' + common.DOMAIN)
         .get(`/k/v1/records.json`)
         .reply(200, {records: []});
       const getRecordsResult = recordModule.getRecords();
@@ -39,13 +38,13 @@ describe('getRecords function', () => {
           totalCount: false
         };
 
-        nock('https://' + config.domain)
+        nock('https://' + common.DOMAIN)
           .get(`/k/v1/records.json`, (rqbody) => {
             expect(rqbody).toMatchObject(body);
             return true;
           })
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-            expect(authHeader).toBe(Buffer.from(config.username + ':' + config.password).toString('base64'));
+            expect(authHeader).toBe(Buffer.from(common.USERNAME + ':' + common.PASSWORD).toString('base64'));
             return true;
           })
           .matchHeader('Content-Type', (type) => {
@@ -81,7 +80,7 @@ describe('getRecords function', () => {
           'message': 'Missing or invalid input.',
           'errors': {'app': {'messages': ['must be greater than or equal to 1']}}
         };
-        nock('https://' + config.domain)
+        nock('https://' + common.DOMAIN)
           .get(`/k/v1/records.json`, (rqbody) => {
             expect(rqbody).toMatchObject(body);
             return true;
