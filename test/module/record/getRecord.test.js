@@ -8,49 +8,68 @@ const KintoneExeption = require('../../../src/exception/KintoneAPIException');
 const KintoneConnection = require('../../../src/connection/Connection');
 const KintoneAuth = require('../../../src/authentication/Auth');
 const KintoneRecord = require('../../../src/module/record/Record');
-const env = require('../env');
+const nock = require('nock');
+const config = require('../../config');
 
 const auth = new KintoneAuth();
-auth.setPasswordAuth(env.username, env.password);
+auth.setPasswordAuth(config.username, config.password);
 
-const conn = new KintoneConnection(env.domain, auth);
-if (env.hasOwnProperty('proxy') && env.proxy) {
-  conn.addRequestOption('proxy', env.proxy);
+const conn = new KintoneConnection(config.domain, auth);
+if (config.hasOwnProperty('proxy') && config.proxy) {
+  conn.addRequestOption('proxy', config.proxy);
 }
 
-const data = {
-  appID: env.app,
-  recordID: 2
-};
+const appID = 1;
+const recordID = 1;
+
+nock('https://' + config.domain)
+  .get(`/k/v1/record.json`, (rqBody) => {
+    return rqBody.app === appID && rqBody.id === recordID;
+  })
+  .matchHeader('X-Cybozu-Authorization', (authHeader) => {
+    expect(authHeader).toBe(Buffer.from(config.username + ':' + config.password).toString('base64'));
+    return true;
+  })
+  .matchHeader('Content-Type', (type) => {
+    expect(type).toBe('application/json');
+    return true;
+  })
+  .reply(200, {
+    'record': {}});
 
 const recordModule = new KintoneRecord(conn);
+describe('common case', () => {
 
-describe('getRecord should have enough property', () => {
   const getRecordResult = recordModule.getRecord();
-  it('getRecord should have a "then" property', () => {
-    return expect(getRecordResult).toHaveProperty('then');
-  });
-
-  it('getRecord should have a "catch" property', () => {
-    return expect(getRecordResult).toHaveProperty('catch');
+  it('should return a promise', () => {
+    expect(getRecordResult).toHaveProperty('then');
+    expect(getRecordResult).toHaveProperty('catch');
   });
 });
 
-describe('getRecord success', () => {
-  const getRecordResult = recordModule.getRecord(data.appID, data.recordID);
-  it('getRecord success should have a "record" property', () => {
-    return getRecordResult.then((rsp) => {
-      expect(rsp).toHaveProperty('record');
+describe('success case', () => {
+  describe('valid params are specificed', () => {
+    it('should have a "record" property in the result', () => {
+      return recordModule.getRecord(appID, recordID)
+        .then((rsp) => {
+          expect(rsp).toHaveProperty('record');
+        });
     });
+    // todo
   });
+  // todo
 });
 
-describe('No param is specified, getRecord error', () => {
-  const getRecordResult = recordModule.getRecord('');
-  it('"getRecord" error should have a "id" property', () => {
-    return getRecordResult.catch((err) => {
-      expect(err).toBeInstanceOf(KintoneExeption);
-      expect(err.get()).toHaveProperty('id');
+describe('error case', () => {
+  describe('invalid appID param is specified', () => {
+    const getRecordResult = recordModule.getRecord(2);
+    it('"should return the error in the result', () => {
+      return getRecordResult.catch((err) => {
+        expect(err).toBeInstanceOf(KintoneExeption);
+        expect(err.get()).toHaveProperty('id');
+      });
     });
+    // todo
   });
+  // todo
 });

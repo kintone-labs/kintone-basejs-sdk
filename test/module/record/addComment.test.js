@@ -8,52 +8,100 @@ const KintoneExeption = require('../../../src/exception/KintoneAPIException');
 const KintoneConnection = require('../../../src/connection/Connection');
 const KintoneAuth = require('../../../src/authentication/Auth');
 const KintoneRecord = require('../../../src/module/record/Record');
-const env = require('../env');
+const config = require('../../config');
+const nock = require('nock');
+const Common = require('../../Common');
+
+const common = new Common();
 
 const auth = new KintoneAuth();
-auth.setPasswordAuth(env.username, env.password);
+auth.setPasswordAuth(config.username, config.password);
 
-const conn = new KintoneConnection(env.domain, auth);
-if (env.hasOwnProperty('proxy') && env.proxy) {
-  conn.addRequestOption('proxy', env.proxy);
+const conn = new KintoneConnection(config.domain, auth);
+if (config.hasOwnProperty('proxy') && config.proxy) {
+  conn.addRequestOption('proxy', config.proxy);
 }
 
-const data = {
-  appID: env.app,
-  recordID: 2,
-  commentContent: {
-    text: 'hello'
-  }
-};
+describe('addComment function', () => {
+  describe('common case', () => {
+    it('should return a promise', () => {
 
-const recordModule = new KintoneRecord(conn);
-
-describe('addComment should have enough property', () => {
-  const addCommentResult = recordModule.addComment();
-  it('addComment should have a "then" property', () => {
-    return expect(addCommentResult).toHaveProperty('then');
-  });
-
-  it('addComment should have a "catch" property', () => {
-    return expect(addCommentResult).toHaveProperty('catch');
-  });
-});
-
-describe('addComment success', () => {
-  const addCommentResult = recordModule.addComment(data.appID, data.recordID, data.commentContent);
-  it('addComment success should have a "id" property', () => {
-    return addCommentResult.then((rsp) => {
-      expect(rsp).toHaveProperty('id');
+      nock('https://' + config.domain)
+        .post('/k/v1/record/comment.json')
+        .reply(200, {'id': '1'});
+      const recordModule = new KintoneRecord(conn);
+      const addCommentResult = recordModule.addComment();
+      expect(addCommentResult).toHaveProperty('then');
+      expect(addCommentResult).toHaveProperty('catch');
     });
   });
-});
 
-describe('No param is specified, addComment error', () => {
-  const addCommentResult = recordModule.addComment('');
-  it('"addComment" error should have a "id" property', () => {
-    return addCommentResult.catch((err) => {
-      expect(err).toBeInstanceOf(KintoneExeption);
-      expect(err.get()).toHaveProperty('id');
+  describe('success case', () => {
+    describe('valid data', () => {
+      const data = {
+        app: config.app,
+        record: 1,
+        comment: {
+          text: 'hello'
+        }
+      };
+
+      nock('https://' + config.domain)
+        .post('/k/v1/record/comment.json', (rqBody) => {
+          expect(rqBody).toMatchObject(data);
+          return true;
+        })
+        .matchHeader('X-Cybozu-Authorization', (authHeader) => {
+          expect(authHeader).toBe(common.getPasswordAuth(config.username, config.password));
+          return true;
+        })
+        .matchHeader('Content-Type', (type) => {
+          expect(type).toBe('application/json');
+          return true;
+        })
+        .reply(200, {'id': '1'});
+
+      const recordModule = new KintoneRecord(conn);
+      const addCommentResult = recordModule.addComment(data.app, data.record, data.comment);
+      it('should add comment to record successfully', () => {
+        return addCommentResult.then((rsp) => {
+          expect(rsp).toHaveProperty('id');
+        });
+      });
+    // todo
     });
+  // todo
+  });
+
+  describe('error case', () => {
+    describe('invalid comment content', () => {
+      const data = {
+        app: config.app,
+        record: 1,
+        comment: {
+          text: 'hello'
+        }
+      };
+      const expectResult = common.getMissingOrInvalidInputResp();
+      nock('https://' + config.domain)
+        .post('/k/v1/record/comment.json', (rqBody) => {
+          expect(rqBody).toMatchObject(data);
+          return true;
+        })
+        .reply(400, expectResult);
+
+      const recordModule = new KintoneRecord(conn);
+      const addCommentResult = recordModule.addComment(data.app, data.record, data.comment);
+      it('should return error when the comment text is blank', () => {
+        return addCommentResult.catch((err) => {
+          expect(err).toBeInstanceOf(KintoneExeption);
+          expect(err.get()).toHaveProperty('id');
+          expect(err.get().code).toEqual(expectResult.code);
+          expect(err.get().message).toEqual(expectResult.message);
+        });
+      });
+      // todo
+    });
+    // todo
   });
 });
