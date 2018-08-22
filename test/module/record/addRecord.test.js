@@ -3,24 +3,20 @@
  * kintone api - nodejs client
  * test record module
  */
-
-const KintoneExeption = require('../../../src/exception/KintoneAPIException');
-const KintoneConnection = require('../../../src/connection/Connection');
-const KintoneAuth = require('../../../src/authentication/Auth');
-const KintoneRecord = require('../../../src/module/record/Record');
 const nock = require('nock');
-const config = require('../../config');
-const Common = require('../../Common');
 
-const auth = new KintoneAuth();
+const config = require('../../config');
+const common = require('../../common');
+
+const KintoneAPIException = require('../../../src/exception/KintoneAPIException');
+const Connection = require('../../../src/connection/Connection');
+const Auth = require('../../../src/authentication/Auth');
+const Record = require('../../../src/module/record/Record');
+
+const auth = new Auth();
 auth.setPasswordAuth(config.username, config.password);
 
-const conn = new KintoneConnection(config.domain, auth);
-if (config.hasOwnProperty('proxyPost') && config.proxyHost) {
-  conn.setProxy(config.proxyHost, config.proxyPost);
-}
-
-const common = new Common();
+const conn = new Connection(config.domain, auth);
 
 describe('addRecord function', () => {
   describe('common case', () => {
@@ -28,7 +24,7 @@ describe('addRecord function', () => {
       nock('https://' + config.domain)
         .post('/k/v1/record.json')
         .reply(200, {'id': '100', 'revision': '1'});
-      const recordModule = new KintoneRecord(conn);
+      const recordModule = new Record(conn);
       const addRecordResult = recordModule.addRecord();
       expect(addRecordResult).toHaveProperty('then');
       expect(addRecordResult).toHaveProperty('catch');
@@ -53,7 +49,7 @@ describe('addRecord function', () => {
             expect(rqBody.record).toMatchObject(body.recordData);
             return rqBody.app === body.appID;
           })
-          .matchHeader('X-Cybozu-Authorization', (authHeader) => {
+          .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(common.getPasswordAuth(config.username, config.password));
             return true;
           })
@@ -62,23 +58,28 @@ describe('addRecord function', () => {
             return true;
           })
           .reply(200, {'id': '100', 'revision': '1'});
-        const recordModule = new KintoneRecord(conn);
+        const recordModule = new Record(conn);
         return recordModule.addRecord(body.appID, body.recordData)
           .then(rsp => {
             expect(rsp).toHaveProperty('id');
             expect(rsp).toHaveProperty('revision');
           });
       });
-      // todo
     });
-  // todo
+    /**
+    * Todo: implement another success case
+    */
   });
 
   describe('error case', () => {
     describe('invalid appID', () => {
       it('should return error when using unexisted appID', () => {
         const unexistedAppID = 999;
-        const expectResult = common.getUnexistedAppResp(unexistedAppID);
+        const expectResult = {
+          'code': 'GAIA_AP01',
+          'id': 'id when request to invalid app',
+          'message': 'The app (ID: 999) not found. The app may have been deleted.'
+        };
         nock('https://' + config.domain, (rqBody) => {
           expect(rqBody.app).toEqual(unexistedAppID);
           return true;
@@ -86,7 +87,7 @@ describe('addRecord function', () => {
           .post('/k/v1/record.json')
           .reply(404, expectResult);
 
-        const recordModule = new KintoneRecord(conn);
+        const recordModule = new Record(conn);
         return recordModule.addRecord(unexistedAppID)
           .catch(err => {
             expect(err.get()).toHaveProperty('id');
@@ -96,37 +97,51 @@ describe('addRecord function', () => {
       });
       it('should return error when using negative appID', () => {
         const negativeAppID = -1;
-        const expectResult = common.getMissingOrInvalidInputResp();
+        const expectResult = {
+          'code': 'CB_VA01',
+          'id': '0hjc1OJbmY29cl2SoDey',
+          'message': 'Missing or invalid input.',
+          'errors': {'app':
+           {'messages': ['must be greater than or equal to 1']
+           }
+          }
+        };
         nock('https://' + config.domain)
           .post('/k/v1/record.json')
           .reply(400, expectResult);
 
-        const recordModule = new KintoneRecord(conn);
+        const recordModule = new Record(conn);
         return recordModule.addRecord(negativeAppID)
           .catch(err => {
-            expect(err.get()).toHaveProperty('id');
-            expect(err.get().code).toEqual(expectResult.code);
-            expect(err.get().message).toEqual(expectResult.message);
-            expect(err.get()).toHaveProperty('errors');
+            expect(err).toBeInstanceOf(KintoneAPIException);
+            expect(err.get()).toMatchObject(expectResult);
           });
       });
       it('should return error when appID is 0', () => {
         const appID = 0;
-        const expectResult = common.getMissingOrInvalidInputResp();
+        const expectResult = {
+          'code': 'CB_VA01',
+          'id': '0hjc1OJbmY29cl2SoDey',
+          'message': 'Missing or invalid input.',
+          'errors': {'app':
+           {'messages': ['must be greater than or equal to 1']
+           }
+          }
+        };
         nock('https://' + config.domain)
           .post('/k/v1/record.json')
           .reply(400, expectResult);
 
-        const recordModule = new KintoneRecord(conn);
+        const recordModule = new Record(conn);
         return recordModule.addRecord(appID)
           .catch(err => {
-            expect(err.get()).toHaveProperty('id');
-            expect(err.get().code).toEqual(expectResult.code);
-            expect(err.get().message).toEqual(expectResult.message);
-            expect(err.get()).toHaveProperty('errors');
+            expect(err).toBeInstanceOf(KintoneAPIException);
+            expect(err.get()).toMatchObject(expectResult);
           });
       });
     });
-  // todo
+    /**
+    * Todo: implement another error case
+    */
   });
 });

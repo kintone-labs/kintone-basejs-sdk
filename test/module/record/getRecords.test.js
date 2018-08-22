@@ -2,65 +2,28 @@
  * kintone api - nodejs client
  * test record module
  */
+const nock = require('nock');
 
-const KintoneExeption = require('../../../src/exception/KintoneAPIException');
-const KintoneConnection = require('../../../src/connection/Connection');
-const KintoneAuth = require('../../../src/authentication/Auth');
-const KintoneRecord = require('../../../src/module/record/Record');
-const nock = require('../../../../../../../../Library/Caches/typescript/2.9/node_modules/@types/nock');
 const config = require('../../config');
+const common = require('../../common');
 
-const auth = new KintoneAuth();
+const Connection = require('../../../src/connection/Connection');
+const Auth = require('../../../src/authentication/Auth');
+const Record = require('../../../src/module/record/Record');
+
+const auth = new Auth();
 auth.setPasswordAuth(config.username, config.password);
 
-const conn = new KintoneConnection(config.domain, auth);
-if (config.hasOwnProperty('proxy') && config.proxy) {
-  conn.addRequestOption('proxy', config.proxy);
-}
+const conn = new Connection(config.domain, auth);
 
-const body = {
-  app: 844,
-  query: 'Created_datetime = TODAY()',
-  fields: ['Created_datetime', '$id', 'dropdown', 'radio', 'checkbox'],
-  totalCount: false
-};
-
-nock('https://' + config.domain)
-  .get(`/k/v1/records.json`, (rqbody) => {
-    if (rqbody.hasOwnProperty('totalCount')) {
-      expect(typeof (rqbody.totalCount)).toBe('boolean');
-    }
-
-    if (rqbody.hasOwnProperty('query')) {
-      const unExistFields = rqbody.fields.filter(field => body.fields.indexOf(field) === -1);
-      expect(unExistFields.length).toBe(0);
-    }
-
-    if (rqbody.hasOwnProperty('fields')) {
-      expect(Array.isArray(rqbody.fields)).toBe(true);
-
-      const unExistFields = rqbody.fields.filter(field => body.fields.indexOf(field) === -1);
-      expect(unExistFields.length).toBe(0);
-    }
-
-    return rqbody.app === body.app;
-  })
-  .matchHeader('X-Cybozu-Authorization', (authHeader) => {
-    expect(authHeader).toBe(Buffer.from(config.username + ':' + config.password).toString('base64'));
-    return true;
-  })
-  .matchHeader('Content-Type', (type) => {
-    expect(type).toBe('application/json');
-    return true;
-  })
-  .reply(200, {
-    'records': [{}]});
-
-const recordModule = new KintoneRecord(conn);
+const recordModule = new Record(conn);
 describe('getRecords function', () => {
   describe('common case', () => {
-    const getRecordsResult = recordModule.getRecords();
     it('should return a promise', () => {
+      nock('https://' + config.domain)
+        .get(`/k/v1/records.json`)
+        .reply(200, {records: []});
+      const getRecordsResult = recordModule.getRecords();
       expect(getRecordsResult).toHaveProperty('then');
       expect(getRecordsResult).toHaveProperty('catch');
     });
@@ -69,27 +32,71 @@ describe('getRecords function', () => {
   describe('success case', () => {
     describe('valid params are specificed', () => {
       it('should have a "records" property in the result', () => {
+        const body = {
+          app: 844,
+          query: 'Created_datetime = TODAY()',
+          fields: ['Created_datetime', '$id', 'dropdown', 'radio', 'checkbox'],
+          totalCount: false
+        };
+
+        nock('https://' + config.domain)
+          .get(`/k/v1/records.json`, (rqbody) => {
+            expect(rqbody).toMatchObject(body);
+            return true;
+          })
+          .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+            expect(authHeader).toBe(Buffer.from(config.username + ':' + config.password).toString('base64'));
+            return true;
+          })
+          .matchHeader('Content-Type', (type) => {
+            expect(type).toBe('application/json');
+            return true;
+          })
+          .reply(200, {
+            'records': [{}]});
         return recordModule.getRecords(body.app, body.query, body.fields, body.totalCount)
           .then(rsp => {
             expect(rsp).toHaveProperty('records');
           });
       });
-    // todo
     });
-  // todo
+    /**
+    * Todo: implement another success case
+    */
   });
 
   describe('error case', () => {
     describe('the app ID param is invalid', () => {
-      const getRecordsResult = recordModule.getRecords(34, body.query, body.fields, body.totalCount);
       it('should return the error in the result', () => {
+        const body = {
+          app: -2,
+          query: 'Created_datetime = TODAY()',
+          fields: ['Created_datetime', '$id', 'dropdown', 'radio', 'checkbox'],
+          totalCount: false
+        };
+
+        const expectResult = {
+          'code': 'CB_VA01',
+          'id': 'PmcT6fVjQMsl4BhMw9Uo',
+          'message': 'Missing or invalid input.',
+          'errors': {'app': {'messages': ['must be greater than or equal to 1']}}
+        };
+        nock('https://' + config.domain)
+          .get(`/k/v1/records.json`, (rqbody) => {
+            expect(rqbody).toMatchObject(body);
+            return true;
+          })
+          .reply(200, expectResult);
+
+        const getRecordsResult = recordModule.getRecords(-2, body.query, body.fields, body.totalCount);
         return getRecordsResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneExeption);
+          expect(err.get()).toMatchObject(expectResult);
         });
       });
-    // todo
     });
-  // todo
+  /**
+  * Todo: implement another error case
+  */
   });
 });
 

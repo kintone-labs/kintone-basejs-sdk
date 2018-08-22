@@ -3,45 +3,35 @@
  * kintone api - nodejs client
  * test record module
  */
-
-const KintoneExeption = require('../../../src/exception/KintoneAPIException');
-const KintoneConnection = require('../../../src/connection/Connection');
-const KintoneAuth = require('../../../src/authentication/Auth');
-const KintoneRecord = require('../../../src/module/record/Record');
 const nock = require('nock');
-const config = require('../../config');
 
-const auth = new KintoneAuth();
+const config = require('../../config');
+const common = require('../../common');
+
+const KintoneAPIException = require('../../../src/exception/KintoneAPIException');
+const Connection = require('../../../src/connection/Connection');
+const Auth = require('../../../src/authentication/Auth');
+const Record = require('../../../src/module/record/Record');
+
+const auth = new Auth();
 auth.setPasswordAuth(config.username, config.password);
 
-const conn = new KintoneConnection(config.domain, auth);
+const conn = new Connection(config.domain, auth);
 if (config.hasOwnProperty('proxy') && config.proxy) {
   conn.addRequestOption('proxy', config.proxy);
 }
 
-const appID = 1;
-const recordID = 1;
-
-nock('https://' + config.domain)
-  .get(`/k/v1/record.json`, (rqBody) => {
-    return rqBody.app === appID && rqBody.id === recordID;
-  })
-  .matchHeader('X-Cybozu-Authorization', (authHeader) => {
-    expect(authHeader).toBe(Buffer.from(config.username + ':' + config.password).toString('base64'));
-    return true;
-  })
-  .matchHeader('Content-Type', (type) => {
-    expect(type).toBe('application/json');
-    return true;
-  })
-  .reply(200, {
-    'record': {}});
-
-const recordModule = new KintoneRecord(conn);
+const recordModule = new Record(conn);
 describe('common case', () => {
-
-  const getRecordResult = recordModule.getRecord();
   it('should return a promise', () => {
+    const appID = 1;
+    const recordID = 1;
+    nock('https://' + config.domain)
+      .get(`/k/v1/record.json`)
+      .reply(200, {
+        'record': {}});
+
+    const getRecordResult = recordModule.getRecord(appID, recordID);
     expect(getRecordResult).toHaveProperty('then');
     expect(getRecordResult).toHaveProperty('catch');
   });
@@ -50,26 +40,67 @@ describe('common case', () => {
 describe('success case', () => {
   describe('valid params are specificed', () => {
     it('should have a "record" property in the result', () => {
+      const appID = 1;
+      const recordID = 1;
+      nock('https://' + config.domain)
+        .get(`/k/v1/record.json`, (rqBody, b) => {
+          expect(rqBody.app).toBe(appID);
+          expect(rqBody.id).toBe(recordID);
+          return true;
+        })
+        .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+          expect(authHeader).toBe(Buffer.from(config.username + ':' + config.password).toString('base64'));
+          return true;
+        })
+        .matchHeader('Content-Type', (type) => {
+          expect(type).toBe('application/json');
+          return true;
+        })
+        .reply(200, {
+          'record': {}});
       return recordModule.getRecord(appID, recordID)
         .then((rsp) => {
           expect(rsp).toHaveProperty('record');
         });
     });
-    // todo
   });
-  // todo
+  /**
+  * Todo: implement another success case
+  */
 });
 
 describe('error case', () => {
   describe('invalid appID param is specified', () => {
-    const getRecordResult = recordModule.getRecord(2);
     it('"should return the error in the result', () => {
+      const expectResult = {
+        'code': 'CB_VA01',
+        'id': 'PmcT6fVjQMsl4BhMw9Uo',
+        'message': 'Missing or invalid input.',
+        'errors': {'app': {'messages': ['must be greater than or equal to 1']}}
+      };
+
+      nock('https://' + config.domain)
+        .get(`/k/v1/record.json`, (rqBody, b) => {
+          expect(rqBody.app).toBe(-2);
+          return true;
+        })
+        .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+          expect(authHeader).toBe(Buffer.from(config.username + ':' + config.password).toString('base64'));
+          return true;
+        })
+        .matchHeader('Content-Type', (type) => {
+          expect(type).toBe('application/json');
+          return true;
+        })
+        .reply(400, expectResult);
+      const getRecordResult = recordModule.getRecord(-2);
       return getRecordResult.catch((err) => {
-        expect(err).toBeInstanceOf(KintoneExeption);
-        expect(err.get()).toHaveProperty('id');
+        expect(err).toBeInstanceOf(KintoneAPIException);
+        expect(err.get()).toMatchObject(expectResult);
       });
     });
-    // todo
   });
-  // todo
+  /**
+  * Todo: implement another error case
+  */
 });

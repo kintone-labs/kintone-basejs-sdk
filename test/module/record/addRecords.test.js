@@ -3,26 +3,22 @@
  * kintone api - nodejs client
  * test record module
  */
+const nock = require('nock');
+
+const config = require('../../config');
+const common = require('../../common');
 
 const KintoneExeption = require('../../../src/exception/KintoneAPIException');
-const KintoneConnection = require('../../../src/connection/Connection');
-const KintoneAuth = require('../../../src/authentication/Auth');
-const KintoneRecord = require('../../../src/module/record/Record');
-const config = require('../../config');
-const nock = require('nock');
-const Common = require('../../Common');
+const Connection = require('../../../src/connection/Connection');
+const Auth = require('../../../src/authentication/Auth');
+const Record = require('../../../src/module/record/Record');
 
-const common = new Common();
-
-const auth = new KintoneAuth();
+const auth = new Auth();
 auth.setPasswordAuth(config.username, config.password);
 
-const conn = new KintoneConnection(config.domain, auth);
-if (config.hasOwnProperty('proxy') && config.proxy) {
-  conn.addRequestOption('proxy', config.proxy);
-}
+const conn = new Connection(config.domain, auth);
 
-const recordModule = new KintoneRecord(conn);
+const recordModule = new Record(conn);
 
 describe('addRecords function', () => {
   describe('common case', () => {
@@ -53,7 +49,7 @@ describe('addRecords function', () => {
             expect(rqBody.records).toEqual(expect.arrayContaining(data.recordsData));
             return rqBody.app === data.appID;
           })
-          .matchHeader('X-Cybozu-Authorization', (authHeader) => {
+          .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(common.getPasswordAuth(config.username, config.password));
             return true;
           })
@@ -72,32 +68,29 @@ describe('addRecords function', () => {
           expect(rsp.revisions).toEqual(expect.arrayContaining(['1', '1']));
         });
       });
-    // todo
     });
-  // todo
+    /**
+    * Todo: implement another success case
+    */
   });
 
   describe('error', () => {
     describe('invalid app ID', () => {
-      it('should return error when using unexisted appID', () => {
+      it('should return an error when using unexisted appID', () => {
         const data = {
           unexistedAppID: 999,
           recordsData: [{Text_0: {value: 1}}, {Text_0: {value: 2}}]
         };
-        const expectResult = common.getUnexistedAppResp(data.unexistedAppID);
         nock('https://' + config.domain)
           .post('/k/v1/records.json', (rqBody) => {
             expect(rqBody.app).toEqual(data.unexistedAppID);
             return true;
           })
-          .reply(404, expectResult);
+          .reply(404, {'code': 'GAIA_AP01', 'id': 'Jt2jVNMHlZxXPufVeZCz', 'message': 'The app (ID: 999) not found. The app may have been deleted.'});
 
         const addRecordsResult = recordModule.addRecords(data.unexistedAppID, data.recordsData);
         return addRecordsResult.catch((err) => {
           expect(err).toBeInstanceOf(KintoneExeption);
-          expect(err.get()).toHaveProperty('id');
-          expect(err.get().code).toEqual(expectResult.code);
-          expect(err.get().message).toEqual(expectResult.message);
         });
       });
 
@@ -106,7 +99,12 @@ describe('addRecords function', () => {
           negativeAppID: 999,
           recordsData: [{Text_0: {value: 1}}, {Text_0: {value: 2}}]
         };
-        const expectResult = common.getMissingOrInvalidInputResp();
+        const expectResult = {
+          'code': 'CB_VA01',
+          'id': 'PmcT6fVjQMsl4BhMw9Uo',
+          'message': 'Missing or invalid input.',
+          'errors': {'app': {'messages': ['must be greater than or equal to 1']}}
+        }
         nock('https://' + config.domain)
           .post('/k/v1/records.json', (rqBody) => {
             expect(rqBody.app).toEqual(data.negativeAppID);
@@ -116,10 +114,8 @@ describe('addRecords function', () => {
 
         const addRecordsResult = recordModule.addRecords(data.negativeAppID, data.recordsData);
         return addRecordsResult.catch((err) => {
-          expect(err.get()).toHaveProperty('id');
-          expect(err.get().code).toEqual(expectResult.code);
-          expect(err.get().message).toEqual(expectResult.message);
-          expect(err.get()).toHaveProperty('errors');
+          expect(err).toBeInstanceOf(KintoneExeption);
+          expect(err.get()).toMatchObject(expectResult);
         });
       });
 
@@ -128,7 +124,12 @@ describe('addRecords function', () => {
           appID: 0,
           recordsData: [{Text_0: {value: 1}}, {Text_0: {value: 2}}]
         };
-        const expectResult = common.getMissingOrInvalidInputResp();
+        const expectResult = {
+          'code': 'CB_VA01',
+          'id': 'PmcT6fVjQMsl4BhMw9Uo',
+          'message': 'Missing or invalid input.',
+          'errors': {'app': {'messages': ['must be greater than or equal to 1']}}
+        };
         nock('https://' + config.domain)
           .post('/k/v1/records.json', (rqBody) => {
             expect(rqBody.app).toEqual(0);
@@ -138,14 +139,14 @@ describe('addRecords function', () => {
 
         const addRecordsResult = recordModule.addRecords(data.appID, data.recordsData);
         return addRecordsResult.catch((err) => {
-          expect(err.get()).toHaveProperty('id');
-          expect(err.get().code).toEqual(expectResult.code);
-          expect(err.get().message).toEqual(expectResult.message);
-          expect(err.get()).toHaveProperty('errors');
+          expect(err).toBeInstanceOf(KintoneExeption);
+          expect(err.get()).toMatchObject(expectResult);
         });
       });
 
     });
-  // todo
+    /**
+    * Todo: implement another error case
+    */
   });
 });

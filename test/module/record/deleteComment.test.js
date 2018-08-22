@@ -3,55 +3,100 @@
  * kintone api - nodejs client
  * test record module
  */
+const nock = require('nock');
 
-const KintoneExeption = require('../../../src/exception/KintoneAPIException');
-const KintoneConnection = require('../../../src/connection/Connection');
-const KintoneAuth = require('../../../src/authentication/Auth');
-const KintoneRecord = require('../../../src/module/record/Record');
-const env = require('../env');
+const config = require('../../config');
+const common = require('../../common');
 
-const auth = new KintoneAuth();
-auth.setPasswordAuth(env.username, env.password);
+const KintoneAPIException = require('../../../src/exception/KintoneAPIException');
+const Connection = require('../../../src/connection/Connection');
+const Auth = require('../../../src/authentication/Auth');
+const Record = require('../../../src/module/record/Record');
 
-const conn = new KintoneConnection(env.domain, auth);
-if (env.hasOwnProperty('proxy') && env.proxy) {
-  conn.addRequestOption('proxy', env.proxy);
+const auth = new Auth();
+auth.setPasswordAuth(config.username, config.password);
+
+const conn = new Connection(config.domain, auth);
+if (config.hasOwnProperty('proxy') && config.proxy) {
+  conn.addRequestOption('proxy', config.proxy);
 }
 
-const data = {
-  appID: env.app,
-  recordID: 2,
-  commentID: 1
-};
+describe('deleteComment function', () => {
+  describe('common case', () => {
+    it('should return a promisse', () => {
+      nock('https://' + config.domain)
+        .intercept('/k/v1/record/comment.json', 'DELETE')
+        .reply(200, {});
 
-const recordModule = new KintoneRecord(conn);
-
-describe('deleteComment should have enough property', () => {
-  const deleteCommentResult = recordModule.deleteComment();
-  it('deleteComment should have a "then" property', () => {
-    return expect(deleteCommentResult).toHaveProperty('then');
-  });
-
-  it('deleteComment should have a "catch" property', () => {
-    return expect(deleteCommentResult).toHaveProperty('catch');
-  });
-});
-
-describe('deleteComment success', () => {
-  const deleteCommentResult = recordModule.deleteComment(data.appID, data.recordID, data.commentID);
-  it('deleteComment success should return an empty Json', () => {
-    return deleteCommentResult.then((rsp) => {
-      expect(rsp).toEqual({});
+      const recordModule = new Record(conn);
+      const deleteCommentResult = recordModule.deleteComment();
+      expect(deleteCommentResult).toHaveProperty('then');
+      expect(deleteCommentResult).toHaveProperty('catch');
     });
   });
-});
 
-describe('No param is specified, deleteComment error', () => {
-  const deleteCommentResult = recordModule.deleteComment('');
-  it('"deleteComment" error should have a "id" property', () => {
-    return deleteCommentResult.catch((err) => {
-      expect(err).toBeInstanceOf(KintoneExeption);
-      expect(err.get()).toHaveProperty('id');
+  describe('success case', () => {
+    describe('appID, recordID, commentID params are specified', () => {
+      it('should return an empty Json', () => {
+        const data = {
+          app: 1,
+          record: 1,
+          comment: 1
+        };
+
+        nock('https://' + config.domain)
+          .intercept('/k/v1/record/comment.json', 'DELETE', (rqBody) => {
+            expect(rqBody).toMatchObject(data);
+            return true;
+          })
+          .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+            expect(authHeader).toBe(common.getPasswordAuth(config.username, config.password));
+            return true;
+          })
+          .matchHeader('Content-Type', (type) => {
+            expect(type).toBe('application/json');
+            return true;
+          })
+          .reply(200, {});
+
+        const recordModule = new Record(conn);
+        const deleteCommentResult = recordModule.deleteComment(data.app, data.record, data.comment);
+
+        return deleteCommentResult.then((rsp) => {
+          expect(rsp).toEqual({});
+        });
+      });
     });
+    /**
+    * Todo: implement another success case
+    */
+  });
+
+  describe('error case', () => {
+    describe('invalid comment id', () => {
+      it('should return error when the comment is invalid', () => {
+        const data = {
+          app: 1,
+          record: 1,
+          comment: 444
+        };
+        nock('https://' + config.domain)
+          .intercept('/k/v1/record/comment.json', 'DELETE', (rqBody) => {
+            expect(rqBody).toMatchObject(data);
+            return true;
+          })
+          .reply(520, {'code': 'GAIA_RE02', 'id': '3wYeQRwubqOzNISfmYSZ', 'message': '指定したコメントが存在しません。削除された可能性があります。'});
+
+        const recordModule = new Record(conn);
+        const deleteCommentResult = recordModule.deleteComment(data.app, data.record, data.comment);
+
+        return deleteCommentResult.catch((err) => {
+          expect(err).toBeInstanceOf(KintoneAPIException);
+        });
+      });
+    });
+    /**
+    * Todo: implement another error case
+    */
   });
 });

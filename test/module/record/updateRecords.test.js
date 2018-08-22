@@ -3,67 +3,124 @@
  * kintone api - nodejs client
  * test record module
  */
+const nock = require('nock');
 
-const KintoneExeption = require('../../../src/exception/KintoneAPIException');
-const KintoneConnection = require('../../../src/connection/Connection');
-const KintoneAuth = require('../../../src/authentication/Auth');
-const KintoneRecord = require('../../../src/module/record/Record');
-const env = require('../env');
+const config = require('../../config');
+const common = require('../../common');
 
-const auth = new KintoneAuth();
-auth.setPasswordAuth(env.username, env.password);
+const Connection = require('../../../src/connection/Connection');
+const Auth = require('../../../src/authentication/Auth');
+const Record = require('../../../src/module/record/Record');
 
-const conn = new KintoneConnection(env.domain, auth);
-if (env.hasOwnProperty('proxy') && env.proxyHost) {
-  conn.setProxy(env.proxyHost, env.proxyPost);
-}
+const auth = new Auth();
+auth.setPasswordAuth(config.username, config.password);
 
-const data = {
-  appID: env.app,
-  recordsData: [{
-    id: 2,
-    record: {
-      Text_0: {
-        value: 123
-      }
-    }
-  }]
-};
+const conn = new Connection(config.domain, auth);
 
-const recordModule = new KintoneRecord(conn);
+describe('updateRecords function', () => {
+  describe('common case', () => {
+    const appID = 1;
+    const recordDataUpdate = {
+      id: 1,
+      record: {
+        Text_0: 'test'
+      },
+      revision: 2
+    };
+    const recordsData = [recordDataUpdate];
 
-describe('updateRecords should have enough property', () => {
-  const updateRecordsResult = recordModule.updateRecords();
-  it('updateRecords should have a "then" property', () => {
-    return expect(updateRecordsResult).toHaveProperty('then');
-  });
+    it('should return a promise', () => {
+      nock('https://' + config.domain)
+        .put('/k/v1/records.json')
+        .reply(200, {
+          'records': [{
+            id: 1,
+            revision: 3
+          }]
+        });
 
-  it('updateRecords should have a "catch" property', () => {
-    return expect(updateRecordsResult).toHaveProperty('catch');
-  });
-});
-
-describe('updateRecords success', () => {
-  const updateRecordsResult = recordModule.updateRecords(data.appID, data.recordsData);
-  it('updateRecords success should have a "records" property ', () => {
-    return updateRecordsResult.then((rsp) => {
-      expect(rsp).toHaveProperty('records');
+      const recordModule = new Record(conn);
+      const updateRecordsResult = recordModule.updateRecords(appID, recordsData);
+      expect(updateRecordsResult).toHaveProperty('then');
+      expect(updateRecordsResult).toHaveProperty('catch');
     });
   });
 
-  it('the length of"records" should be 1 ', () => {
-    return updateRecordsResult.then((rsp) => {
-      expect(rsp.records.length).toEqual(1);
-    });
-  });
-});
+  describe('success case', () => {
+    describe('valid data', () => {
+      it('should update successfully the records', () => {
+        const appID = 1;
+        const recordDataUpdate = {
+          id: 1,
+          record: {
+            Text_0: 'test'
+          },
+          revision: 2
+        };
+        const recordsData = [recordDataUpdate];
+        const expectResult = {
+          'records': [{
+            id: 1,
+            revision: 3
+          }]
+        };
 
-describe('No param is specified, updateRecords error', () => {
-  const updateRecordsResult = recordModule.updateRecords();
-  it('"updateRecords" error should have a "id" property', () => {
-    return updateRecordsResult.catch((err) => {
-      expect(err).toBeInstanceOf(KintoneExeption);
-      expect(err.get()).toHaveProperty('id');
+        nock('https://' + config.domain)
+          .put('/k/v1/records.json', (rqBody) => {
+            expect(rqBody.app).toEqual(appID);
+            expect(rqBody.records).toMatchObject(recordsData);
+            return true;
+          })
+          .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+            expect(authHeader).toBe(common.getPasswordAuth(config.username, config.password));
+            return true;
+          })
+          .matchHeader('Content-Type', (type) => {
+            expect(type).toBe('application/json');
+            return true;
+          })
+          .reply(200, expectResult);
+
+        const recordModule = new Record(conn);
+        const updateRecordsResult = recordModule.updateRecords(appID, recordsData);
+        return updateRecordsResult.then((rsp) => {
+          expect(rsp).toMatchObject(expectResult);
+        });
+      });
+    });
+
+    describe('error case', () => {
+      describe('wrong revision', () => {
+        it('should return error when using wrong revison', () => {
+          const appID = 1;
+          const recordDataUpdate = {
+            id: 1,
+            record: {
+              Text_0: 'test'
+            },
+            revision: 0
+          };
+          const recordsData = [recordDataUpdate];
+          const expectResult = {
+            'code': 'GAIA_CO02',
+            'id': '4ucJiURAv0LsXBkLCDdi',
+            'message': 'The revision is not the latest. Someone may update a record.'
+          };
+          nock('https://' + config.domain)
+            .put('/k/v1/records.json', (rqBody) => {
+              expect(rqBody.records).toMatchObject(recordsData);
+              return true;
+            })
+            .reply(409, expectResult);
+          const recordModule = new Record(conn);
+          return recordModule.updateRecords(appID, recordsData).catch((err) => {
+            expect(err.get()).toMatchObject(expectResult);
+          });
+        });
+      });
+      /**
+      * Todo: implement another case error
+      */
     });
   });
 });

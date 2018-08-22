@@ -3,24 +3,20 @@
  * kintone api - nodejs client
  * test record module
  */
-
-const KintoneExeption = require('../../../src/exception/KintoneAPIException');
-const KintoneConnection = require('../../../src/connection/Connection');
-const KintoneAuth = require('../../../src/authentication/Auth');
-const KintoneRecord = require('../../../src/module/record/Record');
-const config = require('../../config');
 const nock = require('nock');
-const Common = require('../../Common');
 
-const common = new Common();
+const config = require('../../config');
+const common = require('../../common');
 
-const auth = new KintoneAuth();
+const KintoneAPIException = require('../../../src/exception/KintoneAPIException');
+const Connection = require('../../../src/connection/Connection');
+const Auth = require('../../../src/authentication/Auth');
+const Record = require('../../../src/module/record/Record');
+
+const auth = new Auth();
 auth.setPasswordAuth(config.username, config.password);
 
-const conn = new KintoneConnection(config.domain, auth);
-if (config.hasOwnProperty('proxy') && config.proxy) {
-  conn.addRequestOption('proxy', config.proxy);
-}
+const conn = new Connection(config.domain, auth);
 
 describe('addComment function', () => {
   describe('common case', () => {
@@ -29,7 +25,7 @@ describe('addComment function', () => {
       nock('https://' + config.domain)
         .post('/k/v1/record/comment.json')
         .reply(200, {'id': '1'});
-      const recordModule = new KintoneRecord(conn);
+      const recordModule = new Record(conn);
       const addCommentResult = recordModule.addComment();
       expect(addCommentResult).toHaveProperty('then');
       expect(addCommentResult).toHaveProperty('catch');
@@ -39,7 +35,7 @@ describe('addComment function', () => {
   describe('success case', () => {
     describe('valid data', () => {
       const data = {
-        app: config.app,
+        app: 1,
         record: 1,
         comment: {
           text: 'hello'
@@ -51,7 +47,7 @@ describe('addComment function', () => {
           expect(rqBody).toMatchObject(data);
           return true;
         })
-        .matchHeader('X-Cybozu-Authorization', (authHeader) => {
+        .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
           expect(authHeader).toBe(common.getPasswordAuth(config.username, config.password));
           return true;
         })
@@ -61,28 +57,33 @@ describe('addComment function', () => {
         })
         .reply(200, {'id': '1'});
 
-      const recordModule = new KintoneRecord(conn);
+      const recordModule = new Record(conn);
       const addCommentResult = recordModule.addComment(data.app, data.record, data.comment);
       it('should add comment to record successfully', () => {
         return addCommentResult.then((rsp) => {
           expect(rsp).toHaveProperty('id');
         });
       });
-    // todo
     });
-  // todo
+    /**
+    * Todo: implement another success case
+    */
   });
 
   describe('error case', () => {
     describe('invalid comment content', () => {
       const data = {
-        app: config.app,
+        app: 1,
         record: 1,
         comment: {
-          text: 'hello'
+          text: ''
         }
       };
-      const expectResult = common.getMissingOrInvalidInputResp();
+      const expectResult = {'code': 'CB_VA01',
+        'id': '7oiYHOZd11fTpyvY00kG',
+        'message': 'Missing or invalid input.',
+        'errors': {'comment.text': {'messages': ['Enter between 1 and 65,535 characters.', 'Required field.']}}
+      };
       nock('https://' + config.domain)
         .post('/k/v1/record/comment.json', (rqBody) => {
           expect(rqBody).toMatchObject(data);
@@ -90,18 +91,17 @@ describe('addComment function', () => {
         })
         .reply(400, expectResult);
 
-      const recordModule = new KintoneRecord(conn);
+      const recordModule = new Record(conn);
       const addCommentResult = recordModule.addComment(data.app, data.record, data.comment);
       it('should return error when the comment text is blank', () => {
         return addCommentResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneExeption);
-          expect(err.get()).toHaveProperty('id');
-          expect(err.get().code).toEqual(expectResult.code);
-          expect(err.get().message).toEqual(expectResult.message);
+          expect(err).toBeInstanceOf(KintoneAPIException);
+          expect(err.get()).toMatchObject(expectResult);
         });
       });
-      // todo
     });
-    // todo
+    /**
+    * Todo: implement more case
+    */
   });
 });

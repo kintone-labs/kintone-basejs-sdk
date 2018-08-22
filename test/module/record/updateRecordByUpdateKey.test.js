@@ -17,28 +17,29 @@ auth.setPasswordAuth(config.username, config.password);
 
 const conn = new Connection(config.domain, auth);
 
-describe('updateRecordById function', () => {
+const recordModule = new Record(conn);
+
+describe('updateRecordByUpdateKey function', () => {
   describe('common case', () => {
+    const appID = 1;
+    const updateKey = {
+      field: 'Text_0',
+      value: '1234'
+    };
+    const recordData = {
+      Number: {
+        value: 1
+      }
+    };
 
     it('should return a promise', () => {
-      const data = {
-        app: 1,
-        id: 1,
-        record: {
-          Text_0: {
-            value: 123
-          }
-        },
-        revision: 2
-      };
       nock('https://' + config.domain)
         .put('/k/v1/record.json')
-        .reply(200, {'revisions': '1'});
+        .reply(200, {'revisions': '2'});
 
-      const recordModule = new Record(conn);
-      const updateRecordByIdResult = recordModule.updateRecordByID(data.app, data.id, data.record, data.revision);
-      expect(updateRecordByIdResult).toHaveProperty('then');
-      expect(updateRecordByIdResult).toHaveProperty('catch');
+      const updateRecordByUpdateKeyResult = recordModule.updateRecordByUpdateKey(appID, updateKey, recordData);
+      expect(updateRecordByUpdateKeyResult).toHaveProperty('then');
+      expect(updateRecordByUpdateKeyResult).toHaveProperty('catch');
     });
   });
 
@@ -46,14 +47,17 @@ describe('updateRecordById function', () => {
     describe('valid data', () => {
       it('should update successfully the record', () => {
         const data = {
-          app: 1,
-          id: 1,
-          record: {
-            Text_0: {
-              value: 123
-            }
+          'app': 777,
+          'updateKey': {
+            'field': 'unique_key',
+            'value': 'CODE123'
           },
-          revision: 2
+          'revision': 2,
+          'record': {
+            'string_multi': {
+              'value': 'this value has been updated'
+            }
+          }
         };
         nock('https://' + config.domain)
           .put('/k/v1/record.json', (rqBody) => {
@@ -70,32 +74,9 @@ describe('updateRecordById function', () => {
           })
           .reply(200, {'revision': '3'});
 
-        const recordModule = new Record(conn);
-        const updateRecordByIdResult = recordModule.updateRecordByID(data.app, data.id, data.record, data.revision);
-        return updateRecordByIdResult.then((rsp) => {
+        const updateRecordByUpdateKeyResult = recordModule.updateRecordByUpdateKey(data.app, data.updateKey, data.record, data.revision);
+        return updateRecordByUpdateKeyResult.then((rsp) => {
           expect(rsp.revision).toEqual('3');
-        });
-      });
-      it('should update successfully when the revision is -1', () => {
-        const data = {
-          app: 1,
-          id: 2,
-          record: {
-            Text_0: {value: 123}
-          },
-          revision: -1
-        };
-        nock('https://' + config.domain)
-          .put('/k/v1/record.json', (rqBody) => {
-            expect(rqBody).toMatchObject(data);
-            return true;
-          })
-          .reply(200, {'revision': '3'});
-
-        const recordModule = new Record(conn);
-        const updateRecordByIdResult = recordModule.updateRecordByID(data.app, data.id, data.record, data.revision);
-        return updateRecordByIdResult.then((rsp) => {
-          expect(rsp).toHaveProperty('revision');
         });
       });
       /**
@@ -107,26 +88,29 @@ describe('updateRecordById function', () => {
       describe('wrong revision', () => {
         it('should return error when using wrong revison', () => {
           const data = {
-            app: 1,
-            id: 2,
-            record: {
-              Text_0: {
-                value: 123
+            'app': 777,
+            'updateKey': {
+              'field': 'unique_key',
+              'value': 'CODE123'
+            },
+            'revision': 655,
+            'record': {
+              'string_multi': {
+                'value': 'this value has been updated'
               }
             }
           };
-          const wrongRevison = 3;
           const expectResult = {'code': 'GAIA_CO02',
             'id': 'MJkW0PkiEJ3HhuPRkl3H',
             'message': '指定したrevisionは最新ではありません。ほかのユーザーがレコードを更新した可能性があります。'};
           nock('https://' + config.domain)
             .put('/k/v1/record.json', (rqBody) => {
-              expect(rqBody.revision).toEqual(wrongRevison);
+              expect(rqBody).toMatchObject(data);
               return true;
             })
             .reply(409, expectResult);
-          const recordModule = new Record(conn);
-          return recordModule.updateRecordByID(data.app, data.id, data.record, wrongRevison).catch((err) => {
+
+          return recordModule.updateRecordByUpdateKey(data.app, data.updateKey, data.record, data.revision).catch((err) => {
             expect(err.get()).toMatchObject(expectResult);
           });
         });
