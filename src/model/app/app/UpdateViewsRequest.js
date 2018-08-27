@@ -3,22 +3,22 @@
  */
 
 const kintoneApp = new WeakMap();
-const kintoneFields = new WeakMap();
+const kintoneViews = new WeakMap();
 const kintoneRevision = new WeakMap();
 
 /**
- * AddFormFieldsRequest model
+ * UpdateViewsRequest model
  * TODO: Unit testing
  */
-class AddFormFieldsRequest {
+class UpdateViewsRequest {
   /**
      * @param {Integer} app
-     * @param {Array<HashTable<String, Field>>} fields
+     * @param {<HashTable<String, View>} views
      * @param {Integer} revision
      */
-  constructor(app, fields, revision) {
+  constructor(app, views, revision) {
     kintoneApp.set(this, app);
-    kintoneFields.set(this, fields);
+    kintoneViews.set(this, views);
     kintoneRevision.set(this, revision);
   }
   /**
@@ -28,7 +28,7 @@ class AddFormFieldsRequest {
   toJSON() {
     const data = {
       app: kintoneApp.get(this),
-      properties: kintoneFields.get(this),
+      views: kintoneViews.get(this),
       revision: kintoneRevision.get(this)
     };
     return data;
@@ -41,4 +41,4 @@ class AddFormFieldsRequest {
     return JSON.stringify(this.toJSON());
   }
 }
-module.exports = AddFormFieldsRequest;
+module.exports = UpdateViewsRequest;

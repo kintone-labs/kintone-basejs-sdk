@@ -11,7 +11,7 @@ const kintoneRevert = new WeakMap();
 class DeployAppSettingsRequest {
   /**
      * constructor for DeployAppSettingsRequest
-     * @param {integer} appID
+     * @param {Array} apps
      * @param {HashTable<String, FieldValue>} recordHashTableData
      */
   constructor(apps, revert) {
@@ -19,25 +19,32 @@ class DeployAppSettingsRequest {
     kintoneRevert.set(this, revert);
   }
   /**
-     * Get app name
-     * @return {integer}
+     * Get apps
+     * @return {Array}
      */
-  getAppName() {
-    return kintoneAppName.get(this);
+  getApps() {
+    return kintonePreviewApps.get(this);
   }
   /**
-     * Get space of app
-     * @return {HashTable<String, FieldValue>}
+     * @param {Array<AddPreviewAppResponse>} apps
+     * @return {this} AddRecoDeployAppSettingsRequestrdsRequest
      */
-  getSpace() {
-    return kintoneSpace.get(this);
+  setApps(apps) {
+    return kintonePreviewApps.set(this, apps);
   }
   /**
-     * Get thread
-     * @return {HashTable<String, FieldValue>}
+     * Get reviert
+     * @return {Boolean}
      */
-  getThread() {
-    return kintoneThread.get(this);
+  getRevert() {
+    return kintoneRevert.get(this);
+  }
+  /**
+     * @param {Boolean>} revert
+     * @return {this} AddRecoDeployAppSettingsRequestrdsRequest
+     */
+  setRevert(revert) {
+    return kintoneRevert.set(this, revert);
   }
   /**
      * Get JSON struct of this model
@@ -45,9 +52,8 @@ class DeployAppSettingsRequest {
      */
   toJSON() {
     return {
-      name: this.getAppName(),
-      space: this.getSpace(),
-      thread: this.getThread(),
+      apps: this.getApps(),
+      revert: this.getRevert()
     };
   }
   /**

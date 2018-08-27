@@ -4,14 +4,20 @@
  */
 
 const AppModels = {
-  // TODO: Write unit test
   GetAppRequest: require('./app/GetAppRequest'),
-  // TODO: Write unit test
   GetAppsRequest: require('./app/GetAppsRequest'),
-  AddPreviewAppRequest: require('./app/AddPreviewAppRequest'),
-  // TODO: Write unit test
   GetFormFieldsRequest: require('./form/GetFormFieldsRequest'),
-  // TODO: Write unit test
+  AddFormFieldsRequest: require('./form/AddFormFieldsRequest'),
+  UpdateFormFieldsRequest: require('./form/UpdateFormFieldsRequest'),
+  DeleteFormFieldsRequest: require('./form/DeleteFormFieldsRequest'),
   GetFormLayoutsRequest: require('./form/GetFormLayoutRequest'),
+  UpdateFormLayoutRequest: require('./form/UpdateFormLayoutRequest'),
+  AddPreviewAppRequest: require('./app/AddPreviewAppRequest'),
+  DeployAppSettingsRequest: require('./app/DeployAppSettingsRequest'),
+  GetAppDeployStatusRequest: require('./app/GetAppDeployStatusRequest'),
+  GetViewsRequest: require('./app/GetViewsRequest'),
+  UpdateViewsRequest: require('./app/UpdateViewsRequest'),
+  GetGeneralSettingsRequest: require('./app/GetGeneralSettingsRequest'),
+  UpdateGeneralSettingsRequest: require('./app/UpdateGeneralSettingsRequest')
 };
 module.exports = AppModels;
