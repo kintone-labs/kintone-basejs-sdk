@@ -22,24 +22,48 @@ class AddPreviewAppRequest {
   }
   /**
      * Get app name
-     * @return {integer}
+     * @return {String}
      */
   getAppName() {
     return kintoneAppName.get(this);
   }
   /**
+     * Set app name
+     * @return {this} AddPreviewAppRequest
+     */
+  setAppName(name) {
+    kintoneAppName.set(this, name);
+    return this;
+  }
+  /**
      * Get space of app
-     * @return {HashTable<String, FieldValue>}
+     * @return {String}
      */
   getSpace() {
     return kintoneSpace.get(this);
   }
   /**
+     * Set space of app
+     * @return {this} AddPreviewAppRequest
+     */
+  setSpace(space) {
+    kintoneSpace.set(this, space);
+    return this;
+  }
+  /**
      * Get thread
-     * @return {HashTable<String, FieldValue>}
+     * @return {String}
      */
   getThread() {
     return kintoneThread.get(this);
+  }
+  /**
+     * Set Thread of app
+     * @return {this} AddPreviewAppRequest
+     */
+  setThread(thread) {
+    kintoneThread.set(this, thread);
+    return this;
   }
   /**
      * Get JSON struct of this model
