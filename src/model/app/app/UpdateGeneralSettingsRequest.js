@@ -26,7 +26,7 @@ class UpdateGeneralSettingsRequest {
      * @return {JSON}
      */
   toJSON() {
-    const data = kintoneGeneralSettings.get(this);
+    const data = kintoneGeneralSettings.get(this) ? kintoneGeneralSettings.get(this) : {};
     data.app = kintoneApp.get(this);
     data.revision = kintoneRevision.get(this);
     return data;
