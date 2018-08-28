@@ -10,7 +10,6 @@
     "node": ">=8.9.3"
   },
   "dependencies": {
-    "nock": "^9.6.0",
     "request": "^2.85.0",
     "request-promise": "^4.2.2"
   },

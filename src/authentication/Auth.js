@@ -61,7 +61,6 @@ class Auth {
     return this;
   }
 
-
   /**
      * getApiToken
      * @return {String}
