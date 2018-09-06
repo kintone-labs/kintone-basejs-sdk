@@ -33,7 +33,6 @@ class KintoneAPIException {
                 new KintoneErrorResponseModel(
                   0, null, errors.response.statusMessage, errorResponse);
     }
-    // console.log(errors);
     const statusCode = errors.response ?
       (errors.response.statusCode || 0) : 0;
     error.set(this,

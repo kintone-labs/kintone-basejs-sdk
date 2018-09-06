@@ -9,7 +9,7 @@ module.exports = {
   App: require('./module/app/App'),
   Comment: require('./module/comment/Comment'),
   Connection: require('./connection/Connection'),
-  Auth: require('./auth/Auth'),
+  Auth: require('./authentication/Auth'),
   File: require('./module/file/File'),
   KintoneException: require('./exception/KintoneAPIException'),
 };
