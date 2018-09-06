@@ -78,7 +78,7 @@ describe("getAppsByIDs function", () => {
         });
       });
 
-      it("should return the app information based on the list of id and the limit", () => {
+      it("should return the app information based on the list of ids and the limit", () => {
         const expectedResult = {
           apps: [
             {
@@ -127,16 +127,6 @@ describe("getAppsByIDs function", () => {
             expect(reqBody.limit).toEqual(limit);
             return true;
           })
-          .matchHeader(common.PASSWORD_AUTH, authHeader => {
-            expect(authHeader).toBe(
-              common.getPasswordAuth(common.USERNAME, common.PASSWORD)
-            );
-            return true;
-          })
-          .matchHeader("Content-Type", type => {
-            expect(type).toBe("application/json");
-            return true;
-          })
           .reply(200, expectedResult);
 
         let actualResult = appModule.getAppsByIDs(appIDs, undefined, limit);
@@ -144,10 +134,64 @@ describe("getAppsByIDs function", () => {
           expect(response).toMatchObject(expectedResult);
         });
       });
+
+      it("should return the app information based on the list of ids and the offset", () => {
+        const expectedResult = {
+          apps: [
+            {
+              appId: "1",
+              code: "task",
+              name: "My Test App",
+              description: "Testing this app",
+              spaceId: null,
+              threadId: null,
+              createdAt: "2014-06-02T05:14:05.000Z",
+              creator: {
+                code: "user1",
+                name: "user1"
+              },
+              modifiedAt: "2014-06-02T05:14:05.000Z",
+              modifier: {
+                code: "user1",
+                name: "user1"
+              }
+            },
+            {
+              appId: "3",
+              code: "task",
+              name: "My Test App",
+              description: "Testing this app",
+              spaceId: null,
+              threadId: null,
+              createdAt: "2014-06-02T05:14:05.000Z",
+              creator: {
+                code: "user1",
+                name: "user1"
+              },
+              modifiedAt: "2014-06-02T05:14:05.000Z",
+              modifier: {
+                code: "user1",
+                name: "user1"
+              }
+            }
+          ]
+        };
+        const offset = 2;
+        const appIDs = [1, 2, 3];
+        nock(URI)
+          .get(route, reqBody => {
+            expect(reqBody.ids).toEqual(appIDs);
+            expect(reqBody.offset).toEqual(offset);
+            return true;
+          })
+          .reply(200, expectedResult);
+
+        let actualResult = appModule.getAppsByIDs(appIDs, offset, undefined);
+        return actualResult.then(response => {
+          expect(response).toMatchObject(expectedResult);
+        });
+      });
     });
-    /**
-     * Todo: implement another success case
-     */
   });
 
   describe("error case", () => {
@@ -167,8 +211,131 @@ describe("getAppsByIDs function", () => {
         });
       });
     });
-    /**
-     * Todo: implement another success case
-     */
+
+    it("should return an error when the param limit has value of 0", () => {
+      const expectedResult = {
+        code: "CB_VA01",
+        id: "u5raHo9ugggi6JhuwaBN",
+        message: "入力内容が正しくありません。",
+        errors: {
+          limit: {
+            messages: ["最小でも1以上です。"]
+          }
+        }
+      };
+      nock(URI)
+        .get(route, reqBody => {
+          expect(reqBody.limit).toEqual(0);
+          return true;
+        })
+        .reply(400, expectedResult);
+
+      let actualResult = appModule.getAppsByIDs([1, 2, 3, 4, 5], undefined, 0);
+      return actualResult.catch(err => {
+        expect(err.get()).toMatchObject(expectedResult);
+      });
+    });
+
+    it("should return an error when the param limit has value greater than 100", () => {
+      const expectedResult = {
+        code: "CB_VA01",
+        id: "rhfkAm75Cs0AJw0jpUU3",
+        message: "入力内容が正しくありません。",
+        errors: {
+          limit: {
+            messages: ["最大でも100以下です。"]
+          }
+        }
+      };
+      nock(URI)
+        .get(route, reqBody => {
+          expect(reqBody.limit).toBeGreaterThan(100);
+          return true;
+        })
+        .reply(400, expectedResult);
+
+      let actualResult = appModule.getAppsByIDs(
+        [1, 2, 3, 4, 5],
+        undefined,
+        101
+      );
+      return actualResult.catch(err => {
+        expect(err.get()).toMatchObject(expectedResult);
+      });
+    });
+
+    it("should return an error when the param offset has value less than 0", () => {
+      const expectedResult = {
+        code: "CB_VA01",
+        id: "k6cykYqDofAjHMmq40w1",
+        message: "入力内容が正しくありません。",
+        errors: {
+          offset: {
+            messages: ["最小でも0以上です。"]
+          }
+        }
+      };
+      nock(URI)
+        .get(route, reqBody => {
+          expect(reqBody.offset).toBeLessThan(0);
+          console.log(reqBody);
+          return true;
+        })
+        .reply(400, expectedResult);
+
+      let actualResult = appModule.getAppsByIDs([1, 2, 3, 4, 5], -1, undefined);
+      return actualResult.catch(err => {
+        expect(err.get()).toMatchObject(expectedResult);
+      });
+    });
+
+    it("should return an error when the param offset has value greater than max value 2147483647", () => {
+      const MAX_VALUE = 2147483647;
+      const expectedResult = {
+        code: "CB_VA01",
+        id: "OcOVMlF0yn6jSkvKctSI",
+        message: "入力内容が正しくありません。",
+        errors: {
+          offset: {
+            messages: ["最大でも2,147,483,647以下です。"]
+          }
+        }
+      };
+      nock(URI)
+        .get(route, reqBody => {
+          expect(reqBody.offset).toBeGreaterThan(MAX_VALUE);
+          return true;
+        })
+        .reply(400, expectedResult);
+
+      let actualResult = appModule.getAppsByIDs(
+        [1, 2, 3, 4, 5],
+        MAX_VALUE + 1,
+        undefined
+      );
+      return actualResult.catch(err => {
+        expect(err.get()).toMatchObject(expectedResult);
+      });
+    });
+
+    it("should return an error when the param limit has value greater than max value 2147483647", () => {
+      const MAX_VALUE = 2147483647;
+      const expectedResult = {};
+      nock(URI)
+        .get(route, reqBody => {
+          expect(reqBody.limit).toBeGreaterThan(MAX_VALUE);
+          return true;
+        })
+        .reply(400, expectedResult);
+
+      let actualResult = appModule.getAppsByIDs(
+        [1, 2, 3, 4, 5],
+        undefined,
+        MAX_VALUE + 1
+      );
+      return actualResult.catch(err=>{
+        expect(err.get()).to
+      });
+    });
   });
 });
