@@ -7,10 +7,7 @@ const nock = require('nock');
 
 const common = require('../../common');
 
-const KintoneAPIException = require('../../../src/exception/KintoneAPIException');
-const Connection = require('../../../src/connection/Connection');
-const Auth = require('../../../src/authentication/Auth');
-const Record = require('../../../src/module/record/Record');
+const {Record, Auth, Connection, KintoneException} = require('../../../src/main.js');
 
 const auth = new Auth();
 auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
@@ -86,7 +83,7 @@ describe('deleteRecords function', () => {
 
         const deleteRecordsResult = recordModule.deleteRecords(data.app, data.ids);
         return deleteRecordsResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneAPIException);
+          expect(err).toBeInstanceOf(KintoneException);
         });
       });
     });
