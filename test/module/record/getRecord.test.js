@@ -41,7 +41,7 @@ describe('getRecord function', () => {
         const appID = 1;
         const recordID = 1;
         nock('https://' + common.DOMAIN)
-          .get(`/k/v1/record.json`, (rqBody, b) => {
+          .get(`/k/v1/record.json`, (rqBody) => {
             expect(rqBody.app).toBe(appID);
             expect(rqBody.id).toBe(recordID);
             return true;
@@ -71,13 +71,13 @@ describe('getRecord function', () => {
         const recordID = 100;
         const appID = 46;
         const expectResult = {
-          "code": "GAIA_RE01",
-          "id": "bYKCU4rpRnqJh2c5Ir7z",
-          "message": "The specified record (ID: 100) is not found."
+          'code': 'GAIA_RE01',
+          'id': 'bYKCU4rpRnqJh2c5Ir7z',
+          'message': 'The specified record (ID: 100) is not found.'
         };
         nock('https://' + common.DOMAIN)
-          .get(`/k/v1/record.json`, (rqBody, b) => {
-            expect(rqBody.app).toEqual(appID)
+          .get(`/k/v1/record.json`, (rqBody) => {
+            expect(rqBody.app).toEqual(appID);
             expect(rqBody.id).toEqual(recordID);
             return true;
           })
@@ -102,19 +102,22 @@ describe('getRecord function', () => {
       it('should return the error in the result', () => {
         const recordID = 1;
         const expectResult = {
-          "code": "CB_VA01",
-          "id": "lngXBpSntzwEI9wqMEZu",
-          "message": "Missing or invalid input.",
-          "errors": {
-            "id": {
-              "messages": [
-                "Required field."
+          'code': 'CB_VA01',
+          'id': 'lngXBpSntzwEI9wqMEZu',
+          'message': 'Missing or invalid input.',
+          'errors': {
+            'id': {
+              'messages': [
+                'Required field.'
               ]
             }
           }
         };
         nock('https://' + common.DOMAIN)
-          .get(`/k/v1/record.json`)
+          .get(`/k/v1/record.json`, (rqBody) => {
+            expect(rqBody.id).toEqual(recordID);
+            return true;
+          })
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(Buffer.from(common.USERNAME + ':' + common.PASSWORD).toString('base64'));
             return true;
@@ -124,7 +127,7 @@ describe('getRecord function', () => {
             return true;
           })
           .reply(400, expectResult);
-        const getRecordResult = recordModule.getRecord('',recordID);
+        const getRecordResult = recordModule.getRecord('', recordID);
         return getRecordResult.catch((err) => {
           expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
@@ -136,19 +139,22 @@ describe('getRecord function', () => {
       it('should return the error in the result', () => {
         const appID = 1;
         const expectResult = {
-          "code": "CB_VA01",
-          "id": "lngXBpSntzwEI9wqMEZu",
-          "message": "Missing or invalid input.",
-          "errors": {
-            "id": {
-              "messages": [
-                "Required field."
+          'code': 'CB_VA01',
+          'id': 'lngXBpSntzwEI9wqMEZu',
+          'message': 'Missing or invalid input.',
+          'errors': {
+            'id': {
+              'messages': [
+                'Required field.'
               ]
             }
           }
         };
         nock('https://' + common.DOMAIN)
-          .get(`/k/v1/record.json`)
+          .get(`/k/v1/record.json`, (rqBody) => {
+            expect(rqBody.app).toEqual(appID);
+            return true;
+          })
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(Buffer.from(common.USERNAME + ':' + common.PASSWORD).toString('base64'));
             return true;
@@ -158,7 +164,7 @@ describe('getRecord function', () => {
             return true;
           })
           .reply(400, expectResult);
-        const getRecordResult = recordModule.getRecord(appID,'');
+        const getRecordResult = recordModule.getRecord(appID, '');
         return getRecordResult.catch((err) => {
           expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
@@ -171,12 +177,16 @@ describe('getRecord function', () => {
         const appID = 1;
         const recordID = 1;
         const expectResult = {
-          "code": "CB_NO02",
-          "id": "46babHd1VN5DSm4vAOZU",
-          "message": "No privilege to proceed."
+          'code': 'CB_NO02',
+          'id': '46babHd1VN5DSm4vAOZU',
+          'message': 'No privilege to proceed.'
         };
         nock('https://' + common.DOMAIN)
-          .get(`/k/v1/record.json`)
+          .get(`/k/v1/record.json`, (rqBody) => {
+            expect(rqBody.app).toEqual(appID);
+            expect(rqBody.id).toEqual(recordID);
+            return true;
+          })
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(Buffer.from(common.USERNAME + ':' + common.PASSWORD).toString('base64'));
             return true;
@@ -199,12 +209,16 @@ describe('getRecord function', () => {
         const appID = 1;
         const recordID = 1;
         const expectResult = {
-          "code": "CB_NO02",
-          "id": "46babHd1VN5DSm4vAOZU",
-          "message": "No privilege to proceed."
+          'code': 'CB_NO02',
+          'id': '46babHd1VN5DSm4vAOZU',
+          'message': 'No privilege to proceed.'
         };
         nock('https://' + common.DOMAIN)
-          .get(`/k/v1/record.json`)
+          .get(`/k/v1/record.json`, (rqBody) => {
+            expect(rqBody.app).toEqual(appID);
+            expect(rqBody.id).toEqual(recordID);
+            return true;
+          })
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(Buffer.from(common.USERNAME + ':' + common.PASSWORD).toString('base64'));
             return true;
@@ -229,27 +243,31 @@ describe('getRecord function', () => {
 
         // Data response does not include some system fields because user does not have View permission for that fields
         const expectResult = {
-          "record": {
-            "Record_number": {
-              "type": "RECORD_NUMBER",
-              "value": "1"
+          'record': {
+            'Record_number': {
+              'type': 'RECORD_NUMBER',
+              'value': '1'
             },
-            "Drop_down": {
-              "type": "DROP_DOWN",
-              "value": "Pass"
+            'Drop_down': {
+              'type': 'DROP_DOWN',
+              'value': 'Pass'
             },
-            "$revision": {
-              "type": "__REVISION__",
-              "value": "1"
+            '$revision': {
+              'type': '__REVISION__',
+              'value': '1'
             },
-            "$id": {
-              "type": "__ID__",
-              "value": "1"
+            '$id': {
+              'type': '__ID__',
+              'value': '1'
             }
           }
         };
         nock('https://' + common.DOMAIN)
-          .get(`/k/v1/record.json`)
+          .get(`/k/v1/record.json`, (rqBody) => {
+            expect(rqBody.app).toEqual(appID);
+            expect(rqBody.id).toEqual(recordID);
+            return true;
+          })
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(Buffer.from(common.USERNAME + ':' + common.PASSWORD).toString('base64'));
             return true;
@@ -261,7 +279,7 @@ describe('getRecord function', () => {
           .reply(200, expectResult);
         const getRecordResult = recordModule.getRecord(appID, recordID);
         return getRecordResult.then((rsp) => {
-          expect(rsp).toMatchObject(expectResult)
+          expect(rsp).toMatchObject(expectResult);
         });
       });
     });
@@ -271,14 +289,14 @@ describe('getRecord function', () => {
         const guestappID = 1;
         const recordID = 1;
         const expectResult = {
-          "code": "GAIA_IL23",
-          "id": "ATuUhgxnYVIrnd66whQY",
-          "message": "You need to send a request to the URL: \"/k/guest/<Space ID>/v1/...\" to execute apps in Guest Spaces."
+          'code': 'GAIA_IL23',
+          'id': 'ATuUhgxnYVIrnd66whQY',
+          'message': 'You need to send a request to the URL: "/k/guest/<Space ID>/v1/..." to execute apps in Guest Spaces.'
         };
         nock('https://' + common.DOMAIN)
           .get(`/k/v1/record.json`, (rqBody) => {
-            expect(rqBody.app).toBe(1);
-            expect(rqBody.id).toBe(1)
+            expect(rqBody.app).toEqual(guestappID);
+            expect(rqBody.id).toEqual(recordID);
             return true;
           })
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
@@ -303,47 +321,47 @@ describe('getRecord function', () => {
         const appID = 1;
         const recordID = 1;
         const expectResult = {
-          "record": {
-            "Updated_datetime": {
-              "type": "UPDATED_TIME",
-              "value": "2018-08-27T02:09:00Z"
+          'record': {
+            'Updated_datetime': {
+              'type': 'UPDATED_TIME',
+              'value': '2018-08-27T02:09:00Z'
             },
-            "Created_datetime": {
-              "type": "CREATED_TIME",
-              "value": "2018-08-27T02:09:00Z"
+            'Created_datetime': {
+              'type': 'CREATED_TIME',
+              'value': '2018-08-27T02:09:00Z'
             },
-            "Record_number": {
-              "type": "RECORD_NUMBER",
-              "value": "3"
+            'Record_number': {
+              'type': 'RECORD_NUMBER',
+              'value': '3'
             },
-            "Created_by": {
-              "type": "CREATOR",
-              "value": {
-                "code": "cybozu",
-                "name": "cybozu"
+            'Created_by': {
+              'type': 'CREATOR',
+              'value': {
+                'code': 'cybozu',
+                'name': 'cybozu'
               }
             },
-            "$revision": {
-              "type": "__REVISION__",
-              "value": "1"
+            '$revision': {
+              'type': '__REVISION__',
+              'value': '1'
             },
-            "Updated_by": {
-              "type": "MODIFIER",
-              "value": {
-                "code": "cybozu",
-                "name": "cybozu"
+            'Updated_by': {
+              'type': 'MODIFIER',
+              'value': {
+                'code': 'cybozu',
+                'name': 'cybozu'
               }
             },
-            "$id": {
-              "type": "__ID__",
-              "value": "3"
+            '$id': {
+              'type': '__ID__',
+              'value': '3'
             }
           }
         };
         nock('https://' + common.DOMAIN)
           .get(`/k/v1/record.json`, (rqBody) => {
-            expect(rqBody.app).toBe(1);
-            expect(rqBody.id).toBe(1)
+            expect(rqBody.app).toEqual(appID);
+            expect(rqBody.id).toEqual(recordID);
             return true;
           })
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
@@ -388,7 +406,7 @@ describe('getRecord function', () => {
             expect(rsp).toHaveProperty('record');
           });
       });
-    })
+    });
 
     describe('invalid appID param is specified', () => {
       it('should return the error in the result', () => {
@@ -396,7 +414,7 @@ describe('getRecord function', () => {
           'code': 'CB_VA01',
           'id': 'PmcT6fVjQMsl4BhMw9Uo',
           'message': 'Missing or invalid input.',
-          'errors': { 'app': { 'messages': ['must be greater than or equal to 1'] } }
+          'errors': {'app': {'messages': ['must be greater than or equal to 1']}}
         };
 
         nock('https://' + common.DOMAIN)

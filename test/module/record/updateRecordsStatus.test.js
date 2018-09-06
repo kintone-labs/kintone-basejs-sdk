@@ -31,7 +31,7 @@ describe('updateRecordsStatus function', () => {
     it('should return a promise', () => {
       nock('https://' + common.DOMAIN)
         .put('/k/v1/records/status.json')
-        .reply(200, { 'revision': '3' });
+        .reply(200, {'revision': '3'});
 
       const recordModule = new Record(conn);
       const updateRecordsStatusResult = recordModule.updateRecordsStatus(data.app, data.records);
@@ -252,7 +252,7 @@ describe('updateRecordsStatus function', () => {
 
     describe('Verify the number of records that can be updated at once is 100', () => {
       it('should changed successfully the status of the multiple record', () => {
-        let number = 100;
+        const number = 100;
         const data = {
           app: '20',
           record: {
@@ -276,11 +276,11 @@ describe('updateRecordsStatus function', () => {
             expect(type).toBe('application/json');
             return true;
           })
-          .reply(200, { 'records': {} });
+          .reply(200, {'records': {}});
         const recordModule = new Record(conn);
         const updateRecordsStatusResult = recordModule.updateRecordsStatus(data.app, common.generateRecord(number, data.record));
         return updateRecordsStatusResult.then((rsp) => {
-          expect(rsp).toHaveProperty("records")
+          expect(rsp).toHaveProperty('records');
         });
       });
     });
@@ -306,9 +306,9 @@ describe('updateRecordsStatus function', () => {
         };
 
         const expectResult = {
-          "code": "GAIA_IL26",
-          "id": "iaQwvEhqv723hIS4V6DG",
-          "message": "The specified user (code：unexisted_user) not found."
+          'code': 'GAIA_IL26',
+          'id': 'iaQwvEhqv723hIS4V6DG',
+          'message': 'The specified user (code：unexisted_user) not found.'
         };
 
         nock('https://' + common.DOMAIN)
@@ -353,18 +353,18 @@ describe('updateRecordsStatus function', () => {
         };
 
         const expectResult = {
-          "code": "CB_VA01",
-          "id": "VO6qddcYmQyHwqhPqud1",
-          "message": "Missing or invalid input.",
-          "errors": {
-            "records[1].id": {
-              "messages": [
-                "Enter an integer value."
+          'code': 'CB_VA01',
+          'id': 'VO6qddcYmQyHwqhPqud1',
+          'message': 'Missing or invalid input.',
+          'errors': {
+            'records[1].id': {
+              'messages': [
+                'Enter an integer value.'
               ]
             },
-            "records[0].id": {
-              "messages": [
-                "Enter an integer value."
+            'records[0].id': {
+              'messages': [
+                'Enter an integer value.'
               ]
             }
           }
@@ -412,18 +412,18 @@ describe('updateRecordsStatus function', () => {
         };
 
         const expectResult = {
-          "code": "CB_VA01",
-          "id": "NEszpttsFpGaMUT659VI",
-          "message": "Missing or invalid input.",
-          "errors": {
-            "records[0].revision": {
-              "messages": [
-                "Enter an integer value."
+          'code': 'CB_VA01',
+          'id': 'NEszpttsFpGaMUT659VI',
+          'message': 'Missing or invalid input.',
+          'errors': {
+            'records[0].revision': {
+              'messages': [
+                'Enter an integer value.'
               ]
             },
-            "records[1].revision": {
-              "messages": [
-                "Enter an integer value."
+            'records[1].revision': {
+              'messages': [
+                'Enter an integer value.'
               ]
             }
           }
@@ -471,13 +471,13 @@ describe('updateRecordsStatus function', () => {
         };
 
         const expectResult = {
-          "code": "CB_VA01",
-          "id": "VO7l8xmK9ToZfdRpXjXw",
-          "message": "Missing or invalid input.",
-          "errors": {
-            "app": {
-              "messages": [
-                "Enter an integer value."
+          'code': 'CB_VA01',
+          'id': 'VO7l8xmK9ToZfdRpXjXw',
+          'message': 'Missing or invalid input.',
+          'errors': {
+            'app': {
+              'messages': [
+                'Enter an integer value.'
               ]
             }
           }
@@ -524,13 +524,13 @@ describe('updateRecordsStatus function', () => {
         };
 
         const expectResult = {
-          "code": "CB_VA01",
-          "id": "dHPIvqdeN3ZlPhfHaHQ8",
-          "message": "Missing or invalid input.",
-          "errors": {
-            "app": {
-              "messages": [
-                "Required field."
+          'code': 'CB_VA01',
+          'id': 'dHPIvqdeN3ZlPhfHaHQ8',
+          'message': 'Missing or invalid input.',
+          'errors': {
+            'app': {
+              'messages': [
+                'Required field.'
               ]
             }
           }
@@ -577,13 +577,13 @@ describe('updateRecordsStatus function', () => {
         };
 
         const expectResult = {
-          "code": "CB_VA01",
-          "id": "VwTXwWEBiNosD8xfrL3w",
-          "message": "Missing or invalid input.",
-          "errors": {
-            "records[0].id": {
-              "messages": [
-                "Required field."
+          'code': 'CB_VA01',
+          'id': 'VwTXwWEBiNosD8xfrL3w',
+          'message': 'Missing or invalid input.',
+          'errors': {
+            'records[0].id': {
+              'messages': [
+                'Required field.'
               ]
             }
           }
@@ -629,9 +629,9 @@ describe('updateRecordsStatus function', () => {
         };
 
         const expectResult = {
-          "code": "GAIA_SA01",
-          "id": "5j3ige69pKHYyO9037FW",
-          "message": "Assignee is required."
+          'code': 'GAIA_SA01',
+          'id': '5j3ige69pKHYyO9037FW',
+          'message': 'Assignee is required.'
         };
 
         nock('https://' + common.DOMAIN)
@@ -676,9 +676,9 @@ describe('updateRecordsStatus function', () => {
         };
 
         const expectResult = {
-          "code": "GAIA_ST02",
-          "id": "8fXKy9n8PFNJKRtHgmiz",
-          "message": "Your request failed. The process management feature has been disabled."
+          'code': 'GAIA_ST02',
+          'id': '8fXKy9n8PFNJKRtHgmiz',
+          'message': 'Your request failed. The process management feature has been disabled.'
         };
 
         nock('https://' + common.DOMAIN)
@@ -706,7 +706,7 @@ describe('updateRecordsStatus function', () => {
 
     describe('Verify the error displays when number of records is > 100', () => {
       it('should return the error in the result', () => {
-        let number = 102;
+        const number = 102;
         const data = {
           app: 1,
           record: {
@@ -718,13 +718,13 @@ describe('updateRecordsStatus function', () => {
         };
 
         const expectResult = {
-          "id": "Tl0ogUCh0ZMOHSHSzSbB",
-          "code": "CB_VA01",
-          "message": "Missing or invalid input.",
-          "errors": {
-            "records": {
-              "messages": [
-                "A maximum of 100 records can be updated at one time."
+          'id': 'Tl0ogUCh0ZMOHSHSzSbB',
+          'code': 'CB_VA01',
+          'message': 'Missing or invalid input.',
+          'errors': {
+            'records': {
+              'messages': [
+                'A maximum of 100 records can be updated at one time.'
               ]
             }
           }
@@ -770,7 +770,7 @@ describe('updateRecordsStatus function', () => {
           'id': 'IARR1iA2jOY5dMzRzVys',
           'message': 'Missing or invalid input.',
           'errors': {
-            'records[0].action': { 'messages': ['Required field.'] }
+            'records[0].action': {'messages': ['Required field.']}
           }
         };
 

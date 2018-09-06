@@ -29,9 +29,7 @@ describe('UpdateRecordAssignees function', () => {
     it('should return a promise', () => {
       nock('https://' + common.DOMAIN)
         .put('/k/v1/record/assignees.json')
-        .reply(200, { 'revision': '3' });
-
-      const recordModule = new Record(conn);
+        .reply(200, {'revision': '3'});
       const updateRecordAssigneesResult = recordModule.updateRecordAssignees(data.app, data.appID, data.assignees, data.revision);
       expect(updateRecordAssigneesResult).toHaveProperty('then');
       expect(updateRecordAssigneesResult).toHaveProperty('catch');
@@ -48,7 +46,7 @@ describe('UpdateRecordAssignees function', () => {
           revision: 2
         };
 
-        const expectResult = { 'revision': '3' };
+        const expectResult = {'revision': '3'};
 
         nock('https://' + common.DOMAIN)
           .put('/k/v1/record/assignees.json', (rqBody) => {
@@ -80,7 +78,7 @@ describe('UpdateRecordAssignees function', () => {
           revision: 2
         };
 
-        const expectResult = { 'revision': '3' };
+        const expectResult = {'revision': '3'};
 
         nock('https://' + common.DOMAIN)
           .put('/k/v1/record/assignees.json', (rqBody) => {
@@ -112,7 +110,7 @@ describe('UpdateRecordAssignees function', () => {
           revision: 2
         };
 
-        const expectResult = { 'revision': '3' };
+        const expectResult = {'revision': '3'};
 
         nock('https://' + common.DOMAIN)
           .put('/k/v1/record/assignees.json', (rqBody) => {
@@ -137,15 +135,15 @@ describe('UpdateRecordAssignees function', () => {
 
     describe('Verify it is able to add 100 assignees for the record', () => {
       it('should update successfully the assignee of the record', () => {
-        let number = 100;
+        const number = 100;
         const data = {
           app: 1,
           id: 1,
-          assignee: "user6",
+          assignee: 'user6',
           revision: 2
         };
 
-        const expectResult = { 'revision': '3' };
+        const expectResult = {'revision': '3'};
 
         nock('https://' + common.DOMAIN)
           .put('/k/v1/record/assignees.json', (rqBody) => {
@@ -162,8 +160,8 @@ describe('UpdateRecordAssignees function', () => {
             return true;
           })
           .reply(200, expectResult);
-        const updateRecordAssigneesResult = recordModule.updateRecordAssignees(data.app, data.id, common.generateRecord(number, data.assignee), data.revision);
-        return updateRecordAssigneesResult.then((rsp) => {
+        const updateAssignees = recordModule.updateRecordAssignees(data.app, data.id, common.generateRecord(number, data.assignee), data.revision);
+        return updateAssignees.then((rsp) => {
           expect(rsp).toMatchObject(expectResult);
         });
       });
@@ -178,7 +176,7 @@ describe('UpdateRecordAssignees function', () => {
           revision: 2
         };
 
-        const expectResult = { 'revision': '3' };
+        const expectResult = {'revision': '3'};
 
         nock('https://' + common.DOMAIN)
           .put('/k/v1/record/assignees.json', (rqBody) => {
@@ -212,7 +210,7 @@ describe('UpdateRecordAssignees function', () => {
           revision: 2
         };
 
-        const expectResult = { 'revision': '3' };
+        const expectResult = {'revision': '3'};
 
         nock('https://' + common.DOMAIN)
           .put('/k/v1/record/assignees.json', (rqBody) => {
@@ -234,7 +232,6 @@ describe('UpdateRecordAssignees function', () => {
         });
       });
     });
-    
   });
 
   describe('Error case', () => {
@@ -248,9 +245,9 @@ describe('UpdateRecordAssignees function', () => {
         };
 
         const expectResult = {
-          "code": "GAIA_TO02",
-          "id": "nLO8Tjp9dRmIRkHclTFj",
-          "message": "Only one assignee can be set to \"Completed\"."
+          'code': 'GAIA_TO02',
+          'id': 'nLO8Tjp9dRmIRkHclTFj',
+          'message': 'Only one assignee can be set to "Completed".'
         };
 
         nock('https://' + common.DOMAIN)
@@ -277,22 +274,22 @@ describe('UpdateRecordAssignees function', () => {
 
     describe('The error is displayed when adding more than 100 assignees', () => {
       it('should return the error in the result', () => {
-        let number = 105
+        const number = 105;
         const data = {
           app: 1,
           id: 1,
-          assignee: "user1",
+          assignee: 'user1',
           revision: 2
         };
 
         const expectResult = {
-          "code": "CB_VA01",
-          "id": "w2gU8q13XMtVmYHZRe8K",
-          "message": "Missing or invalid input.",
-          "errors": {
-            "assignees": {
-              "messages": [
-                "size must be between 0 and 100"
+          'code': 'CB_VA01',
+          'id': 'w2gU8q13XMtVmYHZRe8K',
+          'message': 'Missing or invalid input.',
+          'errors': {
+            'assignees': {
+              'messages': [
+                'size must be between 0 and 100'
               ]
             }
           }
@@ -313,8 +310,8 @@ describe('UpdateRecordAssignees function', () => {
             return true;
           })
           .reply(200, expectResult);
-        const updateRecordAssigneesResult = recordModule.updateRecordAssignees(data.app, data.id, common.generateRecord(number, data.assignee), data.revision);
-        return updateRecordAssigneesResult.catch((err) => {
+        const updateAssignees = recordModule.updateRecordAssignees(data.app, data.id, common.generateRecord(number, data.assignee), data.revision);
+        return updateAssignees.catch((err) => {
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -330,9 +327,9 @@ describe('UpdateRecordAssignees function', () => {
         };
 
         const expectResult = {
-          "id": '8NHtbwNLY3RFK99etdW0',
-          "code": 'GAIA_CO02',
-          "message": 'The revision is not the latest. Someone may update a record.',
+          'id': '8NHtbwNLY3RFK99etdW0',
+          'code': 'GAIA_CO02',
+          'message': 'The revision is not the latest. Someone may update a record.',
         };
 
         nock('https://' + common.DOMAIN)
@@ -367,9 +364,9 @@ describe('UpdateRecordAssignees function', () => {
         };
 
         const expectResult = {
-          "code": "GAIA_IL26",
-          "id": "XCqDduel9hphcC8T3jxv",
-          "message": "The specified user (code：user_notexist) not found."
+          'code': 'GAIA_IL26',
+          'id': 'XCqDduel9hphcC8T3jxv',
+          'message': 'The specified user (code：user_notexist) not found.'
         };
 
         nock('https://' + common.DOMAIN)
@@ -404,13 +401,13 @@ describe('UpdateRecordAssignees function', () => {
         };
 
         const expectResult = {
-          "code": "CB_VA01",
-          "id": "nFhw4mcY6M8m8F0dOMfR",
-          "message": "Missing or invalid input.",
-          "errors": {
-            "app": {
-              "messages": [
-                "Enter an integer value."
+          'code': 'CB_VA01',
+          'id': 'nFhw4mcY6M8m8F0dOMfR',
+          'message': 'Missing or invalid input.',
+          'errors': {
+            'app': {
+              'messages': [
+                'Enter an integer value.'
               ]
             }
           }
@@ -447,13 +444,13 @@ describe('UpdateRecordAssignees function', () => {
         };
 
         const expectResult = {
-          "code": "CB_VA01",
-          "id": "iN6cXz14UBJ0LLTCGczG",
-          "message": "Missing or invalid input.",
-          "errors": {
-            "app": {
-              "messages": [
-                "Required field."
+          'code': 'CB_VA01',
+          'id': 'iN6cXz14UBJ0LLTCGczG',
+          'message': 'Missing or invalid input.',
+          'errors': {
+            'app': {
+              'messages': [
+                'Required field.'
               ]
             }
           }
@@ -491,9 +488,9 @@ describe('UpdateRecordAssignees function', () => {
         };
 
         const expectResult = {
-          "code": "CB_NO02",
-          "id": "BU2JLXsaYblJJCgsAiLj",
-          "message": "No privilege to proceed."
+          'code': 'CB_NO02',
+          'id': 'BU2JLXsaYblJJCgsAiLj',
+          'message': 'No privilege to proceed.'
         };
 
         nock('https://' + common.DOMAIN)
@@ -528,20 +525,20 @@ describe('UpdateRecordAssignees function', () => {
         };
 
         const expectResult = {
-          "code": "CB_NO02",
-          "id": "BU2JLXsaYblJJCgsAiLj",
-          "message": "No privilege to proceed."
+          'code': 'CB_NO02',
+          'id': 'BU2JLXsaYblJJCgsAiLj',
+          'message': 'No privilege to proceed.'
         };
 
-        const auth = new Auth();
-        auth.setApiToken(common.API_TOKEN);
+        const authAPI = new Auth();
+        authAPI.setApiToken(common.API_TOKEN);
 
-        const conn = new Connection(common.DOMAIN, auth);
-        const recordAssignee = new Record(conn);
+        const conn1 = new Connection(common.DOMAIN, authAPI);
+        const recordAssignee = new Record(conn1);
         nock('https://' + common.DOMAIN)
           .put('/k/v1/record/assignees.json')
           .matchHeader(common.API_TOKEN, (authHeader) => {
-            expect(authHeader).toBe(common.API_TOKEN);
+            expect(authHeader).toEqual(common.API_TOKEN);
             return true;
           })
           .reply(403, expectResult);
@@ -562,13 +559,13 @@ describe('UpdateRecordAssignees function', () => {
         };
 
         const expectResult = {
-          "code": "CB_VA01",
-          "id": "2RrRnAjsbSSmMCbbDdFP",
-          "message": "Missing or invalid input.",
-          "errors": {
-            "id": {
-              "messages": [
-                "Required field."
+          'code': 'CB_VA01',
+          'id': '2RrRnAjsbSSmMCbbDdFP',
+          'message': 'Missing or invalid input.',
+          'errors': {
+            'id': {
+              'messages': [
+                'Required field.'
               ]
             }
           }
@@ -605,13 +602,13 @@ describe('UpdateRecordAssignees function', () => {
         };
 
         const expectResult = {
-          "code": "CB_VA01",
-          "id": "2RrRnAjsbSSmMCbbDdFP",
-          "message": "Missing or invalid input.",
-          "errors": {
-            "assignees": {
-              "messages": [
-                "Required field."
+          'code': 'CB_VA01',
+          'id': '2RrRnAjsbSSmMCbbDdFP',
+          'message': 'Missing or invalid input.',
+          'errors': {
+            'assignees': {
+              'messages': [
+                'Required field.'
               ]
             }
           }
@@ -648,7 +645,7 @@ describe('UpdateRecordAssignees function', () => {
           revision: 3
         };
 
-        const expectResult = { revision: '15' };
+        const expectResult = {revision: '15'};
 
         nock('https://' + common.DOMAIN)
           .put('/k/v1/record/assignees.json', (rqBody) => {
@@ -681,7 +678,7 @@ describe('UpdateRecordAssignees function', () => {
           revision: 2
         };
 
-        const expectResult = { 'code': 'GAIA_RE01', 'id': '8PePOAQMHkWHWeynRPjQ', 'message': 'The specified record (ID: 22) is not found.' };
+        const expectResult = {'code': 'GAIA_RE01', 'id': '8PePOAQMHkWHWeynRPjQ', 'message': 'The specified record (ID: 22) is not found.'};
 
         nock('https://' + common.DOMAIN)
           .put('/k/v1/record/assignees.json', (rqBody) => {

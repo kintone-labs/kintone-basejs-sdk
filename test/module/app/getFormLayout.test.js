@@ -80,21 +80,21 @@ describe('getFormLayout function', () => {
       it('should return the app formfield base on full data', () => {
         const app = 10;
         const expectResult = {
-          "layout": [
+          'layout': [
             {
-              "type": "ROW",
-              "fields": [
+              'type': 'ROW',
+              'fields': [
                 {
-                  "type": "SINGLE_LINE_TEXT",
-                  "code": "Text",
-                  "size": {
-                    "width": "193"
+                  'type': 'SINGLE_LINE_TEXT',
+                  'code': 'Text',
+                  'size': {
+                    'width': '193'
                   }
                 }
               ]
             }
           ],
-          "revision": "16"
+          'revision': '16'
         };
         nock('https://' + common.DOMAIN)
           .get('/k/v1/app/form/layout.json', (rqBody) => {
@@ -123,28 +123,28 @@ describe('getFormLayout function', () => {
         const app = 10;
         const isPreview = true;
         const expectResult = {
-          "layout": [
+          'layout': [
             {
-              "type": "ROW",
-              "fields": [
+              'type': 'ROW',
+              'fields': [
                 {
-                  "type": "SINGLE_LINE_TEXT",
-                  "code": "Text",
-                  "size": {
-                    "width": "193"
+                  'type': 'SINGLE_LINE_TEXT',
+                  'code': 'Text',
+                  'size': {
+                    'width': '193'
                   }
                 },
                 {
-                  "type": "NUMBER",
-                  "code": "Number",
-                  "size": {
-                    "width": "193"
+                  'type': 'NUMBER',
+                  'code': 'Number',
+                  'size': {
+                    'width': '193'
                   }
                 }
               ]
             }
           ],
-          "revision": "20"
+          'revision': '20'
         };
         nock('https://' + common.DOMAIN)
           .get('/k/v1/preview/app/form/layout.json', (rqBody) => {
@@ -266,13 +266,13 @@ describe('getFormLayout function', () => {
         const app = 'abc';
         const isPreview = false;
         const expectResult = {
-          "code": "CB_VA01",
-          "id": "PbKNsufheaeqXulVAdGv",
-          "message": "Missing or invalid input.",
-          "errors": {
-            "app": {
-              "messages": [
-                "Enter an integer value."
+          'code': 'CB_VA01',
+          'id': 'PbKNsufheaeqXulVAdGv',
+          'message': 'Missing or invalid input.',
+          'errors': {
+            'app': {
+              'messages': [
+                'Enter an integer value.'
               ]
             }
           }
@@ -304,13 +304,13 @@ describe('getFormLayout function', () => {
       it('should return error in the result', () => {
         const isPreview = false;
         const expectResult = {
-          "code": "CB_VA01",
-          "id": "6GVXCJ0sCnMFn1sDJ6cw",
-          "message": "Missing or invalid input.",
-          "errors": {
-            "app": {
-              "messages": [
-                "Required field."
+          'code': 'CB_VA01',
+          'id': '6GVXCJ0sCnMFn1sDJ6cw',
+          'message': 'Missing or invalid input.',
+          'errors': {
+            'app': {
+              'messages': [
+                'Required field.'
               ]
             }
           }
@@ -342,9 +342,9 @@ describe('getFormLayout function', () => {
         const app = 'abc';
         const isPreview = false;
         const expectResult = {
-          "code": "CB_NO02",
-          "id": "7sqH5vh2McTqtFz0o0LB",
-          "message": "No privilege to proceed."
+          'code': 'CB_NO02',
+          'id': '7sqH5vh2McTqtFz0o0LB',
+          'message': 'No privilege to proceed.'
         };
         nock('https://' + common.DOMAIN)
           .get('/k/v1/app/form/layout.json', (rqBody) => {

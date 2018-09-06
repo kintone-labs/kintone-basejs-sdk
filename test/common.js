@@ -12,22 +12,8 @@ module.exports = {
   },
   generateRecord: (number, inputRecord) => {
     const items = [];
-    if (inputRecord.hasOwnProperty('id')) {
-        for (let i = 0; i < number; i++) {
-            items.push({ ...inputRecord })
-            items[i].id = i;
-        }
-    }
-    else if(typeof inputRecord === 'object'){
-        for (let i = 0; i < number; i++) {
-            items.push({ ...inputRecord })
-        }
-    }
-    else{
-        for (let i = 0; i < number; i++) {
-            items.push({ ...inputRecord })
-            items[i] = "user" + i;
-        }
+    for (let i = 0; i < number; i++) {
+      items.push(inputRecord);
     }
     return items;
   }

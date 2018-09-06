@@ -29,7 +29,7 @@ describe('updateRecordStatus function', () => {
     it('should return a promise', () => {
       nock('https://' + common.DOMAIN)
         .put('/k/v1/record/status.json')
-        .reply(200, { 'revision': '3' });
+        .reply(200, {'revision': '3'});
 
       const recordModule = new Record(conn);
       const updateRecordStatusResult = recordModule.updateRecordStatus(data.app, data.appID, data.action, data.assignee, data.revision);
@@ -49,7 +49,7 @@ describe('updateRecordStatus function', () => {
           revision: 2
         };
 
-        const expectResult = { 'revision': '3' };
+        const expectResult = {'revision': '3'};
 
         nock('https://' + common.DOMAIN)
           .put('/k/v1/record/status.json', (rqBody) => {
@@ -83,7 +83,7 @@ describe('updateRecordStatus function', () => {
           revision: 3
         };
 
-        const expectResult = { 'revision': '4' };
+        const expectResult = {'revision': '4'};
 
         nock('https://' + common.DOMAIN)
           .put('/k/v1/record/status.json', (rqBody) => {
@@ -113,11 +113,11 @@ describe('updateRecordStatus function', () => {
         const data = {
           app: 1,
           id: 1,
-          action: "スタート",
+          action: 'スタート',
           revision: 2
         };
 
-        const expectResult = { 'revision': '3' };
+        const expectResult = {'revision': '3'};
 
         nock('https://' + common.DOMAIN)
           .put('/k/v1/record/status.json', (rqBody) => {
@@ -147,11 +147,11 @@ describe('updateRecordStatus function', () => {
         const data = {
           app: 1,
           id: 1,
-          action: "Submit",
+          action: 'Submit',
           revision: -1
         };
 
-        const expectResult = { 'revision': '3' };
+        const expectResult = {'revision': '3'};
 
         nock('https://' + common.DOMAIN)
           .put('/k/v1/record/status.json', (rqBody) => {
@@ -186,7 +186,7 @@ describe('updateRecordStatus function', () => {
           revision: 2
         };
 
-        const expectResult = { 'revision': '3' };
+        const expectResult = {'revision': '3'};
 
         nock('https://' + common.DOMAIN)
           .put('/k/v1/record/status.json', (rqBody) => {
@@ -212,7 +212,7 @@ describe('updateRecordStatus function', () => {
       });
     });
 
-    describe('Verify when the "User chooses one assignee from the list to take action" is not set, user can change status without providing assignee', () => {
+    describe('Verify "User chooses one assignee from the list to take action" is not set, user can change status without providing assignee', () => {
       it('should changed successfully the status of the record', () => {
         const data = {
           app: 1,
@@ -221,7 +221,7 @@ describe('updateRecordStatus function', () => {
           revision: 2
         };
 
-        const expectResult = { 'revision': '3' };
+        const expectResult = {'revision': '3'};
 
         nock('https://' + common.DOMAIN)
           .put('/k/v1/record/status.json', (rqBody) => {
@@ -239,7 +239,7 @@ describe('updateRecordStatus function', () => {
           .reply(200, expectResult);
 
         const recordModule = new Record(conn);
-        const updateRecordStatusResult = recordModule.updateRecordStatus(data.app, data.id, data.action,'', data.revision);
+        const updateRecordStatusResult = recordModule.updateRecordStatus(data.app, data.id, data.action, '', data.revision);
         return updateRecordStatusResult.then((rsp) => {
           expect(rsp).toMatchObject(expectResult);
         });
@@ -251,12 +251,12 @@ describe('updateRecordStatus function', () => {
         const data = {
           app: 1,
           id: 1,
-          action: "Submit",
-          assignee: "user2",
+          action: 'Submit',
+          assignee: 'user2',
           revision: -1
         };
 
-        const expectResult = { 'revision': '3' };
+        const expectResult = {'revision': '3'};
 
         nock('https://' + common.DOMAIN)
           .put('/k/v1/record/status.json', (rqBody) => {
@@ -291,7 +291,7 @@ describe('updateRecordStatus function', () => {
           revision: 2
         };
 
-        const expectResult = { 'revision': '3' };
+        const expectResult = {'revision': '3'};
 
         nock('https://' + common.DOMAIN)
           .put('/k/v1/record/status.json', (rqBody) => {
@@ -318,7 +318,7 @@ describe('updateRecordStatus function', () => {
   });
 
   describe('error case', () => {
-    describe('Verify when the "User chooses one assignee from the list to take action" is set, error is displayed when change status without providing assignee', () => {
+    describe('Verify "User chooses one assignee from the list to take action" is set, error displayed when change status without assignee', () => {
       it('should return the error in the result', () => {
         const data = {
           app: 1,
@@ -328,9 +328,9 @@ describe('updateRecordStatus function', () => {
         };
 
         const expectResult = {
-          "code": "GAIA_SA01",
-          "id": "r564zRh5fJGmtEpjwPbN",
-          "message": "Assignee is required."
+          'code': 'GAIA_SA01',
+          'id': 'r564zRh5fJGmtEpjwPbN',
+          'message': 'Assignee is required.'
         };
 
         nock('https://' + common.DOMAIN)
@@ -367,9 +367,9 @@ describe('updateRecordStatus function', () => {
         };
 
         const expectResult = {
-          "code": "GAIA_SA04",
-          "id": "de8MGDsxTZI4VNqn73eo",
-          "message": "Failed to update status. Assignee cannot be specified by the action."
+          'code': 'GAIA_SA04',
+          'id': 'de8MGDsxTZI4VNqn73eo',
+          'message': 'Failed to update status. Assignee cannot be specified by the action.'
         };
 
         nock('https://' + common.DOMAIN)
@@ -406,9 +406,9 @@ describe('updateRecordStatus function', () => {
         };
 
         const expectResult = {
-          "code": "GAIA_IL03",
-          "id": "91V2E4UIkuDwngsE6lcq",
-          "message": "Failed to update the status. The settings or the status itself may have been changed by someone."
+          'code': 'GAIA_IL03',
+          'id': '91V2E4UIkuDwngsE6lcq',
+          'message': 'Failed to update the status. The settings or the status itself may have been changed by someone.'
         };
 
         nock('https://' + common.DOMAIN)
@@ -439,15 +439,15 @@ describe('updateRecordStatus function', () => {
         const data = {
           app: 1,
           id: 1,
-          action: "Start",
-          assignee: "unexist_user",
+          action: 'Start',
+          assignee: 'unexist_user',
           revision: 2
         };
 
         const expectResult = {
-          "code": "GAIA_IL26",
-          "id": "TXtbWfmtL3vpCffesUzH",
-          "message": "The specified user (code：unexist_user) not found."
+          'code': 'GAIA_IL26',
+          'id': 'TXtbWfmtL3vpCffesUzH',
+          'message': 'The specified user (code：unexist_user) not found.'
         };
 
         nock('https://' + common.DOMAIN)
@@ -478,19 +478,19 @@ describe('updateRecordStatus function', () => {
         const data = {
           app: 1,
           id: 1,
-          action: "Start",
-          assignee: "user1",
+          action: 'Start',
+          assignee: 'user1',
           revision: 'abc'
         };
 
         const expectResult = {
-          "code": "CB_VA01",
-          "id": "sRXKNwyq9vSkZlddzsl1",
-          "message": "Missing or invalid input.",
-          "errors": {
-            "revision": {
-              "messages": [
-                "Enter an integer value."
+          'code': 'CB_VA01',
+          'id': 'sRXKNwyq9vSkZlddzsl1',
+          'message': 'Missing or invalid input.',
+          'errors': {
+            'revision': {
+              'messages': [
+                'Enter an integer value.'
               ]
             }
           }
@@ -524,15 +524,15 @@ describe('updateRecordStatus function', () => {
         const data = {
           app: 1,
           id: 1,
-          action: "Submit",
-          assignee: "user1",
+          action: 'Submit',
+          assignee: 'user1',
           revision: -1
         };
 
         const expectResult = {
-          "code": "GAIA_NT01",
-          "id": "YysgGE3vcpRU4G9ZQyvA",
-          "message": "Only Assignee can change the status."
+          'code': 'GAIA_NT01',
+          'id': 'YysgGE3vcpRU4G9ZQyvA',
+          'message': 'Only Assignee can change the status.'
         };
 
         nock('https://' + common.DOMAIN)
@@ -563,15 +563,15 @@ describe('updateRecordStatus function', () => {
         const data = {
           app: 100000,
           id: 1,
-          action: "Submit",
-          assignee: "user1",
+          action: 'Submit',
+          assignee: 'user1',
           revision: -1
         };
 
         const expectResult = {
-          "code": "GAIA_AP01",
-          "id": "odSa5TDi8wU7UlpGfck3",
-          "message": "The app (ID: 100000) not found. The app may have been deleted."
+          'code': 'GAIA_AP01',
+          'id': 'odSa5TDi8wU7UlpGfck3',
+          'message': 'The app (ID: 100000) not found. The app may have been deleted.'
         };
 
         nock('https://' + common.DOMAIN)
@@ -601,19 +601,19 @@ describe('updateRecordStatus function', () => {
       it('should return the error in the result', () => {
         const data = {
           id: 1,
-          action: "Submit",
-          assignee: "user1",
+          action: 'Submit',
+          assignee: 'user1',
           revision: -1
         };
 
         const expectResult = {
-          "code": "CB_VA01",
-          "id": "tdTAK2tvpfssOCADPUwR",
-          "message": "Missing or invalid input.",
-          "errors": {
-            "app": {
-              "messages": [
-                "Required field."
+          'code': 'CB_VA01',
+          'id': 'tdTAK2tvpfssOCADPUwR',
+          'message': 'Missing or invalid input.',
+          'errors': {
+            'app': {
+              'messages': [
+                'Required field.'
               ]
             }
           }
@@ -646,19 +646,19 @@ describe('updateRecordStatus function', () => {
       it('should return the error in the result', () => {
         const data = {
           app: 1,
-          action: "Submit",
-          assignee: "user1",
+          action: 'Submit',
+          assignee: 'user1',
           revision: -1
         };
 
         const expectResult = {
-          "code": "CB_VA01",
-          "id": "xQLcu61tMGhM0IQa7zwN",
-          "message": "Missing or invalid input.",
-          "errors": {
-            "id": {
-              "messages": [
-                "Required field."
+          'code': 'CB_VA01',
+          'id': 'xQLcu61tMGhM0IQa7zwN',
+          'message': 'Missing or invalid input.',
+          'errors': {
+            'id': {
+              'messages': [
+                'Required field.'
               ]
             }
           }
@@ -691,14 +691,14 @@ describe('updateRecordStatus function', () => {
       it('should return the error in the result', () => {
         const data = {
           app: 1,
-          action: "Testing",
+          action: 'Testing',
           revision: -1
         };
 
         const expectResult = {
-          "code": "GAIA_SA01",
-          "id": "r564zRh5fJGmtEpjwPbN",
-          "message": "Assignee is required."
+          'code': 'GAIA_SA01',
+          'id': 'r564zRh5fJGmtEpjwPbN',
+          'message': 'Assignee is required.'
         };
 
         nock('https://' + common.DOMAIN)
@@ -729,15 +729,15 @@ describe('updateRecordStatus function', () => {
         const data = {
           app: 1,
           id: 1,
-          action: "Submit",
-          assignee: "user1",
+          action: 'Submit',
+          assignee: 'user1',
           revision: -1
         };
 
         const expectResult = {
-          "code": "GAIA_ST02",
-          "id": "vrNS6L86jbDgFZAGe5lT",
-          "message": "Your request failed. The process management feature has been disabled."
+          'code': 'GAIA_ST02',
+          'id': 'vrNS6L86jbDgFZAGe5lT',
+          'message': 'Your request failed. The process management feature has been disabled.'
         };
 
         nock('https://' + common.DOMAIN)
@@ -773,7 +773,7 @@ describe('updateRecordStatus function', () => {
           revision: 2
         };
 
-        const expectResult = { 'code': 'GAIA_NT01', 'id': '4UPEpLZKYpZfju46I3wm', 'message': 'Only Assignee can change the status.' };
+        const expectResult = {'code': 'GAIA_NT01', 'id': '4UPEpLZKYpZfju46I3wm', 'message': 'Only Assignee can change the status.'};
 
         nock('https://' + common.DOMAIN)
           .put('/k/v1/record/status.json', (rqBody) => {

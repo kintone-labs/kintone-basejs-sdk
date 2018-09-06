@@ -190,15 +190,15 @@ describe('getFormFields function', () => {
               'expression': '',
               'hideExpression': false
             },
-            "Date": {
-              "type": "DATE",
-              "code": "Date",
-              "label": "Date",
-              "noLabel": false,
-              "required": false,
-              "unique": false,
-              "defaultValue": "",
-              "defaultNowValue": true
+            'Date': {
+              'type': 'DATE',
+              'code': 'Date',
+              'label': 'Date',
+              'noLabel': false,
+              'required': false,
+              'unique': false,
+              'defaultValue': '',
+              'defaultNowValue': true
             }
           },
           'revision': '2'
@@ -271,7 +271,7 @@ describe('getFormFields function', () => {
           expect(rsp).toMatchObject(expectResult);
         });
       });
-    })
+    });
 
     describe('Verify the app of Guest Space is returned', () => {
       it('should return the app formfield base on full data', () => {
@@ -331,13 +331,13 @@ describe('getFormFields function', () => {
         const lang = 'EN';
         const isPreview = false;
         const expectResult = {
-          "code": "CB_VA01",
-          "id": "rd70vRQmhixNIPltBzPa",
-          "message": "Missing or invalid input.",
-          "errors": {
-            "app": {
-              "messages": [
-                "Enter an integer value."
+          'code': 'CB_VA01',
+          'id': 'rd70vRQmhixNIPltBzPa',
+          'message': 'Missing or invalid input.',
+          'errors': {
+            'app': {
+              'messages': [
+                'Enter an integer value.'
               ]
             }
           }
@@ -371,13 +371,13 @@ describe('getFormFields function', () => {
         const lang = 'EN';
         const isPreview = false;
         const expectResult = {
-          "code": "CB_VA01",
-          "id": "h6QtUmUVbmuPTcZBLf1I",
-          "message": "Missing or invalid input.",
-          "errors": {
-            "app": {
-              "messages": [
-                "Required field."
+          'code': 'CB_VA01',
+          'id': 'h6QtUmUVbmuPTcZBLf1I',
+          'message': 'Missing or invalid input.',
+          'errors': {
+            'app': {
+              'messages': [
+                'Required field.'
               ]
             }
           }
@@ -411,13 +411,13 @@ describe('getFormFields function', () => {
         const lang = '1';
         const isPreview = false;
         const expectResult = {
-          "code": "CB_VA01",
-          "id": "7ZQYN2qOgxdUAQ5n2J1j",
-          "message": "Missing or invalid input.",
-          "errors": {
-            "lang": {
-              "messages": [
-                "must be one of the enum value"
+          'code': 'CB_VA01',
+          'id': '7ZQYN2qOgxdUAQ5n2J1j',
+          'message': 'Missing or invalid input.',
+          'errors': {
+            'lang': {
+              'messages': [
+                'must be one of the enum value'
               ]
             }
           }
@@ -452,9 +452,9 @@ describe('getFormFields function', () => {
         const lang = 'EN';
         const isPreview = true;
         const expectResult = {
-          "code": "CB_NO02",
-          "id": "7sqH5vh2McTqtFz0o0LB",
-          "message": "No privilege to proceed."
+          'code': 'CB_NO02',
+          'id': '7sqH5vh2McTqtFz0o0LB',
+          'message': 'No privilege to proceed.'
         };
         nock('https://' + common.DOMAIN)
           .get('/k/v1/preview/app/form/fields.json', (rqBody) => {
