@@ -4,9 +4,12 @@
  */
 const nock = require("nock");
 const common = require("../../common");
-const Connection = require("../../../src/connection/Connection");
-const Auth = require("../../../src/authentication/Auth");
-const App = require("../../../src/module/app/App");
+
+// const Connection = require("../../../src/connection/Connection");
+// const Auth = require("../../../src/authentication/Auth");
+// const App = require("../../../src/module/app/App");
+
+const { Connection, Auth, App } = require("../../../src/main");
 
 const auth = new Auth();
 auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
@@ -333,8 +336,8 @@ describe("getAppsByIDs function", () => {
         undefined,
         MAX_VALUE + 1
       );
-      return actualResult.catch(err=>{
-        expect(err.get()).to
+      return actualResult.catch(err => {
+        expect(err.get()).toMatchObject(expectedResult);
       });
     });
   });
