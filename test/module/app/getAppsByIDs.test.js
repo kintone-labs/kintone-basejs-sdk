@@ -4,13 +4,7 @@
  */
 const nock = require("nock");
 const common = require("../../common");
-
-// const Connection = require("../../../src/connection/Connection");
-// const Auth = require("../../../src/authentication/Auth");
-// const App = require("../../../src/module/app/App");
-
 const { Connection, Auth, App } = require("../../../src/main");
-
 const auth = new Auth();
 auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
 const conn = new Connection(common.DOMAIN, auth);
