@@ -11,7 +11,7 @@ const conn = new Connection(common.DOMAIN, auth);
 const appModule = new App(conn);
 
 const URI = "https://" + common.DOMAIN;
-const route = "/k/v1/apps.json";
+const ROUTE = "/k/v1/apps.json";
 
 describe("getAppsByIDs function", () => {
   describe("common function", () => {
@@ -119,7 +119,7 @@ describe("getAppsByIDs function", () => {
         const limit = 2;
         const appIDs = [1, 2, 3, 4, 5];
         nock(URI)
-          .get(route, reqBody => {
+          .get(ROUTE, reqBody => {
             expect(reqBody.ids).toEqual(appIDs);
             expect(reqBody.limit).toEqual(limit);
             return true;
@@ -176,7 +176,7 @@ describe("getAppsByIDs function", () => {
         const offset = 2;
         const appIDs = [1, 2, 3];
         nock(URI)
-          .get(route, reqBody => {
+          .get(ROUTE, reqBody => {
             expect(reqBody.ids).toEqual(appIDs);
             expect(reqBody.offset).toEqual(offset);
             return true;
@@ -221,7 +221,7 @@ describe("getAppsByIDs function", () => {
         }
       };
       nock(URI)
-        .get(route, reqBody => {
+        .get(ROUTE, reqBody => {
           expect(reqBody.limit).toEqual(0);
           return true;
         })
@@ -245,7 +245,7 @@ describe("getAppsByIDs function", () => {
         }
       };
       nock(URI)
-        .get(route, reqBody => {
+        .get(ROUTE, reqBody => {
           expect(reqBody.limit).toBeGreaterThan(100);
           return true;
         })
@@ -273,9 +273,8 @@ describe("getAppsByIDs function", () => {
         }
       };
       nock(URI)
-        .get(route, reqBody => {
+        .get(ROUTE, reqBody => {
           expect(reqBody.offset).toBeLessThan(0);
-          console.log(reqBody);
           return true;
         })
         .reply(400, expectedResult);
@@ -299,7 +298,7 @@ describe("getAppsByIDs function", () => {
         }
       };
       nock(URI)
-        .get(route, reqBody => {
+        .get(ROUTE, reqBody => {
           expect(reqBody.offset).toBeGreaterThan(MAX_VALUE);
           return true;
         })
@@ -319,7 +318,7 @@ describe("getAppsByIDs function", () => {
       const MAX_VALUE = 2147483647;
       const expectedResult = {};
       nock(URI)
-        .get(route, reqBody => {
+        .get(ROUTE, reqBody => {
           expect(reqBody.limit).toBeGreaterThan(MAX_VALUE);
           return true;
         })
