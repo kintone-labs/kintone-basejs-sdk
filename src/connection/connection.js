@@ -3,12 +3,14 @@
  */
 
 
-const request = require('request-promise');
+const axios = require('axios');
+const tunnel = require('tunnel');
 
 const KintoneAuth = require('../authentication/Auth');
 const KintoneHTTPHeader = require('../model/http/HTTPHeader');
 
 const CONNECTION_CONST = require('./constant');
+const DEFAULT_PORT = '443';
 
 const kintoneDomain = new WeakMap();
 const kintoneAuth = new WeakMap();
@@ -69,11 +71,16 @@ class Connection {
     // Set request options
     const requestOptions = options.get(this);
     requestOptions.method = String(methodName).toUpperCase();
-    requestOptions.uri = this.getUri(restAPIName);
+    requestOptions.url = this.getUri(restAPIName);
     requestOptions.headers = headersRequet;
-    requestOptions.body = body;
+    // set data to param if using GET method
+    if (requestOptions.method === 'GET') {
+      requestOptions.params = body;
+    } else {
+      requestOptions.data = body;
+    }
     // Execute request
-    return request(requestOptions);
+    return axios(requestOptions);
   }
   /**
      * auto get uri for request
@@ -83,6 +90,7 @@ class Connection {
   getUri(url) {
     let urlFQDN = CONNECTION_CONST.BASE.SCHEMA + '://' + kintoneDomain.get(this);
     const apiNameUpperCase = String(url).toUpperCase();
+    urlFQDN += ':' + DEFAULT_PORT;
     if (CONNECTION_CONST.PATH.hasOwnProperty(apiNameUpperCase)) {
       urlFQDN += this.getPathURI(apiNameUpperCase);
     } else {
@@ -154,9 +162,15 @@ class Connection {
      * @return {this}
      */
   setProxy(proxyHost, proxyPort) {
-    const host = (!proxyHost.match(/http/)) ? 'http://' + proxyHost : proxyHost;
-    const proxy = host + ':' + proxyPort;
-    return this.addRequestOption(CONNECTION_CONST.BASE.PROXY, proxy);
+    const httpsAgent = tunnel.httpsOverHttp({
+      proxy: {
+        host: proxyHost,
+        port: proxyPort
+      },
+    });
+    this.addRequestOption(CONNECTION_CONST.BASE.PROXY, false);
+    this.addRequestOption(CONNECTION_CONST.BASE.HTTPS_AGENT, httpsAgent);
+    return this;
   }
 }
 module.exports = Connection;

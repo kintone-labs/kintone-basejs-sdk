@@ -26,7 +26,7 @@ class KintoneAPIException {
       errorResponse =
                 new KintoneErrorResponseModel('', '', errors, {});
     } else {
-      errorResponse = this.getErrorResponse(errors.response.body);
+      errorResponse = this.getErrorResponse(errors.response.data);
     }
     if (!(errorResponse instanceof KintoneErrorResponseModel)) {
       errorResponse =
