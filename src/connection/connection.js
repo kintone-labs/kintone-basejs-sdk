@@ -34,14 +34,6 @@ class Connection {
     headers.set(this, []);
     options.set(this, {});
     this.setAuth(auth);
-    // set default user-agent
-    this.setHeader(
-      CONNECTION_CONST.BASE.USER_AGENT,
-      CONNECTION_CONST.BASE.USER_AGENT_BASE_VALUE
-        .replace('{name}',
-          process.env.npm_package_name || 'kintone-basicjs-sdk')
-        .replace('{version}', process.env.npm_package_version || '(none)')
-    );
   }
 
   /**
@@ -73,14 +65,18 @@ class Connection {
     requestOptions.method = String(methodName).toUpperCase();
     requestOptions.url = this.getUri(restAPIName);
     requestOptions.headers = headersRequet;
+    requestOptions.withCredentials = true;
     // set data to param if using GET method
     if (requestOptions.method === 'GET') {
       requestOptions.params = body;
     } else {
       requestOptions.data = body;
     }
+    console.log(requestOptions);
     // Execute request
-    return axios(requestOptions);
+    return axios(requestOptions).then(rsp => {
+      return rsp.data;
+    });
   }
   /**
      * auto get uri for request
