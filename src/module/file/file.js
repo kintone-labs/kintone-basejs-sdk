@@ -1,13 +1,6 @@
-/**
- * kintone api - nodejs client
- * File module
- */
-
-const KintoneConnection = require('../../connection/Connection');
+const Connection = require('../../connection/Connection');
 const FileModel = require('../../model/file/FileModels');
 const common = require('../../utils/Common');
-
-const kintoneConnection = new WeakMap();
 
 const CONTENT_TYPE_KEY = 'Content-Type';
 const CONTENT_TYPE_VALUE = 'multipart/form-data';
@@ -23,11 +16,10 @@ class File {
      * @param {Connection} connection
      */
   constructor(connection) {
-    if (!(connection instanceof KintoneConnection)) {
-      throw new Error(`${connection}` +
-                `not an instance of kintoneConnection`);
+    if (!(connection instanceof Connection)) {
+      throw new Error(`${connection} not an instance of Connection`);
     }
-    kintoneConnection.set(this, connection);
+    this.connection = connection;
   }
   /**
      * @param {String} method
@@ -36,7 +28,7 @@ class File {
      * @return {Promise} Promise
      */
   sendRequest(method, url, model) {
-    return common.sendRequest(method, url, model, kintoneConnection.get(this));
+    return common.sendRequest(method, url, model, this.connection);
   }
   /**
      * Download file from kintone
@@ -46,7 +38,7 @@ class File {
   download(fileKey) {
     const dataRequest =
             new FileModel.GetFileRequest(fileKey);
-    kintoneConnection.get(this).addRequestOption(RESPONSE_TYPE_KEY, RESPONSE_TYPE_VALUE);
+    this.connection.addRequestOption(RESPONSE_TYPE_KEY, RESPONSE_TYPE_VALUE);
     return this.sendRequest('GET', 'FILE', dataRequest.toJSON());
   }
   /**
@@ -55,7 +47,7 @@ class File {
      * @return {Promise}
      */
   upload(formData) {
-    kintoneConnection.get(this).setHeader(CONTENT_TYPE_KEY, CONTENT_TYPE_VALUE);
+    this.connection.setHeader(CONTENT_TYPE_KEY, CONTENT_TYPE_VALUE);
     return this.sendRequest('POST', 'FILE', formData);
   }
 }
