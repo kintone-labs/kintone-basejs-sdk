@@ -20,7 +20,7 @@ class DeployAppSettingsRequest {
   }
   /**
      * @param {Array} apps
-     * @return {this} AddRecoDeployAppSettingsRequestrdsRequest
+     * @return {this} DeployAppSettingsRequestrdsRequest
      */
   setApps(apps) {
     this.apps = apps;
@@ -35,7 +35,7 @@ class DeployAppSettingsRequest {
   }
   /**
      * @param {Boolean>} revert
-     * @return {this} AddRecoDeployAppSettingsRequestrdsRequest
+     * @return {this} DeployAppSettingsRequestrdsRequest
      */
   setRevert(revert) {
     this.revert = revert;
