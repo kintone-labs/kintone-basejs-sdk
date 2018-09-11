@@ -1,11 +1,4 @@
 /**
- * kintone api - nodejs client
- */
-
-const app = new WeakMap();
-const records = new WeakMap();
-
-/**
  * AddRecordsRequest model
  */
 class AddRecordsRequest {
@@ -13,14 +6,14 @@ class AddRecordsRequest {
      * @param {Integer} appID
      */
   constructor(appID) {
-    app.set(this, appID);
-    records.set(this, []);
+    this.app = appID;
+    this.records = [];
   }
   /**
      * @return {Integer} appID
      */
   getAppID() {
-    return app.get(this);
+    return this.app;
   }
   /**
      * Add record item to execute the add multi records function
@@ -28,7 +21,7 @@ class AddRecordsRequest {
      * @return {this} AddRecordsRequest
      */
   addRecord(record) {
-    records.set(this, records.get(this).push(record));
+    this.records.push(record);
     return this;
   }
   /**
@@ -36,14 +29,14 @@ class AddRecordsRequest {
      * @return {this} AddRecordsRequest
      */
   setRecords(recordsData) {
-    records.set(this, recordsData);
+    this.records = recordsData;
     return this;
   }
   /**
      * @return {Array<Record>} Records
      */
   getRecordsData() {
-    return records.get(this);
+    return this.records;
   }
   /**
      * Get JSON struct of this model
