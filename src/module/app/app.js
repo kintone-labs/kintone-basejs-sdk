@@ -1,13 +1,6 @@
-/**
- * kintone api - nodejs client
- * App module
- */
-
-const KintoneConnection = require('../../connection/Connection');
+const Connection = require('../../connection/Connection');
 const AppModel = require('../../model/app/AppModels');
 const common = require('../../utils/Common');
-
-const kintoneConnection = new WeakMap();
 
 /**
  * App module
@@ -18,11 +11,10 @@ class App {
      * @param {Connection} connection
      */
   constructor(connection) {
-    if (!(connection instanceof KintoneConnection)) {
-      throw new Error(`${connection}` +
-                `not an instance of kintoneConnection`);
+    if (!(connection instanceof Connection)) {
+      throw new Error(`${connection} not an instance of Connection`);
     }
-    kintoneConnection.set(this, connection);
+    this.connection = connection;
   }
   /**
      * @param {String} method
@@ -31,7 +23,7 @@ class App {
      * @return {Promise} Promise
      */
   sendRequest(method, url, model) {
-    return common.sendRequest(method, url, model, kintoneConnection.get(this));
+    return common.sendRequest(method, url, model, this.connection);
   }
   /**
      * Get single app details
@@ -50,8 +42,7 @@ class App {
      * @return {Promise} Promise
      */
   getApps(offset, limit) {
-    const dataRequest =
-            new AppModel.GetAppsRequest(offset, limit);
+    const dataRequest = new AppModel.GetAppsRequest(offset, limit);
     return this.sendRequest('GET', 'apps', dataRequest);
   }
   /**
@@ -62,8 +53,7 @@ class App {
      * @return {Promise} Promise
      */
   getAppsByCodes(codes, offset, limit) {
-    const dataRequest =
-            new AppModel.GetAppsRequest(offset, limit);
+    const dataRequest = new AppModel.GetAppsRequest(offset, limit);
     dataRequest.setAppCodes(codes);
     return this.sendRequest('GET', 'apps', dataRequest);
   }
@@ -75,8 +65,7 @@ class App {
      * @return {Promise} Promise
      */
   getAppsByName(name, offset, limit) {
-    const dataRequest =
-            new AppModel.GetAppsRequest(offset, limit);
+    const dataRequest = new AppModel.GetAppsRequest(offset, limit);
     dataRequest.setAppName(name);
     return this.sendRequest('GET', 'apps', dataRequest);
   }
@@ -101,8 +90,7 @@ class App {
      * @return {Promise} Promise
      */
   getAppsBySpaceIDs(spaceIds, offset, limit) {
-    const dataRequest =
-            new AppModel.GetAppsRequest(offset, limit);
+    const dataRequest = new AppModel.GetAppsRequest(offset, limit);
     dataRequest.setAppSpaceIDs(spaceIds);
     return this.sendRequest('GET', 'apps', dataRequest);
   }
@@ -113,8 +101,7 @@ class App {
      * @return {Promise} Promise
      */
   getFormLayout(appID, isPreview) {
-    const dataRequest =
-            new AppModel.GetFormLayoutsRequest(appID);
+    const dataRequest = new AppModel.GetFormLayoutsRequest(appID);
     const apiName = isPreview === true ? 'APP_LAYOUT_PREVIEW' : 'APP_LAYOUT';
     return this.sendRequest('GET', apiName, dataRequest);
   }
@@ -125,8 +112,7 @@ class App {
      * @return {Promise} Promise
      */
   updateFormLayout(app, layout, revision) {
-    const dataRequest =
-              new AppModel.UpdateFormLayoutRequest(app, layout, revision);
+    const dataRequest = new AppModel.UpdateFormLayoutRequest(app, layout, revision);
     return this.sendRequest('PUT', 'APP_LAYOUT_PREVIEW', dataRequest);
   }
   /**
@@ -137,8 +123,7 @@ class App {
      * @return {Promise} Promise
      */
   getFormFields(appID, lang, isPreview) {
-    const dataRequest =
-            new AppModel.GetFormFieldsRequest(appID, lang);
+    const dataRequest = new AppModel.GetFormFieldsRequest(appID, lang);
     const apiName = isPreview === true ? 'APP_FIELDS_PREVIEW' : 'APP_FIELDS';
     return this.sendRequest('GET', apiName, dataRequest);
   }
@@ -150,8 +135,7 @@ class App {
    * @returns {Promise} Promise
    */
   addFormFields(app, fields, revision) {
-    const dataRequest =
-            new AppModel.AddFormFieldsRequest(app, fields, revision);
+    const dataRequest = new AppModel.AddFormFieldsRequest(app, fields, revision);
     return this.sendRequest('POST', 'APP_FIELDS_PREVIEW', dataRequest);
   }
 
@@ -163,8 +147,7 @@ class App {
    * @returns {Promise} Promise
    */
   updateFormFields(app, fields, revision) {
-    const dataRequest =
-            new AppModel.UpdateFormFieldsRequest(app, fields, revision);
+    const dataRequest = new AppModel.UpdateFormFieldsRequest(app, fields, revision);
     return this.sendRequest('PUT', 'APP_FIELDS_PREVIEW', dataRequest);
   }
 
@@ -176,8 +159,7 @@ class App {
    * @returns {Promise} Promise
    */
   deleteFormFields(app, fields, revision) {
-    const dataRequest =
-            new AppModel.DeleteFormFieldsRequest(app, fields, revision);
+    const dataRequest = new AppModel.DeleteFormFieldsRequest(app, fields, revision);
     return this.sendRequest('DELETE', 'APP_FIELDS_PREVIEW', dataRequest);
   }
 
@@ -189,8 +171,7 @@ class App {
    * @returns {Promise} Promise
    */
   addPreviewApp(name, space, thread) {
-    const dataRequest =
-            new AppModel.AddPreviewAppRequest(name, space, thread);
+    const dataRequest = new AppModel.AddPreviewAppRequest(name, space, thread);
     return this.sendRequest('POST', 'APP_PREVIEW', dataRequest);
   }
 
@@ -201,8 +182,7 @@ class App {
    * @returns {Promise} Promise
    */
   deployAppSettings(apps, revert) {
-    const dataRequest =
-            new AppModel.DeployAppSettingsRequest(apps, revert);
+    const dataRequest = new AppModel.DeployAppSettingsRequest(apps, revert);
     return this.sendRequest('POST', 'APP_DEPLOY_PREVIEW', dataRequest);
   }
 
@@ -212,8 +192,7 @@ class App {
    * @returns {Promise} Promise
    */
   getAppDeployStatus(apps) {
-    const dataRequest =
-            new AppModel.GetAppDeployStatusRequest(apps);
+    const dataRequest = new AppModel.GetAppDeployStatusRequest(apps);
     return this.sendRequest('GET', 'APP_DEPLOY_PREVIEW', dataRequest);
   }
 
@@ -225,8 +204,7 @@ class App {
    * @returns {Promise} Promise
    */
   getViews(app, lang, isPreview) {
-    const dataRequest =
-            new AppModel.GetViewsRequest(app, lang);
+    const dataRequest = new AppModel.GetViewsRequest(app, lang);
     const apiName = isPreview ? 'APP_VIEWS_PREVIEW' : 'APP_VIEWS';
     return this.sendRequest('GET', apiName, dataRequest);
   }
@@ -239,8 +217,7 @@ class App {
    * @returns {Promise} Promise
    */
   updateViews(app, views, revision) {
-    const dataRequest =
-            new AppModel.UpdateViewsRequest(app, views, revision);
+    const dataRequest = new AppModel.UpdateViewsRequest(app, views, revision);
     return this.sendRequest('PUT', 'APP_VIEWS_PREVIEW', dataRequest);
   }
 
@@ -252,8 +229,7 @@ class App {
    * @returns {Promise} Promise
    */
   getGeneralSettings(app, lang, isPreview) {
-    const dataRequest =
-            new AppModel.GetGeneralSettingsRequest(app, lang);
+    const dataRequest = new AppModel.GetGeneralSettingsRequest(app, lang);
     const apiName = isPreview ? 'APP_SETTINGS_PREVIEW' : 'APP_SETTINGS';
     return this.sendRequest('GET', apiName, dataRequest);
   }
@@ -266,8 +242,7 @@ class App {
    * @returns {Promise} Promise
    */
   updateGeneralSettings(app, generalSettings, revision) {
-    const dataRequest =
-            new AppModel.UpdateGeneralSettingsRequest(app, generalSettings, revision);
+    const dataRequest = new AppModel.UpdateGeneralSettingsRequest(app, generalSettings, revision);
     return this.sendRequest('PUT', 'APP_SETTINGS_PREVIEW', dataRequest);
   }
 }
