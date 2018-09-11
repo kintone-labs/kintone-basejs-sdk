@@ -1,34 +1,28 @@
 /**
- * kintone api - nodejs client
- */
-
-const username = new WeakMap();
-const password = new WeakMap();
-/**
  * Credential model
  */
 class Credential {
   /**
-     * @param {String} usernameString
-     * @param {String} passwordString
+     * @param {String} username
+     * @param {String} password
      */
-  constructor(usernameString, passwordString) {
-    username.set(this, usernameString);
-    password.set(this, passwordString);
+  constructor(username, password) {
+    this.username = username;
+    this.password = password;
   }
   /**
      * Get username of Credential model
      * @return {String}
      */
   getUsername() {
-    return username.get(this);
+    return this.username;
   }
   /**
      * Get password of Credential model
      * @return {String}
      */
   getPassword() {
-    return password.get(this);
+    return this.password;
   }
 }
 module.exports = Credential;

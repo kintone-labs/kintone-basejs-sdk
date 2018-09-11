@@ -1,50 +1,41 @@
 /**
- * kintone api - nodejs client
- */
-
-const id = new WeakMap();
-const code = new WeakMap();
-const message = new WeakMap();
-const errors = new WeakMap();
-
-/**
  * Error response model
  */
 class ErrorResponse {
   /**
      * constructor
-     * @param {String} idResp
-     * @param {String} codeResp
-     * @param {String} messageResp
-     * @param {String} errorsResp
+     * @param {String} id
+     * @param {String} code
+     * @param {String} message
+     * @param {String} errors
      */
-  constructor(idResp, codeResp, messageResp, errorsResp) {
-    this.setID(idResp);
-    this.setCode(codeResp);
-    this.setMessage(messageResp);
-    this.setErrors(errorsResp);
+  constructor(id, code, message, errors) {
+    this.setID(id);
+    this.setCode(code);
+    this.setMessage(message);
+    this.setErrors(errors);
   }
 
   /**
-     * @param {Object} errs
+     * @param {Object} errors
      * @return {this}
      */
-  setErrors(errs) {
-    errors.set(this, errs);
+  setErrors(errors) {
+    this.errors = errors;
     return this;
   }
   /**
      * @return {Object}
      */
   getErrors() {
-    return errors.get(this);
+    return this.errors;
   }
   /**
-     * @param {String} mess
+     * @param {String} message
      * @return {this}
      */
-  setMessage(mess) {
-    message.set(this, mess);
+  setMessage(message) {
+    this.message = message;
     return this;
   }
 
@@ -52,15 +43,15 @@ class ErrorResponse {
      * @return {String}
      */
   getMessage() {
-    return message.get(this);
+    return this.message;
   }
 
   /**
-     * @param {String} idRsp
+     * @param {String} id
      * @return {this}
      */
-  setID(idRsp) {
-    id.set(this, idRsp);
+  setID(id) {
+    this.id = id;
     return this;
   }
 
@@ -68,15 +59,15 @@ class ErrorResponse {
      * @return {String}
      */
   getID() {
-    return id.get(this);
+    return this.id;
   }
 
   /**
-     * @param {String} codeResp
+     * @param {String} code
      * @return {this}
      */
-  setCode(codeResp) {
-    code.set(this, codeResp);
+  setCode(code) {
+    this.code = code;
     return this;
   }
 
@@ -84,7 +75,7 @@ class ErrorResponse {
      * @return {String}
      */
   getCode() {
-    return code.get(this);
+    return this.code;
   }
   /**
      * @return {Object}
