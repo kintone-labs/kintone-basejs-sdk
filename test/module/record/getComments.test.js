@@ -3,7 +3,6 @@
  * test record module
  */
 const nock = require("nock");
-
 const common = require("../../common");
 const {
   KintoneException,
@@ -12,31 +11,28 @@ const {
   Record
 } = require("../../../src/main");
 
-const auth = new Auth();
-auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
-
+const auth = new Auth().setPasswordAuth(common.USERNAME, common.PASSWORD);
 const conn = new Connection(common.DOMAIN, auth);
 if (common.hasOwnProperty("proxy") && common.proxy) {
   conn.addRequestOption("proxy", common.proxy);
 }
 const recordModule = new Record(conn);
-
 const URI = "https://" + common.DOMAIN;
 const ROUTE = "/k/v1/record/comments.json";
 
 describe("getComments function", () => {
-  describe("common case", () => {
+  describe("common cases", () => {
     it("should return a promise", () => {
-      const data = {
-        app: 2,
-        record: 1
+      let data = {
+        app: 1,
+        record: 2
       };
       nock(URI)
         .get(ROUTE)
         .reply(200, {
           comments: [
             {
-              id: "1",
+              id: "2",
               text:
                 "user13 Global Sales APAC Taskforce \nHere is today's report.",
               createdAt: "2016-05-09T18:27:54Z",
@@ -49,24 +45,24 @@ describe("getComments function", () => {
           older: false,
           newer: false
         });
-      const getCommentsResult = recordModule.getComments(data.app, data.record);
-      expect(getCommentsResult).toHaveProperty("then");
-      expect(getCommentsResult).toHaveProperty("catch");
+      let actualResult = recordModule.getComments(data.app, data.record);
+      expect(actualResult).toHaveProperty("then");
+      expect(actualResult).toHaveProperty("catch");
     });
   });
 
-  describe("success case", () => {
+  describe("success cases", () => {
     describe("valid data, app + record only", () => {
-      it("should return correctly the comments of record,", () => {
-        const data = {
-          app: 2,
-          record: 1
+      it("[RecordModule-215] should return correctly the comments of record,", () => {
+        let data = {
+          app: 1,
+          record: 2
         };
 
         nock(URI)
-          .get(ROUTE, rqBody => {
-            expect(rqBody.record).toEqual(data.record);
-            expect(rqBody.app).toEqual(data.app);
+          .get(ROUTE, reqBody => {
+            expect(reqBody.app).toEqual(data.app);
+            expect(reqBody.record).toEqual(data.record);
             return true;
           })
           .matchHeader("X-Cybozu-Authorization", authHeader => {
@@ -82,7 +78,7 @@ describe("getComments function", () => {
           .reply(200, {
             comments: [
               {
-                id: "1",
+                id: "2",
                 text:
                   "user13 Global Sales APAC Taskforce \nHere is today's report.",
                 createdAt: "2016-05-09T18:27:54Z",
@@ -95,18 +91,15 @@ describe("getComments function", () => {
             older: false,
             newer: false
           });
-        const getCommentsResult = recordModule.getComments(
-          data.app,
-          data.record
-        );
-        return getCommentsResult.then(rsp => {
-          expect(rsp).toHaveProperty("comments");
+        let actualResult = recordModule.getComments(data.app, data.record);
+        return actualResult.then(response => {
+          expect(response).toHaveProperty("comments");
         });
       });
 
       it("[RecordModule-216] should return the comments of record by the order of `asc`", () => {
-        const data = { app: 1, record: 2 };
-        const expectedResult = {
+        let data = { app: 1, record: 2 };
+        let expectedResult = {
           comments: [
             {
               id: "1",
@@ -159,7 +152,7 @@ describe("getComments function", () => {
           })
           .reply(200, expectedResult);
 
-        const actualResult = recordModule.getComments(
+        let actualResult = recordModule.getComments(
           data.app,
           data.record,
           "asc",
@@ -173,8 +166,8 @@ describe("getComments function", () => {
       });
 
       it("[RecordModule-217] should return the comments of record by the order of `desc`", () => {
-        const data = { app: 1, record: 2 };
-        const expectedResult = {
+        let data = { app: 1, record: 2 };
+        let expectedResult = {
           comments: [
             {
               id: "4",
@@ -227,7 +220,7 @@ describe("getComments function", () => {
           })
           .reply(200, expectedResult);
 
-        const actualResult = recordModule.getComments(
+        let actualResult = recordModule.getComments(
           data.app,
           data.record,
           "desc",
@@ -241,8 +234,8 @@ describe("getComments function", () => {
       });
 
       it("[RecordModule-219] should return the comments of record according to the offset value", () => {
-        const data = { app: 1, record: 2 };
-        const expectedResult = {
+        let data = { app: 1, record: 2 };
+        let expectedResult = {
           comments: [
             {
               id: "3",
@@ -268,7 +261,7 @@ describe("getComments function", () => {
           older: true,
           newer: false
         };
-        const OFFSET = 2;
+        let OFFSET = 2;
 
         nock(URI)
           .get(ROUTE, reqBody => {
@@ -277,7 +270,7 @@ describe("getComments function", () => {
           })
           .reply(200, expectedResult);
 
-        const actualResult = recordModule.getComments(
+        let actualResult = recordModule.getComments(
           data.app,
           data.record,
           "asc",
@@ -291,8 +284,8 @@ describe("getComments function", () => {
       });
 
       it("[RecordModule-220] should return the comments of record without skipping when the offset value is 0", () => {
-        const data = { app: 1, record: 2 };
-        const expectedResult = {
+        let data = { app: 1, record: 2 };
+        let expectedResult = {
           comments: [
             {
               id: "4",
@@ -338,7 +331,8 @@ describe("getComments function", () => {
           older: false,
           newer: false
         };
-        const OFFSET = 0;
+        let OFFSET = 0;
+
         nock(URI)
           .get(ROUTE, reqBody => {
             expect(reqBody.offset).toEqual(OFFSET);
@@ -346,7 +340,7 @@ describe("getComments function", () => {
           })
           .reply(200, expectedResult);
 
-        const actualResult = recordModule.getComments(
+        let actualResult = recordModule.getComments(
           data.app,
           data.record,
           "desc",
@@ -360,8 +354,8 @@ describe("getComments function", () => {
       });
 
       it("[RecordModule-222] should return the comments of record according to the limit value", () => {
-        const data = { app: 1, record: 2 };
-        const expectedResult = {
+        let data = { app: 1, record: 2 };
+        let expectedResult = {
           comments: [
             {
               id: "4",
@@ -387,7 +381,7 @@ describe("getComments function", () => {
           older: true,
           newer: false
         };
-        const LIMIT = 2;
+        let LIMIT = 2;
 
         nock(URI)
           .get(ROUTE, reqBody => {
@@ -396,7 +390,7 @@ describe("getComments function", () => {
           })
           .reply(200, expectedResult);
 
-        const actualResult = recordModule.getComments(
+        let actualResult = recordModule.getComments(
           data.app,
           data.record,
           undefined,
@@ -410,13 +404,13 @@ describe("getComments function", () => {
       });
 
       it("[RecordModule-223] should NOT return the comments of record when the limit value is 0", () => {
-        const data = { app: 1, record: 2 };
-        const expectedResult = {
+        let data = { app: 1, record: 2 };
+        let expectedResult = {
           comments: [],
           older: true,
           newer: false
         };
-        const LIMIT = 0;
+        let LIMIT = 0;
         nock(URI)
           .get(ROUTE, reqBody => {
             expect(reqBody.limit).toEqual(LIMIT);
@@ -424,7 +418,7 @@ describe("getComments function", () => {
           })
           .reply(200, expectedResult);
 
-        const actualResult = recordModule.getComments(
+        let actualResult = recordModule.getComments(
           data.app,
           data.record,
           undefined,
@@ -440,8 +434,8 @@ describe("getComments function", () => {
 
     describe("combination of order + offset + limit", () => {
       it("[RecordModule-225] should return the comments of record when combining the three param {order, offset, limit}", () => {
-        const data = { app: 1, record: 2, order: "desc", offset: 3, limit: 3 };
-        const expectedResult = {
+        let data = { app: 1, record: 2, order: "desc", offset: 3, limit: 3 };
+        let expectedResult = {
           comments: [
             {
               id: "1",
@@ -483,15 +477,15 @@ describe("getComments function", () => {
 
   describe("error case", () => {
     it("[RecordModule-218] should return an error when the value of order is invalid", () => {
-      const data = {
+      let data = {
         app: 2,
         record: 1,
         order: "dd"
       };
 
       nock(URI)
-        .get(ROUTE, rqBody => {
-          expect(rqBody.order).toEqual(data.order);
+        .get(ROUTE, reqBody => {
+          expect(reqBody.order).toEqual(data.order);
           return true;
         })
         .reply(400, {
@@ -502,20 +496,20 @@ describe("getComments function", () => {
             order: { messages: ["Enum値のいずれかでなければなりません。"] }
           }
         });
-      const getCommentsResult = recordModule.getComments(
+      let actualResult = recordModule.getComments(
         data.app,
         data.record,
         data.order
       );
-      return getCommentsResult.catch(err => {
+      return actualResult.catch(err => {
         expect(err).toBeInstanceOf(KintoneException);
       });
     });
 
     it("[RecordModule-221] should return an error when the value of offset is invalid", () => {
-      const data = { app: 1, record: 2 };
-      const OFFSET = -1;
-      const expectedResult = {
+      let data = { app: 1, record: 2 };
+      let OFFSET = -1;
+      let expectedResult = {
         code: "CB_VA01",
         id: "N0t3WAWaUpYycmdwqdDK",
         message: "入力内容が正しくありません。",
@@ -532,7 +526,7 @@ describe("getComments function", () => {
         })
         .reply(400, expectedResult);
 
-      const actualResult = recordModule.getComments(
+      let actualResult = recordModule.getComments(
         data.app,
         data.record,
         undefined,
@@ -545,9 +539,9 @@ describe("getComments function", () => {
     });
 
     it("[RecordModule-224] should return an error when the value of limit is greater than 10", () => {
-      const data = { app: 1, record: 2 };
-      const LIMIT = 11;
-      const expectedResult = {
+      let data = { app: 1, record: 2 };
+      let LIMIT = 11;
+      let expectedResult = {
         code: "CB_VA01",
         id: "GK7azPfLL3wV1Jq2GvUH",
         message: "入力内容が正しくありません。",
@@ -564,7 +558,7 @@ describe("getComments function", () => {
         })
         .reply(400, expectedResult);
 
-      const actualResult = recordModule.getComments(
+      let actualResult = recordModule.getComments(
         data.app,
         data.record,
         undefined,
@@ -577,8 +571,8 @@ describe("getComments function", () => {
     });
 
     it("[RecordModule-230] should return an error when using invalid appId", () => {
-      const data = { app: -1, record: 2 };
-      const expectedResult = {
+      let data = { app: -1, record: 2 };
+      let expectedResult = {
         code: "CB_VA01",
         id: "7IAqt2O3hm4Fw1oui0bn",
         message: "入力内容が正しくありません。",
@@ -595,7 +589,7 @@ describe("getComments function", () => {
         })
         .reply(400, expectedResult);
 
-      const actualResult = recordModule.getComments(
+      let actualResult = recordModule.getComments(
         data.app,
         data.record,
         undefined,
@@ -609,8 +603,8 @@ describe("getComments function", () => {
     });
 
     it("[RecordModule-231] should return an error when using invalid recordId", () => {
-      const data = { app: 1, record: -2 };
-      const expectedResult = {
+      let data = { app: 1, record: -2 };
+      let expectedResult = {
         code: "CB_VA01",
         id: "4KCVyFaCn4JTEEhw6ozb",
         message: "入力内容が正しくありません。",
@@ -627,7 +621,7 @@ describe("getComments function", () => {
         })
         .reply(400, expectedResult);
 
-      const actualResult = recordModule.getComments(
+      let actualResult = recordModule.getComments(
         data.app,
         data.record,
         undefined,
@@ -641,8 +635,8 @@ describe("getComments function", () => {
     });
 
     it("[RecordModule-232] should return an error when missing appId", () => {
-      const data = { app: 1, record: 2 };
-      const expectedResult = {
+      let data = { app: 1, record: 2 };
+      let expectedResult = {
         code: "CB_VA01",
         id: "fPvGX7iqoF0DxeCI04Pk",
         message: "入力内容が正しくありません。",
@@ -659,7 +653,7 @@ describe("getComments function", () => {
         })
         .reply(400, expectedResult);
 
-      const actualResult = recordModule.getComments(
+      let actualResult = recordModule.getComments(
         undefined,
         data.record,
         undefined,
@@ -673,8 +667,8 @@ describe("getComments function", () => {
     });
 
     it("[RecordModule-233] should return an error when missing recordId", () => {
-      const data = { app: 1, record: 2 };
-      const expectedResult = {
+      let data = { app: 1, record: 2 };
+      let expectedResult = {
         code: "CB_VA01",
         id: "DUB0DXXSrnORvhKeC4mz",
         message: "入力内容が正しくありません。",
@@ -691,7 +685,7 @@ describe("getComments function", () => {
         })
         .reply(400, expectedResult);
 
-      const actualResult = recordModule.getComments(
+      let actualResult = recordModule.getComments(
         data.app,
         undefined,
         undefined,
@@ -704,7 +698,4 @@ describe("getComments function", () => {
       });
     });
   });
-  /**
-   * Todo: implement another error case
-   */
 });

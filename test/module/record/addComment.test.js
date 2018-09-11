@@ -4,7 +4,6 @@
  */
 const nock = require("nock");
 const common = require("../../common");
-
 const {
   KintoneException,
   Connection,
@@ -12,8 +11,7 @@ const {
   Record
 } = require("../../../src/main");
 
-const auth = new Auth();
-auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
+const auth = new Auth().setPasswordAuth(common.USERNAME, common.PASSWORD);
 const conn = new Connection(common.DOMAIN, auth);
 const recordModule = new Record(conn);
 
@@ -23,18 +21,17 @@ const ROUTE = "/k/v1/record/comment.json";
 describe("addComment function", () => {
   describe("common case", () => {
     it("should return a promise", () => {
-      nock("https://" + common.DOMAIN)
-        .post("/k/v1/record/comment.json")
+      nock(URI)
+        .post(ROUTE)
         .reply(200, { id: "1" });
-      //const recordModule = new Record(conn);
-      const addCommentResult = recordModule.addComment();
+      let addCommentResult = recordModule.addComment();
       expect(addCommentResult).toHaveProperty("then");
       expect(addCommentResult).toHaveProperty("catch");
     });
   });
 
-  describe("success case", () => {
-    it("should add comment to record successfully", () => {
+  describe("success cases", () => {
+    it("[RecordModule-236] should add comment to record successfully", () => {
       const data = {
         app: 1,
         record: 1,
@@ -43,9 +40,9 @@ describe("addComment function", () => {
         }
       };
 
-      nock("https://" + common.DOMAIN)
-        .post("/k/v1/record/comment.json", rqBody => {
-          expect(rqBody).toMatchObject(data);
+      nock(URI)
+        .post(ROUTE, reqBody => {
+          expect(reqBody).toMatchObject(data);
           return true;
         })
         .matchHeader(common.PASSWORD_AUTH, authHeader => {
@@ -60,24 +57,23 @@ describe("addComment function", () => {
         })
         .reply(200, { id: "1" });
 
-      //const recordModule = new Record(conn);
-      const addCommentResult = recordModule.addComment(
+      let actualResult = recordModule.addComment(
         data.app,
         data.record,
         data.comment
       );
-      return addCommentResult.then(rsp => {
+      return actualResult.then(rsp => {
         expect(rsp).toHaveProperty("id");
       });
     });
 
     it("[RecordModule-237] should add a comment with the content containing special characters", () => {
-      const data = {
+      let data = {
         app: 1,
         record: 2,
         comment: { text: "new comment containing 日本" }
       };
-      const expectedResult = { id: "5" };
+      let expectedResult = { id: "5" };
       nock(URI)
         .post(ROUTE, reqBody => {
           expect(reqBody).toHaveProperty("comment");
@@ -85,7 +81,7 @@ describe("addComment function", () => {
         })
         .reply(200, expectedResult);
 
-      const actualResult = recordModule.addComment(
+      let actualResult = recordModule.addComment(
         data.app,
         data.record,
         data.comment
@@ -96,7 +92,7 @@ describe("addComment function", () => {
     });
 
     it("[RecordModule-239] should add a comment with mention", () => {
-      const data = {
+      let data = {
         app: 1,
         record: 2,
         comment: {
@@ -117,7 +113,7 @@ describe("addComment function", () => {
           ]
         }
       };
-      const expectedResult = { id: "5" };
+      let expectedResult = { id: "5" };
       nock(URI)
         .post(ROUTE, reqBody => {
           expect(reqBody).toHaveProperty("comment");
@@ -126,7 +122,7 @@ describe("addComment function", () => {
         })
         .reply(200, expectedResult);
 
-      const actualResult = recordModule.addComment(
+      let actualResult = recordModule.addComment(
         data.app,
         data.record,
         data.comment
@@ -137,12 +133,12 @@ describe("addComment function", () => {
     });
 
     it("[RecordModule-252] should add a comment successfully when inputting string for appId", () => {
-      const data = {
+      let data = {
         app: 1,
         record: 2,
         comment: { text: "something goes here" }
       };
-      const expectedResult = { id: "8" };
+      let expectedResult = { id: "8" };
       nock(URI)
         .post(ROUTE, reqBody => {
           expect(reqBody).toHaveProperty("app");
@@ -152,7 +148,7 @@ describe("addComment function", () => {
         })
         .reply(200, expectedResult);
 
-      const actualResult = recordModule.addComment(
+      let actualResult = recordModule.addComment(
         data.app,
         data.record,
         data.comment
@@ -165,15 +161,15 @@ describe("addComment function", () => {
 
   describe("error case", () => {
     describe("invalid comment content", () => {
-      it("should return error when the comment text is blank", () => {
-        const data = {
+      it("[RecordModule-241] should return error when the comment text is blank", () => {
+        let data = {
           app: 1,
           record: 1,
           comment: {
             text: ""
           }
         };
-        const expectResult = {
+        let expectResult = {
           code: "CB_VA01",
           id: "7oiYHOZd11fTpyvY00kG",
           message: "Missing or invalid input.",
@@ -186,20 +182,19 @@ describe("addComment function", () => {
             }
           }
         };
-        nock("https://" + common.DOMAIN)
-          .post("/k/v1/record/comment.json", rqBody => {
-            expect(rqBody).toMatchObject(data);
+        nock(URI)
+          .post(ROUTE, reqBody => {
+            expect(reqBody).toMatchObject(data);
             return true;
           })
           .reply(400, expectResult);
 
-        //const recordModule = new Record(conn);
-        const addCommentResult = recordModule.addComment(
+        let actualResult = recordModule.addComment(
           data.app,
           data.record,
           data.comment
         );
-        return addCommentResult.catch(err => {
+        return actualResult.catch(err => {
           expect(err).toBeInstanceOf(KintoneException);
           expect(err.get()).toMatchObject(expectResult);
         });
@@ -252,12 +247,12 @@ describe("addComment function", () => {
     // });
 
     it("[RecordModule-246] should return an error when using invalid appId", () => {
-      const data = {
+      let data = {
         app: -1,
         record: 2,
         comment: { text: "something goes here" }
       };
-      const expectedResult = {
+      let expectedResult = {
         code: "CB_VA01",
         id: "R4E6puJFh6nDPXypT796",
         message: "入力内容が正しくありません。",
@@ -273,7 +268,7 @@ describe("addComment function", () => {
           return true;
         })
         .reply(400, expectedResult);
-      const actualResult = recordModule.addComment(
+      let actualResult = recordModule.addComment(
         data.app,
         data.record,
         data.comment
@@ -283,13 +278,14 @@ describe("addComment function", () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
+
     it("[RecordModule-247] should return an error when using invalid recordId", () => {
-      const data = {
+      let data = {
         app: 1,
         record: -2,
         comment: { text: "something goes here" }
       };
-      const expectedResult = {
+      let expectedResult = {
         code: "CB_VA01",
         id: "MDx5kAIOfK4AbeJssEYW",
         message: "入力内容が正しくありません。",
@@ -305,7 +301,7 @@ describe("addComment function", () => {
           return true;
         })
         .reply(400, expectedResult);
-      const actualResult = recordModule.addComment(
+      let actualResult = recordModule.addComment(
         data.app,
         data.record,
         data.comment
@@ -315,13 +311,14 @@ describe("addComment function", () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
+
     it("[RecordModule-248] should return an error when missing appId", () => {
-      const data = {
+      let data = {
         app: undefined,
         record: 2,
         comment: { text: "something goes here" }
       };
-      const expectedResult = {
+      let expectedResult = {
         code: "CB_VA01",
         id: "9JAS954ZZpOZk7PcZ3JS",
         message: "入力内容が正しくありません。",
@@ -338,19 +335,23 @@ describe("addComment function", () => {
         })
         .reply(400, expectedResult);
 
-      const actualResult = recordModule.addComment(
+      let actualResult = recordModule.addComment(
         data.app,
         data.record,
         data.comment
       );
+      return actualResult.catch(err => {
+        expect(err).toBeInstanceOf(KintoneException);
+      });
     });
+
     it("[RecordModule-249] should return an error when missing recordId", () => {
-      const data = {
+      let data = {
         app: 1,
         record: undefined,
         comment: { text: "something goes here" }
       };
-      const expectedResult = {
+      let expectedResult = {
         code: "CB_VA01",
         id: "jxdkEErN6fBh5Uip6qik",
         message: "入力内容が正しくありません。",
@@ -367,19 +368,23 @@ describe("addComment function", () => {
         })
         .reply(400, expectedResult);
 
-      const actualResult = recordModule.addComment(
+      let actualResult = recordModule.addComment(
         data.app,
         data.record,
         data.comment
       );
+      return actualResult.catch(err => {
+        expect(err).toBeInstanceOf(KintoneException);
+      });
     });
+
     it("[RecordModule-250] should return an error when missing comment", () => {
-      const data = {
+      let data = {
         app: 1,
         record: undefined,
         comment: undefined
       };
-      const expectedResult = {
+      let expectedResult = {
         code: "CB_VA01",
         id: "GCUZnHDYCC6bvKjOSgoB",
         message: "入力内容が正しくありません。",
@@ -396,11 +401,14 @@ describe("addComment function", () => {
         })
         .reply(400, expectedResult);
 
-      const actualResult = recordModule.addComment(
+      let actualResult = recordModule.addComment(
         data.app,
         data.record,
         data.comment
       );
+      return actualResult.catch(err => {
+        expect(err).toBeInstanceOf(KintoneException);
+      });
     });
   });
 });
