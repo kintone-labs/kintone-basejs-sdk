@@ -1,13 +1,6 @@
-/**
- * kintone api - nodejs client
- * Record module
- */
-
-const KintoneConnection = require('../../connection/Connection');
+const Connection = require('../../connection/Connection');
 const RecordModel = require('../../model/record/RecordModels');
 const common = require('../../utils/Common');
-
-const kintoneConnection = new WeakMap();
 
 /**
  * Record module
@@ -18,11 +11,10 @@ class Record {
      * @param {Connection} connection
      */
   constructor(connection) {
-    if (!(connection instanceof KintoneConnection)) {
-      throw new Error(`${connection}` +
-                `not an instance of kintoneConnection`);
+    if (!(connection instanceof Connection)) {
+      throw new Error(`${connection} not an instance of Connection`);
     }
-    kintoneConnection.set(this, connection);
+    this.connection = connection;
   }
 
   /**
@@ -32,7 +24,7 @@ class Record {
      * @return {Promise} Promise
      */
   sendRequest(method, url, model) {
-    return common.sendRequest(method, url, model, kintoneConnection.get(this));
+    return common.sendRequest(method, url, model, this.connection);
   }
   /**
      * Get record by specific ID
@@ -55,8 +47,7 @@ class Record {
      * @return {Promise} Promise
      */
   getRecords(app, query, fields, totalCount) {
-    const getRecordsRequest =
-            new RecordModel.GetRecordsRequest(app, query, fields, totalCount);
+    const getRecordsRequest = new RecordModel.GetRecordsRequest(app, query, fields, totalCount);
     return this.sendRequest('GET', 'records', getRecordsRequest);
   }
   /**
@@ -66,8 +57,7 @@ class Record {
      * @return {Promise} Promise
      */
   addRecord(app, record) {
-    const addRecordRequest =
-            new RecordModel.AddRecordRequest(app, record);
+    const addRecordRequest = new RecordModel.AddRecordRequest(app, record);
     return this.sendRequest('POST', 'record', addRecordRequest);
   }
 
@@ -78,8 +68,7 @@ class Record {
      * @return {Promise} Promise
      */
   addRecords(app, records) {
-    const addRecordsRequest =
-            new RecordModel.AddRecordsRequest(app);
+    const addRecordsRequest = new RecordModel.AddRecordsRequest(app);
     addRecordsRequest.setRecords(records);
     return this.sendRequest('POST', 'records', addRecordsRequest);
   }
@@ -93,8 +82,7 @@ class Record {
      * @return {Promise} Promise
      */
   updateRecordByID(app, id, record, revision) {
-    const updateRecordRequest =
-            new RecordModel.UpdateRecordRequest(app);
+    const updateRecordRequest = new RecordModel.UpdateRecordRequest(app);
 
     updateRecordRequest
       .setID(id)
@@ -114,8 +102,7 @@ class Record {
      * @return {Promise} Promise
      */
   updateRecordByUpdateKey(app, updateKey, record, revision) {
-    const updateRecordRequest =
-            new RecordModel.UpdateRecordRequest(app);
+    const updateRecordRequest = new RecordModel.UpdateRecordRequest(app);
 
     updateRecordRequest
       .setUpdateKey(updateKey.field, updateKey.value)
@@ -157,8 +144,7 @@ class Record {
      * @return {Promise} Promise
      */
   updateRecords(app, records) {
-    const updateRecordsRequest =
-            new RecordModel.UpdateRecordsRequest(app, records);
+    const updateRecordsRequest = new RecordModel.UpdateRecordsRequest(app, records);
 
     return this.sendRequest('PUT', 'records', updateRecordsRequest);
   }
@@ -170,8 +156,7 @@ class Record {
      * @return {Promise} Promise
      */
   deleteRecords(app, ids) {
-    const deleteRecordsRequest =
-            new RecordModel.DeleteRecordsRequest(app);
+    const deleteRecordsRequest = new RecordModel.DeleteRecordsRequest(app);
     deleteRecordsRequest.setIDs(ids);
     return this.sendRequest('DELETE', 'records', deleteRecordsRequest);
   }
@@ -183,8 +168,7 @@ class Record {
      * @return {this}
      */
   deleteRecordsWithRevision(app, idsWithRevision) {
-    const deleteRecordsRequest =
-            new RecordModel.DeleteRecordsRequest(app);
+    const deleteRecordsRequest = new RecordModel.DeleteRecordsRequest(app);
     deleteRecordsRequest.setIDsWithRevision(idsWithRevision);
 
     return this.sendRequest('DELETE', 'records', deleteRecordsRequest);
@@ -199,9 +183,7 @@ class Record {
      * @return {Promise}
      */
   updateRecordAssignees(app, id, assignees, revision) {
-    const updateRecordRequest =
-            new RecordModel.UpdateRecordAssigneesRequest(
-              app, id, assignees, revision);
+    const updateRecordRequest = new RecordModel.UpdateRecordAssigneesRequest(app, id, assignees, revision);
 
     return this.sendRequest('PUT', 'RECORD_ASSIGNEES', updateRecordRequest);
   }
@@ -216,9 +198,7 @@ class Record {
      * @return {Promise}
      */
   updateRecordStatus(app, id, action, assignee, revision) {
-    const updateRecordRequest =
-            new RecordModel.UpdateRecordStatusRequest(
-              app, id, action, assignee, revision);
+    const updateRecordRequest = new RecordModel.UpdateRecordStatusRequest(app, id, action, assignee, revision);
 
     return this.sendRequest('PUT', 'RECORD_STATUS', updateRecordRequest);
   }
@@ -230,8 +210,7 @@ class Record {
      * @return {Promise}
      */
   updateRecordsStatus(app, records) {
-    const updateRecordsRequest = new RecordModel.UpdateRecordsRequest(
-      app, records);
+    const updateRecordsRequest = new RecordModel.UpdateRecordsRequest(app, records);
 
     return this.sendRequest('PUT', 'RECORDS_STATUS', updateRecordsRequest);
   }
@@ -245,9 +224,7 @@ class Record {
      */
   createRecordStatusItem(recordIDInput, actionNameInput,
     assigneeIDInput, revisionIDInput) {
-    return new RecordModel.RecordsUpdateStatusItem(
-      recordIDInput, actionNameInput,
-      assigneeIDInput, revisionIDInput);
+    return new RecordModel.RecordsUpdateStatusItem(recordIDInput, actionNameInput, assigneeIDInput, revisionIDInput);
   }
   /**
      * Get comments of the specific record
@@ -259,8 +236,7 @@ class Record {
      * @return {Promise}
      */
   getComments(app, record, order, offset, limit) {
-    const getCommentsRequest = new RecordModel.GetCommentsRequest(
-      app, record, order, offset, limit);
+    const getCommentsRequest = new RecordModel.GetCommentsRequest(app, record, order, offset, limit);
     return this.sendRequest('GET', 'RECORD_COMMENTS', getCommentsRequest);
   }
 
@@ -272,8 +248,7 @@ class Record {
      * @return {Promise}
      */
   addComment(app, record, comment) {
-    const addCommentRequest = new RecordModel.AddCommentRequest(
-      app, record, comment);
+    const addCommentRequest = new RecordModel.AddCommentRequest(app, record, comment);
     return this.sendRequest('POST', 'RECORD_COMMENT', addCommentRequest);
   }
 
@@ -285,8 +260,7 @@ class Record {
      * @return {Promise}
      */
   deleteComment(app, record, comment) {
-    const deleteCommentRequest = new RecordModel.DeleteCommentRequest(
-      app, record, comment);
+    const deleteCommentRequest = new RecordModel.DeleteCommentRequest(app, record, comment);
     return this.sendRequest('DELETE', 'RECORD_COMMENT', deleteCommentRequest);
   }
 }
