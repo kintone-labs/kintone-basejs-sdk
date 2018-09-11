@@ -105,9 +105,7 @@ class Connection {
      * @return {this}
      */
   addRequestOption(key, value) {
-    const currentOption = this.options;
-    currentOption[key] = value;
-    this.options = currentOption;
+    this.options[key] = value;
     return this;
   }
   /**
