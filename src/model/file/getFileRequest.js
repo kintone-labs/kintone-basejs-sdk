@@ -1,19 +1,12 @@
 /**
- * kintone api - nodejs client
- */
-
-const fileKey = new WeakMap();
-
-/**
  * GetFileRequest model
- * TODO: Unit testing
  */
 class GetFileRequest {
   /**
-     * @param {String} fileKeyInput
+     * @param {String} fileKey
      */
-  constructor(fileKeyInput) {
-    fileKey.set(this, fileKeyInput);
+  constructor(fileKey) {
+    this.fileKey = fileKey;
   }
   /**
      * Get JSON struct of this model
@@ -21,7 +14,7 @@ class GetFileRequest {
      */
   toJSON() {
     return {
-      fileKey: fileKey.get(this),
+      fileKey: this.fileKey
     };
   }
   /**
