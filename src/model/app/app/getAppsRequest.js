@@ -4,7 +4,7 @@
 class GetAppsRequest {
   /**
      * @param {String} offset
-     * @param {String} limitInput
+     * @param {String} limit
      */
   constructor(offset, limit) {
     this.offset = offset;

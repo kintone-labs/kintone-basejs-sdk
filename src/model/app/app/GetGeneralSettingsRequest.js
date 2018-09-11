@@ -1,13 +1,5 @@
 /**
- * kintone api - nodejs client
- */
-
-const kintoneApp = new WeakMap();
-const kintoneLang = new WeakMap();
-
-/**
  * GetGeneralSettingsRequest model
- * TODO: Unit testing
  */
 class GetGeneralSettingsRequest {
   /**
@@ -15,24 +7,24 @@ class GetGeneralSettingsRequest {
      * @param {String} lang
      */
   constructor(app, lang) {
-    kintoneApp.set(this, app);
-    kintoneLang.set(this, lang);
+    this.app = app;
+    this.lang = lang;
   }
   /**
-         * Get JSON struct of this model
-         * @return {JSON}
-         */
+   * Get JSON struct of this model
+   * @return {JSON}
+   */
   toJSON() {
     const data = {
-      app: kintoneApp.get(this),
-      lang: kintoneLang.get(this)
+      app: this.app,
+      lang: this.lang
     };
     return data;
   }
   /**
-         * Convert this model to JSON string
-         * @return {String}
-         */
+   * Convert this model to JSON string
+   * @return {String}
+   */
   toJSONString() {
     return JSON.stringify(this.toJSON());
   }
