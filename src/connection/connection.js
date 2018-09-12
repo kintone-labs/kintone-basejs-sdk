@@ -65,17 +65,15 @@ class Connection {
     requestOptions.method = String(methodName).toUpperCase();
     requestOptions.url = this.getUri(restAPIName);
     requestOptions.headers = headersRequet;
-    requestOptions.withCredentials = true;
     // set data to param if using GET method
     if (requestOptions.method === 'GET') {
       requestOptions.params = body;
     } else {
       requestOptions.data = body;
     }
-    console.log(requestOptions);
     // Execute request
-    return axios(requestOptions).then(rsp => {
-      return rsp.data;
+    return axios(requestOptions).then(response => {
+      return response.data;
     });
   }
   /**

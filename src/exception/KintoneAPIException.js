@@ -20,23 +20,20 @@ class KintoneAPIException {
     let errorResponse;
     errorRaw.set(this, errors);
     if (!errors.hasOwnProperty('response') || !errors.response) {
-      errorResponse =
-                new KintoneErrorResponseModel(0, null, errors.message, errors);
-    } else if (!errors.response) {
-      errorResponse =
-                new KintoneErrorResponseModel('', '', errors, {});
+      errorResponse = new KintoneErrorResponseModel(0, null, errors.message, errors);
     } else {
       errorResponse = this.getErrorResponse(errors.response.data);
+
+      if (Buffer.isBuffer(errors.response.data)) {
+        const stringError = errors.response.data.toString();
+        errorResponse = this.getErrorResponse(JSON.parse(stringError));
+      }
     }
     if (!(errorResponse instanceof KintoneErrorResponseModel)) {
-      errorResponse =
-                new KintoneErrorResponseModel(
-                  0, null, errors.response.statusMessage, errorResponse);
+      errorResponse = new KintoneErrorResponseModel(0, null, errors.response.statusMessage, errorResponse);
     }
-    const statusCode = errors.response ?
-      (errors.response.statusCode || 0) : 0;
-    error.set(this,
-      new KintoneAPIExceptionModel(statusCode, errorResponse));
+    const statusCode = errors.response ? (errors.response.statusCode || 0) : 0;
+    error.set(this, new KintoneAPIExceptionModel(statusCode, errorResponse));
   }
   /**
      * get origin errors
