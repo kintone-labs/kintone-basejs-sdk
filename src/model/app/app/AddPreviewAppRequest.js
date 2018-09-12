@@ -1,12 +1,4 @@
 /**
- * kintone api - nodejs client
- * AddPreviewAppRequest model
- */
-
-const kintoneAppName = new WeakMap();
-const kintoneSpace = new WeakMap();
-const kintoneThread = new WeakMap();
-/**
  * AddPreviewAppRequest model
  */
 class AddPreviewAppRequest {
@@ -16,23 +8,23 @@ class AddPreviewAppRequest {
      * @param {HashTable<String, FieldValue>} recordHashTableData
      */
   constructor(name, space, thread) {
-    kintoneAppName.set(this, name);
-    kintoneSpace.set(this, space);
-    kintoneThread.set(this, thread);
+    this.name = name;
+    this.space = space;
+    this.thread = thread;
   }
   /**
      * Get app name
      * @return {String}
      */
   getAppName() {
-    return kintoneAppName.get(this);
+    return this.name;
   }
   /**
      * Set app name
      * @return {this} AddPreviewAppRequest
      */
   setAppName(name) {
-    kintoneAppName.set(this, name);
+    this.name = name;
     return this;
   }
   /**
@@ -40,14 +32,14 @@ class AddPreviewAppRequest {
      * @return {String}
      */
   getSpace() {
-    return kintoneSpace.get(this);
+    return this.space;
   }
   /**
      * Set space of app
      * @return {this} AddPreviewAppRequest
      */
   setSpace(space) {
-    kintoneSpace.set(this, space);
+    this.space = space;
     return this;
   }
   /**
@@ -55,14 +47,14 @@ class AddPreviewAppRequest {
      * @return {String}
      */
   getThread() {
-    return kintoneThread.get(this);
+    return this.thread;
   }
   /**
      * Set Thread of app
      * @return {this} AddPreviewAppRequest
      */
   setThread(thread) {
-    kintoneThread.set(this, thread);
+    this.thread = thread;
     return this;
   }
   /**

@@ -1,22 +1,11 @@
-/**
- * kintone api - nodejs client
- */
-
-
 const axios = require('axios');
 const tunnel = require('tunnel');
 
-const KintoneAuth = require('../authentication/Auth');
-const KintoneHTTPHeader = require('../model/http/HTTPHeader');
+const Auth = require('../authentication/Auth');
+const HTTPHeader = require('../model/http/HTTPHeader');
 
 const CONNECTION_CONST = require('./constant');
 const DEFAULT_PORT = '443';
-
-const kintoneDomain = new WeakMap();
-const kintoneAuth = new WeakMap();
-const kintoneGuestSpaceID = new WeakMap();
-const headers = new WeakMap();
-const options = new WeakMap();
 
 /**
  * Connection module
@@ -24,15 +13,16 @@ const options = new WeakMap();
 class Connection {
   /**
      * @param {String} domain
-     * @param {KintoneAuth} auth
-     * @param {Integer} kintoneGuestSpaceID
+     * @param {Auth} auth
+     * @param {Integer} guestSpaceID
      */
   constructor(domain, auth, guestSpaceID) {
-    kintoneDomain.set(this, domain);
-    kintoneGuestSpaceID.set(this, parseInt(guestSpaceID, 10));
+    this.domain = domain;
+    this.guestSpaceID = parseInt(guestSpaceID, 10);
 
-    headers.set(this, []);
-    options.set(this, {});
+    this.headers = [];
+    this.options = {};
+
     this.setAuth(auth);
   }
 
@@ -47,13 +37,12 @@ class Connection {
     // Set Header
     const headersRequet = {};
     // set header with credentials
-    kintoneAuth.get(this).createHeaderCredentials().forEach((httpHeaderObj) => {
+    this.auth.createHeaderCredentials().forEach((httpHeaderObj) => {
       headersRequet[httpHeaderObj.getKey()] = httpHeaderObj.getValue();
     });
-    headers.get(this).forEach((httpHeaderObj) => {
+    this.headers.forEach((httpHeaderObj) => {
       const headerKey = httpHeaderObj.getKey();
-      if (headersRequet.hasOwnProperty(headerKey) &&
-                headerKey === CONNECTION_CONST.BASE.USER_AGENT) {
+      if (headersRequet.hasOwnProperty(headerKey) && headerKey === CONNECTION_CONST.BASE.USER_AGENT) {
         headersRequet[headerKey] += ' ' + httpHeaderObj.getValue();
       } else {
         headersRequet[headerKey] = httpHeaderObj.getValue();
@@ -61,7 +50,7 @@ class Connection {
     });
 
     // Set request options
-    const requestOptions = options.get(this);
+    const requestOptions = this.options;
     requestOptions.method = String(methodName).toUpperCase();
     requestOptions.url = this.getUri(restAPIName);
     requestOptions.headers = headersRequet;
@@ -72,7 +61,7 @@ class Connection {
     } else {
       requestOptions.data = body;
     }
-    console.log(requestOptions);
+
     // Execute request
     return axios(requestOptions).then(rsp => {
       return rsp.data;
@@ -84,7 +73,7 @@ class Connection {
      * @return {String}
      */
   getUri(url) {
-    let urlFQDN = CONNECTION_CONST.BASE.SCHEMA + '://' + kintoneDomain.get(this);
+    let urlFQDN = CONNECTION_CONST.BASE.SCHEMA + '://' + this.domain;
     const apiNameUpperCase = String(url).toUpperCase();
     urlFQDN += ':' + DEFAULT_PORT;
     if (CONNECTION_CONST.PATH.hasOwnProperty(apiNameUpperCase)) {
@@ -101,18 +90,11 @@ class Connection {
      */
   getPathURI(apiName) {
     let pathURI = '';
-    if (kintoneGuestSpaceID.get(this) > 0) {
-      pathURI +=
-                CONNECTION_CONST.BASE.BASE_GUEST_URL
-                  .replace(CONNECTION_CONST.BASE.PREFIX_API_NAME,
-                    CONNECTION_CONST.PATH[apiName])
-                  .replace(CONNECTION_CONST.BASE.PREFIX_GUESTSPACEID,
-                    kintoneGuestSpaceID.get(this));
+    if (this.guestSpaceID > 0) {
+      pathURI += CONNECTION_CONST.BASE.BASE_GUEST_URL.replace(CONNECTION_CONST.BASE.PREFIX_API_NAME, CONNECTION_CONST.PATH[apiName])
+        .replace(CONNECTION_CONST.BASE.PREFIX_GUESTSPACEID, this.guestSpaceID);
     } else {
-      pathURI +=
-                CONNECTION_CONST.BASE.BASE_URL
-                  .replace(CONNECTION_CONST.BASE.PREFIX_API_NAME,
-                    CONNECTION_CONST.PATH[apiName]);
+      pathURI += CONNECTION_CONST.BASE.BASE_URL.replace(CONNECTION_CONST.BASE.PREFIX_API_NAME, CONNECTION_CONST.PATH[apiName]);
     }
     return pathURI;
   }
@@ -123,9 +105,7 @@ class Connection {
      * @return {this}
      */
   addRequestOption(key, value) {
-    const currentOption = options.get(this);
-    currentOption[key] = value;
-    options.set(this, currentOption);
+    this.options[key] = value;
     return this;
   }
   /**
@@ -135,8 +115,7 @@ class Connection {
      * @return {this}
      */
   setHeader(key, value) {
-    headers.get(this,
-      headers.get(this).push(new KintoneHTTPHeader(key, value)));
+    this.headers.push(new HTTPHeader(key, value));
     return this;
   }
   /**
@@ -145,10 +124,10 @@ class Connection {
      * @return {this}
      */
   setAuth(auth) {
-    if (!(auth instanceof KintoneAuth)) {
-      throw new Error(`${auth} not an instance of KintoneAuth`);
+    if (!(auth instanceof Auth)) {
+      throw new Error(`${auth} not an instance of Auth`);
     }
-    kintoneAuth.set(this, auth);
+    this.auth = auth;
     return this;
   }
   /**
@@ -159,10 +138,7 @@ class Connection {
      */
   setProxy(proxyHost, proxyPort) {
     const httpsAgent = tunnel.httpsOverHttp({
-      proxy: {
-        host: proxyHost,
-        port: proxyPort
-      },
+      proxy: {host: proxyHost, port: proxyPort}
     });
     this.addRequestOption(CONNECTION_CONST.BASE.PROXY, false);
     this.addRequestOption(CONNECTION_CONST.BASE.HTTPS_AGENT, httpsAgent);

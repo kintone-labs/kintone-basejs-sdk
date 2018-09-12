@@ -1,10 +1,4 @@
-/**
- * kintone api - nodejs client
- */
-
 const UpdateRecordStatusItem = require('./UpdateRecordStatusItem');
-
-const appID = new WeakMap();
 
 /**
  * UpdateRecordStatusRequest model
@@ -12,16 +6,15 @@ const appID = new WeakMap();
 class UpdateRecordStatusRequest extends UpdateRecordStatusItem {
   /**
      * constructor
-     * @param {String} appIDInput
-     * @param {String} recordIDInput
-     * @param {String} actionNameInput
-     * @param {String} assigneeIDInput
-     * @param {String} revisionIDInput
+     * @param {String} appID
+     * @param {String} recordID
+     * @param {String} actionName
+     * @param {String} assigneeID
+     * @param {String} revisionID
      */
-  constructor(appIDInput, recordIDInput, actionNameInput,
-    assigneeIDInput, revisionIDInput) {
-    super(recordIDInput, actionNameInput, assigneeIDInput, revisionIDInput);
-    appID.set(this, appIDInput);
+  constructor(appID, recordID, actionName, assigneeID, revisionID) {
+    super(recordID, actionName, assigneeID, revisionID);
+    this.appID = appID;
   }
   /**
      * Get JSON struct of this model
@@ -29,7 +22,7 @@ class UpdateRecordStatusRequest extends UpdateRecordStatusItem {
      */
   toJSON() {
     const data = super.toJSON();
-    data.app = appID.get(this);
+    data.app = this.appID;
     return data;
   }
   /**

@@ -1,19 +1,27 @@
 /**
- * kintone api - nodejs client
- */
-
-const appID = new WeakMap();
-
-/**
  * GetAppRequest model
- * TODO: Unit testing
  */
 class GetAppRequest {
   /**
-     * @param {String} appIDInput
+     * @param {String} appID
      */
-  constructor(appIDInput) {
-    appID.set(this, appIDInput);
+  constructor(appID) {
+    this.appID = appID;
+  }
+  /**
+   * Get apps
+   * @return {Array}
+   */
+  getAppID() {
+    return this.appID;
+  }
+  /**
+     * @param {Array} apps
+     * @return {this}
+     */
+  setAppID(appID) {
+    this.appID = appID;
+    return this;
   }
   /**
      * Get JSON struct of this model
@@ -21,7 +29,7 @@ class GetAppRequest {
      */
   toJSON() {
     return {
-      id: appID.get(this),
+      id: this.appID,
     };
   }
   /**

@@ -1,22 +1,15 @@
 /**
- * kintone api - nodejs client
- */
-
-const text = new WeakMap();
-const mentions = new WeakMap();
-
-/**
  * CommentContent model
  */
 class CommentContent {
   /**
      * constructor
-     * @param {String} textInput
-     * @param {Array<mentions>} mentionsInput
+     * @param {String} text
+     * @param {Array<mentions>} mentions
      */
-  constructor(textInput, mentionsInput) {
-    text.set(this, textInput);
-    mentions.set(this, mentionsInput);
+  constructor(text, mentions) {
+    this.text = text;
+    this.mentions = mentions;
   }
   /**
      * Get JSON struct of this model
@@ -24,10 +17,10 @@ class CommentContent {
      */
   toJSON() {
     const data = {
-      text: text.get(this),
+      text: this.text,
       mentions: [],
     };
-    const mentionsArray = mentions.get(this);
+    const mentionsArray = this.mentions;
     if (mentionsArray.length > 0 && mentionsArray[0].toJSON) {
       mentionsArray.forEach((mention) => {
         data.mentions.push(mention.toJSON());
