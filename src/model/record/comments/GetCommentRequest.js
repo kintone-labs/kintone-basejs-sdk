@@ -1,32 +1,21 @@
 /**
- * kintone api - nodejs client
- */
-
-const appID = new WeakMap();
-const recordID = new WeakMap();
-const order = new WeakMap();
-const offset = new WeakMap();
-const limit = new WeakMap();
-
-/**
  * GetCommentRequest model
  */
 class GetCommentRequest {
   /**
      * constructor
-     * @param {Initeger} appIDInput
-     * @param {Initeger} recordIDInput
-     * @param {String} orderInput
-     * @param {Integer} offsetInput
-     * @param {Integer} limitInput
+     * @param {Initeger} appID
+     * @param {Initeger} recordID
+     * @param {String} order
+     * @param {Integer} offset
+     * @param {Integer} limit
      */
-  constructor(
-    appIDInput, recordIDInput, orderInput, offsetInput, limitInput) {
-    appID.set(this, appIDInput);
-    recordID.set(this, recordIDInput);
-    order.set(this, orderInput);
-    offset.set(this, offsetInput);
-    limit.set(this, limitInput);
+  constructor(appID, recordID, order, offset, limit) {
+    this.appID = appID;
+    this.recordID = recordID;
+    this.order = order;
+    this.offset = offset;
+    this.limit = limit;
   }
   /**
      * Get JSON struct of this model
@@ -34,11 +23,11 @@ class GetCommentRequest {
      */
   toJSON() {
     return {
-      app: appID.get(this),
-      record: recordID.get(this),
-      order: order.get(this),
-      offset: offset.get(this),
-      limit: limit.get(this),
+      app: this.appID,
+      record: this.recordID,
+      order: this.order,
+      offset: this.offset,
+      limit: this.limit
     };
   }
   /**

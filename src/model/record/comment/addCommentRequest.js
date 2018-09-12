@@ -1,25 +1,17 @@
 /**
- * kintone api - nodejs client
- */
-
-const appID = new WeakMap();
-const recordID = new WeakMap();
-const commentContent = new WeakMap();
-
-/**
  * AddCommentRequest model
  */
 class AddCommentRequest {
   /**
      * constructor
-     * @param {Initeger} appIDInput
-     * @param {Initeger} recordIDInput
-     * @param {String} commentContentInput
+     * @param {Initeger} appID
+     * @param {Initeger} recordID
+     * @param {String} commentContent
      */
-  constructor(appIDInput, recordIDInput, commentContentInput) {
-    appID.set(this, appIDInput);
-    recordID.set(this, recordIDInput);
-    commentContent.set(this, commentContentInput);
+  constructor(appID, recordID, commentContent) {
+    this.appID = appID;
+    this.recordID = recordID;
+    this.commentContent = commentContent;
   }
   /**
      * Get JSON struct of this model
@@ -27,9 +19,9 @@ class AddCommentRequest {
      */
   toJSON() {
     return {
-      app: appID.get(this),
-      record: recordID.get(this),
-      comment: commentContent.get(this),
+      app: this.appID,
+      record: this.recordID,
+      comment: this.commentContent
     };
   }
   /**

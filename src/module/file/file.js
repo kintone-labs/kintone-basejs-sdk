@@ -1,13 +1,11 @@
-/**
- * kintone api - nodejs client
- * File module
- */
-
-const KintoneExeption = require('../../exception/KintoneAPIException');
-const KintoneConnection = require('../../connection/Connection');
+const Connection = require('../../connection/Connection');
 const FileModel = require('../../model/file/FileModels');
+const common = require('../../utils/Common');
 
-const kintoneConnection = new WeakMap();
+const CONTENT_TYPE_KEY = 'Content-Type';
+const CONTENT_TYPE_VALUE = 'multipart/form-data';
+const RESPONSE_TYPE_KEY = 'responseType';
+const RESPONSE_TYPE_VALUE = 'arraybuffer';
 
 /**
  * File module
@@ -18,11 +16,19 @@ class File {
      * @param {Connection} connection
      */
   constructor(connection) {
-    if (!(connection instanceof KintoneConnection)) {
-      throw new Error(`${connection}` +
-                `not an instance of kintoneConnection`);
+    if (!(connection instanceof Connection)) {
+      throw new Error(`${connection} not an instance of Connection`);
     }
-    kintoneConnection.set(this, connection);
+    this.connection = connection;
+  }
+  /**
+     * @param {String} method
+     * @param {String} url
+     * @param {RecordModle} model
+     * @return {Promise} Promise
+     */
+  sendRequest(method, url, model) {
+    return common.sendRequest(method, url, model, this.connection);
   }
   /**
      * Download file from kintone
@@ -32,15 +38,8 @@ class File {
   download(fileKey) {
     const dataRequest =
             new FileModel.GetFileRequest(fileKey);
-    return kintoneConnection.get(this)
-      .addRequestOption('json', true)
-      .addRequestOption('encoding', null)
-      .request('GET', 'FILE', dataRequest.toJSON())
-      .then((result) => {
-        return result;
-      }).catch((err) => {
-        throw new KintoneExeption(err);
-      });
+    this.connection.addRequestOption(RESPONSE_TYPE_KEY, RESPONSE_TYPE_VALUE);
+    return this.sendRequest('GET', 'FILE', dataRequest.toJSON());
   }
   /**
      * upload file to kintone
@@ -48,14 +47,8 @@ class File {
      * @return {Promise}
      */
   upload(formData) {
-    return kintoneConnection.get(this)
-      .addRequestOption('formData', formData)
-      .request('POST', 'FILE', null)
-      .then((result) => {
-        return result;
-      }).catch((err) => {
-        throw new KintoneExeption(err);
-      });
+    this.connection.setHeader(CONTENT_TYPE_KEY, CONTENT_TYPE_VALUE);
+    return this.sendRequest('POST', 'FILE', formData);
   }
 }
 module.exports = File;

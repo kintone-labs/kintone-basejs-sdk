@@ -1,13 +1,6 @@
-/**
- * kintone api - nodejs client
- */
-
 const KintoneErrorResponseModel = require('../model/exception/ErrorResponse');
-const KintoneAPIExceptionModel =
-    require('../model/exception/KintoneAPIException');
+const KintoneAPIExceptionModel = require('../model/exception/KintoneAPIException');
 
-const error = new WeakMap();
-const errorRaw = new WeakMap();
 /**
  * kintone Exception Module
  */
@@ -18,32 +11,29 @@ class KintoneAPIException {
      */
   constructor(errors) {
     let errorResponse;
-    errorRaw.set(this, errors);
+    this.errorRaw = errors;
     if (!errors.hasOwnProperty('response') || !errors.response) {
-      errorResponse =
-                new KintoneErrorResponseModel(0, null, errors.message, errors);
-    } else if (!errors.response) {
-      errorResponse =
-                new KintoneErrorResponseModel('', '', errors, {});
+      errorResponse = new KintoneErrorResponseModel(0, null, errors.message, errors);
     } else {
-      errorResponse = this.getErrorResponse(errors.response.body);
+      errorResponse = this.getErrorResponse(errors.response.data);
+
+      if (Buffer.isBuffer(errors.response.data)) {
+        const stringError = errors.response.data.toString();
+        errorResponse = this.getErrorResponse(JSON.parse(stringError));
+      }
     }
     if (!(errorResponse instanceof KintoneErrorResponseModel)) {
-      errorResponse =
-                new KintoneErrorResponseModel(
-                  0, null, errors.response.statusMessage, errorResponse);
+      errorResponse = new KintoneErrorResponseModel(0, null, errors.response.statusMessage, errorResponse);
     }
-    const statusCode = errors.response ?
-      (errors.response.statusCode || 0) : 0;
-    error.set(this,
-      new KintoneAPIExceptionModel(statusCode, errorResponse));
+    const statusCode = errors.response ? (errors.response.statusCode || 0) : 0;
+    this.error = new KintoneAPIExceptionModel(statusCode, errorResponse);
   }
   /**
      * get origin errors
      * @return {Error}
      */
   getAll() {
-    return errorRaw.get(this);
+    return this.errorRaw;
   }
   /**
      * Show origin error
@@ -56,22 +46,21 @@ class KintoneAPIException {
      * @return {Error}
      */
   get() {
-    return error.get(this).getErrorResponse().toJSON();
+    return this.error.getErrorResponse().toJSON();
   }
   /**
      * Show Error
      */
   throw() {
-    throw new Error(`
-            HttpErrorCode: ${error.get(this).getHttpErrorCode()}
-            Details:'
-                + ID: ${error.get(this).getErrorResponse().getID() || '(none)'}
-                + Code:' ${error.get(this)
-    .getErrorResponse().getCode() || '(none)'}
-                + Message: ${error.get(this).getErrorResponse()
-    .getMessage() || '(none)'}
-                + Errors: ` + (JSON.stringify(
-      error.get(this).getErrorResponse().getErrors() || '(none)')));
+    const errorString =
+`HttpErrorCode: ${this.error.getHttpErrorCode()}
+Details:
+  + ID: ${this.error.getErrorResponse().getID() || '(none)'}
+  + Code: ${this.error.getErrorResponse().getCode() || '(none)'}
+  + Message: ${this.error.getErrorResponse().getMessage() || '(none)'}
+  + Errors:` + (JSON.stringify(this.error.getErrorResponse().getErrors() || '(none)'));
+
+    throw new Error(errorString);
   }
   /**
      * getErrorResponse
@@ -86,7 +75,9 @@ class KintoneAPIException {
       // Validate isJSON
       try {
         response = JSON.parse(bodyResponse);
-      } catch (error) {}
+      } catch (error) {
+        // console.log(error)
+      }
     }
     // Detect the error response from bulkrequest.
     // if (response !== null && response.hasOwnProperty('results')) {

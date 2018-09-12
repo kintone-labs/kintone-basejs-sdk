@@ -1,14 +1,5 @@
 /**
- * kintone api - nodejs client
- */
-
-const kintoneApp = new WeakMap();
-const kintoneFields = new WeakMap();
-const kintoneRevision = new WeakMap();
-
-/**
  * DeleteFormFieldsRequest model
- * TODO: Unit testing
  */
 class DeleteFormFieldsRequest {
   /**
@@ -17,9 +8,9 @@ class DeleteFormFieldsRequest {
      * @param {Integer} revision
      */
   constructor(app, fields, revision) {
-    kintoneApp.set(this, app);
-    kintoneFields.set(this, fields);
-    kintoneRevision.set(this, revision);
+    this.app = app;
+    this.fields = fields;
+    this.revision = revision;
   }
   /**
      * Get JSON struct of this model
@@ -27,9 +18,9 @@ class DeleteFormFieldsRequest {
      */
   toJSON() {
     const data = {
-      app: kintoneApp.get(this),
-      fields: kintoneFields.get(this),
-      revision: kintoneRevision.get(this)
+      app: this.app,
+      fields: this.fields,
+      revision: this.revision
 
     };
     return data;

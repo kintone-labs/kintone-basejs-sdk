@@ -1,13 +1,5 @@
 /**
- * kintone api - nodejs client
- */
-
-const kintoneApp = new WeakMap();
-const kintoneLang = new WeakMap();
-
-/**
  * GetViewsRequest model
- * TODO: Unit testing
  */
 class GetViewsRequest {
   /**
@@ -15,8 +7,8 @@ class GetViewsRequest {
      * @param {String} lang
      */
   constructor(app, lang) {
-    kintoneApp.set(this, app);
-    kintoneLang.set(this, lang);
+    this.app = app;
+    this.lang = lang;
   }
   /**
      * Get JSON struct of this model
@@ -24,8 +16,8 @@ class GetViewsRequest {
      */
   toJSON() {
     const data = {
-      app: kintoneApp.get(this),
-      lang: kintoneLang.get(this)
+      app: this.app,
+      lang: this.lang
     };
     return data;
   }

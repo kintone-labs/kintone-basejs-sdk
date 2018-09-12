@@ -1,22 +1,15 @@
 /**
- * kintone api - nodejs client
- */
-
-const appID = new WeakMap();
-const recordsItem = new WeakMap();
-
-/**
  * UpdateRecordsRequest model
  */
 class UpdateRecordsRequest {
   /**
      * constructor
-     * @param {String} appIDInput
-     * @param {Array<recordsItem>} recordsItemInput
+     * @param {String} appID
+     * @param {Array<recordsItem>} recordsItem
      */
-  constructor(appIDInput, recordsItemInput) {
-    appID.set(this, appIDInput);
-    recordsItem.set(this, recordsItemInput);
+  constructor(appID, recordsItem) {
+    this.appID = appID;
+    this.recordsItem = recordsItem;
   }
   /**
      * Get JSON struct of this model
@@ -24,8 +17,8 @@ class UpdateRecordsRequest {
      */
   toJSON() {
     return {
-      app: appID.get(this),
-      records: recordsItem.get(this) || [],
+      app: this.appID,
+      records: this.recordsItem || []
     };
   }
   /**
