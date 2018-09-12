@@ -7,20 +7,9 @@ const nock = require('nock');
 const common = require('../../../test/utils/common');
 const {KintoneAPIException, Connection, Auth, Record} = require(common.MAIN_PATH);
 
-<<<<<<< HEAD
 const auth = new Auth().setPasswordAuth(common.USERNAME, common.PASSWORD);
-=======
-const common = require('../../common');
-
-const {Record, Auth, Connection, KintoneException} = require('../../../src/main.js');
-
-const auth = new Auth();
-auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
-
->>>>>>> v0.1.6_unit_test
 const conn = new Connection(common.DOMAIN, auth);
 const recordModule = new Record(conn);
-
 
 describe('deleteRecords function', () => {
   describe('common case', () => {
