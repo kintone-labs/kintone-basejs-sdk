@@ -7,6 +7,7 @@ module.exports = {
   PROXY_HOST: 'your_proxy',
   PROXY_PORT: '3128',
   GUEST_SPACEID: 'your_guest_space_ID',
+  MAIN_PATH: '../../../src/main',
   getPasswordAuth: (userName, password) => {
     return Buffer.from(userName + ':' + password).toString('base64');
   },

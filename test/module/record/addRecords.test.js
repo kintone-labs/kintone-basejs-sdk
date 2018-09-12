@@ -6,11 +6,7 @@
 const nock = require('nock');
 
 const common = require('../../common');
-
-const KintoneExeption = require('../../../src/exception/KintoneAPIException');
-const Connection = require('../../../src/connection/Connection');
-const Auth = require('../../../src/authentication/Auth');
-const Record = require('../../../src/module/record/Record');
+const { KintoneException, Connection, Auth, Record } = require(common.MAIN_PATH);
 
 const auth = new Auth();
 auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
@@ -89,7 +85,7 @@ describe('addRecords function', () => {
 
         const addRecordsResult = recordModule.addRecords(data.unexistedAppID, data.recordsData);
         return addRecordsResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneExeption);
+          expect(err).toBeInstanceOf(KintoneException);
         });
       });
 
@@ -113,7 +109,7 @@ describe('addRecords function', () => {
 
         const addRecordsResult = recordModule.addRecords(data.negativeAppID, data.recordsData);
         return addRecordsResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneExeption);
+          expect(err).toBeInstanceOf(KintoneException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -138,7 +134,7 @@ describe('addRecords function', () => {
 
         const addRecordsResult = recordModule.addRecords(data.appID, data.recordsData);
         return addRecordsResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneExeption);
+          expect(err).toBeInstanceOf(KintoneException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
