@@ -5,11 +5,9 @@
  */
 const nock = require('nock');
 
-const common = require('../../common');
+const common = require('../../../test/utils/common');
 
-const Connection = require('../../../src/connection/Connection');
-const Auth = require('../../../src/authentication/Auth');
-const Record = require('../../../src/module/record/Record');
+const {Connection, Auth, Record, KintoneException} = require(common.MAIN_PATH);
 
 const auth = new Auth();
 auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
@@ -40,7 +38,7 @@ describe('updateRecordStatus function', () => {
 
   describe('success case', () => {
     describe('Valid data - Status and Assignee', () => {
-      it('should changed successfully the status of the record', () => {
+      it('[Record-177] should changed successfully the status of the record', () => {
         const data = {
           app: 1,
           id: 1,
@@ -75,7 +73,7 @@ describe('updateRecordStatus function', () => {
     });
 
     describe('Valid data - Status only - Verify the status is changed correctly', () => {
-      it('should changed successfully the status of the record', () => {
+      it('[Record-176] should changed successfully the status of the record', () => {
         const data = {
           app: 2,
           id: 2,
@@ -109,7 +107,7 @@ describe('updateRecordStatus function', () => {
     });
 
     describe('Verify the localized status is changed correctly (EN/JP/ZH) when the localization feature is enabled', () => {
-      it('should changed successfully the status of the record', () => {
+      it('[Record-179] should changed successfully the status of the record', () => {
         const data = {
           app: 1,
           id: 1,
@@ -143,7 +141,7 @@ describe('updateRecordStatus function', () => {
     });
 
     describe('Ignore the revision and the status is updated correctly', () => {
-      it('should changed successfully the status of the record', () => {
+      it('[Record-187] should changed successfully the status of the record', () => {
         const data = {
           app: 1,
           id: 1,
@@ -177,7 +175,7 @@ describe('updateRecordStatus function', () => {
     });
 
     describe('The record is added successfully for app in Guest Space', () => {
-      it('should changed successfully the status of the record', () => {
+      it('[Record-197] should changed successfully the status of the record', () => {
         const data = {
           app: 1,
           id: 1,
@@ -189,7 +187,7 @@ describe('updateRecordStatus function', () => {
         const expectResult = {'revision': '3'};
 
         nock('https://' + common.DOMAIN)
-          .put('/k/v1/record/status.json', (rqBody) => {
+          .put('/k/guest/1/v1/record/status.json', (rqBody) => {
             expect(rqBody).toMatchObject(data);
             return true;
           })
@@ -213,7 +211,7 @@ describe('updateRecordStatus function', () => {
     });
 
     describe('Verify "User chooses one assignee from the list to take action" is not set, user can change status without providing assignee', () => {
-      it('should changed successfully the status of the record', () => {
+      it('[Record-180] should changed successfully the status of the record', () => {
         const data = {
           app: 1,
           id: 1,
@@ -247,7 +245,7 @@ describe('updateRecordStatus function', () => {
     });
 
     describe('The status is changed correctly when the current user is the Assignee of the record', () => {
-      it('should changed successfully the status of the record', () => {
+      it('[Record-189] should changed successfully the status of the record', () => {
         const data = {
           app: 1,
           id: 1,
@@ -282,7 +280,7 @@ describe('updateRecordStatus function', () => {
     });
 
     describe('The function still work correctly when executing with interger as string type', () => {
-      it('should changed successfully the status of the record', () => {
+      it('[Record-198] should changed successfully the status of the record', () => {
         const data = {
           app: '1',
           id: '1',
@@ -319,7 +317,7 @@ describe('updateRecordStatus function', () => {
 
   describe('error case', () => {
     describe('Verify "User chooses one assignee from the list to take action" is set, error displayed when change status without assignee', () => {
-      it('should return the error in the result', () => {
+      it('[Record-181] should return the error in the result', () => {
         const data = {
           app: 1,
           id: 1,
@@ -351,13 +349,14 @@ describe('updateRecordStatus function', () => {
         const recordModule = new Record(conn);
         const updateRecordStatusResult = recordModule.updateRecordStatus(data.app, data.id, data.action, '', data.revision);
         return updateRecordStatusResult.catch((err) => {
+          expect(err).toBeInstanceOf(KintoneException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
     });
 
     describe('Error is displayed when changing status with assignee for Complete/Not Start status', () => {
-      it('should return the error in the result', () => {
+      it('[Record-182] should return the error in the result', () => {
         const data = {
           app: 1,
           id: 1,
@@ -390,13 +389,14 @@ describe('updateRecordStatus function', () => {
         const recordModule = new Record(conn);
         const updateRecordStatusResult = recordModule.updateRecordStatus(data.app, data.id, data.action, data.assignee, data.revision);
         return updateRecordStatusResult.catch((err) => {
+          expect(err).toBeInstanceOf(KintoneException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
     });
 
     describe('Errror is displayed when the status is not correct', () => {
-      it('should return the error in the result', () => {
+      it('[Record-183] should return the error in the result', () => {
         const data = {
           app: 1,
           id: 1,
@@ -429,13 +429,14 @@ describe('updateRecordStatus function', () => {
         const recordModule = new Record(conn);
         const updateRecordStatusResult = recordModule.updateRecordStatus(data.app, data.id, data.action, data.assignee, data.revision);
         return updateRecordStatusResult.catch((err) => {
+          expect(err).toBeInstanceOf(KintoneException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
     });
 
     describe('Errror happens when adding invalid/unexisted assignee for 1 record', () => {
-      it('should return the error in the result', () => {
+      it('[Record-185] should return the error in the result', () => {
         const data = {
           app: 1,
           id: 1,
@@ -468,13 +469,14 @@ describe('updateRecordStatus function', () => {
         const recordModule = new Record(conn);
         const updateRecordStatusResult = recordModule.updateRecordStatus(data.app, data.id, data.action, data.assignee, data.revision);
         return updateRecordStatusResult.catch((err) => {
+          expect(err).toBeInstanceOf(KintoneException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
     });
 
     describe('Error is displayed when the revision is not correct', () => {
-      it('should return the error in the result', () => {
+      it('[Record-186] should return the error in the result', () => {
         const data = {
           app: 1,
           id: 1,
@@ -514,13 +516,14 @@ describe('updateRecordStatus function', () => {
         const recordModule = new Record(conn);
         const updateRecordStatusResult = recordModule.updateRecordStatus(data.app, data.id, data.action, data.assignee, data.revision);
         return updateRecordStatusResult.catch((err) => {
+          expect(err).toBeInstanceOf(KintoneException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
     });
 
     describe('Error is displayed when changing status with the record that already has Assignee', () => {
-      it('should return the error in the result', () => {
+      it('[Record-188] should return the error in the result', () => {
         const data = {
           app: 1,
           id: 1,
@@ -553,13 +556,14 @@ describe('updateRecordStatus function', () => {
         const recordModule = new Record(conn);
         const updateRecordStatusResult = recordModule.updateRecordStatus(data.app, data.id, data.action, data.assignee, data.revision);
         return updateRecordStatusResult.catch((err) => {
+          expect(err).toBeInstanceOf(KintoneException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
     });
 
     describe('The error will be displayed when using invalid app ID', () => {
-      it('should return the error in the result', () => {
+      it('[Record-193] should return the error in the result', () => {
         const data = {
           app: 100000,
           id: 1,
@@ -592,13 +596,14 @@ describe('updateRecordStatus function', () => {
         const recordModule = new Record(conn);
         const updateRecordStatusResult = recordModule.updateRecordStatus(data.app, data.id, data.action, data.assignee, data.revision);
         return updateRecordStatusResult.catch((err) => {
+          expect(err).toBeInstanceOf(KintoneException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
     });
 
     describe('The error will be displayed when using method without app ID', () => {
-      it('should return the error in the result', () => {
+      it('[Record-194] should return the error in the result', () => {
         const data = {
           id: 1,
           action: 'Submit',
@@ -637,13 +642,14 @@ describe('updateRecordStatus function', () => {
         const recordModule = new Record(conn);
         const updateRecordStatusResult = recordModule.updateRecordStatus('', data.id, data.action, data.assignee, data.revision);
         return updateRecordStatusResult.catch((err) => {
+          expect(err).toBeInstanceOf(KintoneException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
     });
 
     describe('The error will be displayed when using method without record ID', () => {
-      it('should return the error in the result', () => {
+      it('[Record-195] should return the error in the result', () => {
         const data = {
           app: 1,
           action: 'Submit',
@@ -682,13 +688,14 @@ describe('updateRecordStatus function', () => {
         const recordModule = new Record(conn);
         const updateRecordStatusResult = recordModule.updateRecordStatus(data.app, '', data.action, data.assignee, data.revision);
         return updateRecordStatusResult.catch((err) => {
+          expect(err).toBeInstanceOf(KintoneException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
     });
 
     describe('The error will be displayed when using method without assignee', () => {
-      it('should return the error in the result', () => {
+      it('[Record-196] should return the error in the result', () => {
         const data = {
           app: 1,
           action: 'Testing',
@@ -719,13 +726,14 @@ describe('updateRecordStatus function', () => {
         const recordModule = new Record(conn);
         const updateRecordStatusResult = recordModule.updateRecordStatus(data.app, '', data.action, data.assignee, data.revision);
         return updateRecordStatusResult.catch((err) => {
+          expect(err).toBeInstanceOf(KintoneException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
     });
 
     describe('The error will be displayed when the process management featured is disabled', () => {
-      it('should return the error in the result', () => {
+      it('[Record-199] should return the error in the result', () => {
         const data = {
           app: 1,
           id: 1,
@@ -758,13 +766,14 @@ describe('updateRecordStatus function', () => {
         const recordModule = new Record(conn);
         const updateRecordStatusResult = recordModule.updateRecordStatus(data.app, data.id, data.action, data.assignee, data.revision);
         return updateRecordStatusResult.catch((err) => {
+          expect(err).toBeInstanceOf(KintoneException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
     });
 
     describe('Change status not assignee', () => {
-      it('should return error when the login user is not assigned', () => {
+      it('[Record-178] should return error when the login user is not assigned', () => {
         const data = {
           app: 1,
           id: 1,
@@ -785,6 +794,7 @@ describe('updateRecordStatus function', () => {
         const recordModule = new Record(conn);
         const updateRecordStatusResult = recordModule.updateRecordStatus(data.app, data.id, data.action, data.assignee, data.revision);
         return updateRecordStatusResult.catch((err) => {
+          expect(err).toBeInstanceOf(KintoneException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });

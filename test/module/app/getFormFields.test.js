@@ -5,10 +5,9 @@
  */
 
 const nock = require('nock');
-const common = require('../../common');
-const Connection = require('../../../src/connection/Connection');
-const Auth = require('../../../src/authentication/Auth');
-const Record = require('../../../src/module/app/App');
+const common = require('../../../test/utils/common');
+
+const {Connection, Auth, App, KintoneException} = require(common.MAIN_PATH);
 
 
 const auth = new Auth();
@@ -16,7 +15,7 @@ auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
 
 const conn = new Connection(common.DOMAIN, auth);
 
-const recordModule = new Record(conn);
+const recordModule = new App(conn);
 
 describe('getFormFields function', () => {
   describe('common function', () => {
@@ -34,7 +33,7 @@ describe('getFormFields function', () => {
 
   describe('success case', () => {
     describe('Valid request', () => {
-      it('should return the app formfield base on full data', () => {
+      it('[Form-3] should return the app formfield base on full data', () => {
         const app = 10;
         const lang = 'EN';
         const isPreview = false;
@@ -80,7 +79,7 @@ describe('getFormFields function', () => {
     });
 
     describe('Verify the data in localization', () => {
-      it('should return the app formfield base on full data', () => {
+      it('[Form-6] should return the app formfield base on full data', () => {
         const app = 10;
         const lang = 'JP';
         const isPreview = false;
@@ -126,7 +125,7 @@ describe('getFormFields function', () => {
     });
 
     describe('Verify the list of fields and field settings of an live App with pre-live settings are returned', () => {
-      it('should return the app formfield base on full data', () => {
+      it('[Form-4] should return the app formfield base on full data', () => {
         const app = 10;
         const lang = 'EN';
         const expectResult = {
@@ -171,7 +170,7 @@ describe('getFormFields function', () => {
     });
 
     describe('Verify the app form field with a pre-live settings is returned when setting isPreview false', () => {
-      it('should return the app formfield base on full data', () => {
+      it('[Form-8] should return the app formfield base on full data', () => {
         const app = 10;
         const lang = 'EN';
         const isPreview = false;
@@ -228,7 +227,7 @@ describe('getFormFields function', () => {
     });
 
     describe('Verify the app form field with a pre-live settings is returned when setting isPreview true', () => {
-      it('should return the app formfield base on full data', () => {
+      it('[Form-7] should return the app formfield base on full data', () => {
         const app = 10;
         const lang = 'EN';
         const isPreview = true;
@@ -274,8 +273,8 @@ describe('getFormFields function', () => {
     });
 
     describe('Verify the app of Guest Space is returned', () => {
-      it('should return the app formfield base on full data', () => {
-        const app = 10;
+      it('[Form-12] should return the app formfield base on full data', () => {
+        const app = 1;
         const lang = 'EN';
         const isPreview = false;
         const expectResult = {
@@ -297,7 +296,7 @@ describe('getFormFields function', () => {
           'revision': '2'
         };
         nock('https://' + common.DOMAIN)
-          .get('/k/v1/app/form/fields.json', (rqBody) => {
+          .get('/k/guest/1/v1/app/form/fields.json', (rqBody) => {
             expect(rqBody.app).toEqual(app);
             expect(rqBody.lang).toEqual(lang);
             expect(rqBody.isPreview).toBeFalsy();
@@ -313,7 +312,7 @@ describe('getFormFields function', () => {
           })
           .reply(200, expectResult);
         const conn1 = new Connection(common.DOMAIN, auth, common.GUEST_SPACEID);
-        const formField = new Record(conn1);
+        const formField = new App(conn1);
         const getFormFieldsResult = formField.getFormFields(app, lang, isPreview);
         return getFormFieldsResult.then((rsp) => {
           expect(rsp).toMatchObject(expectResult);
@@ -326,7 +325,7 @@ describe('getFormFields function', () => {
 
   describe('error case', () => {
     describe('The error will be displayed when using invalid app ID', () => {
-      it('should return the error in the result', () => {
+      it('[Form-9] should return the error in the result', () => {
         const app = 'abc';
         const lang = 'EN';
         const isPreview = false;
@@ -361,13 +360,14 @@ describe('getFormFields function', () => {
 
         const getFormFieldsResult = recordModule.getFormFields(app, lang, isPreview);
         return getFormFieldsResult.catch((err) => {
+          expect(err).toBeInstanceOf(KintoneException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
     });
 
     describe('The error will be displayed when using method without app ID', () => {
-      it('should return the error in the result', () => {
+      it('[Form-10] should return the error in the result', () => {
         const lang = 'EN';
         const isPreview = false;
         const expectResult = {
@@ -400,13 +400,14 @@ describe('getFormFields function', () => {
 
         const getFormFieldsResult = recordModule.getFormFields('', lang, isPreview);
         return getFormFieldsResult.catch((err) => {
+          expect(err).toBeInstanceOf(KintoneException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
     });
 
     describe('The error will be displayed when input invalid language', () => {
-      it('should return the error in the result', () => {
+      it('[Form-11] should return the error in the result', () => {
         const app = 1;
         const lang = '1';
         const isPreview = false;
@@ -441,13 +442,14 @@ describe('getFormFields function', () => {
 
         const getFormFieldsResult = recordModule.getFormFields(app, lang, isPreview);
         return getFormFieldsResult.catch((err) => {
+          expect(err).toBeInstanceOf(KintoneException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
     });
 
     describe('Error will be displayed when using this method with pre-live settings with user who does not have Permission to manage the App', () => {
-      it('should return the error in the result', () => {
+      it('[Form-14] should return the error in the result', () => {
         const app = 1;
         const lang = 'EN';
         const isPreview = true;
@@ -475,13 +477,14 @@ describe('getFormFields function', () => {
 
         const getFormFieldsResult = recordModule.getFormFields(app, lang, isPreview);
         return getFormFieldsResult.catch((err) => {
+          expect(err).toBeInstanceOf(KintoneException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
     });
 
     describe('using API token authentication', () => {
-      it('should return error when using API token authentication ', () => {
+      it('[Form-2] should return error when using API token authentication ', () => {
         const expectResult = {
           'code': 'GAIA_NO01',
           'id': 'lzQPJ1hkW3Aj4iVebWCG',

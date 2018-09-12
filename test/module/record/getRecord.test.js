@@ -5,12 +5,10 @@
  */
 const nock = require('nock');
 
-const common = require('../../common');
 
-const KintoneAPIException = require('../../../src/exception/KintoneAPIException');
-const Connection = require('../../../src/connection/Connection');
-const Auth = require('../../../src/authentication/Auth');
-const Record = require('../../../src/module/record/Record');
+const common = require('../../../test/utils/common');
+
+const {Connection, Auth, Record, KintoneException} = require(common.MAIN_PATH);
 
 const auth = new Auth();
 auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
@@ -37,7 +35,7 @@ describe('getRecord function', () => {
 
   describe('success case', () => {
     describe('valid params are specificed', () => {
-      it('should have a "record" property in the result', () => {
+      it('[Record-2] should have a "record" property in the result', () => {
         const appID = 1;
         const recordID = 1;
         nock('https://' + common.DOMAIN)
@@ -67,7 +65,7 @@ describe('getRecord function', () => {
 
   describe('error case', () => {
     describe('The error will be displayed when using invalid rec ID', () => {
-      it('should return the error in the result', () => {
+      it('[Record-4] should return the error in the result', () => {
         const recordID = 100;
         const appID = 46;
         const expectResult = {
@@ -92,14 +90,14 @@ describe('getRecord function', () => {
           .reply(400, expectResult);
         const getRecordResult = recordModule.getRecord(appID, recordID);
         return getRecordResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneAPIException);
+          expect(err).toBeInstanceOf(KintoneException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
     });
 
     describe('The error will be displayed when using method without app ID', () => {
-      it('should return the error in the result', () => {
+      it('[Record-5] should return the error in the result', () => {
         const recordID = 1;
         const expectResult = {
           'code': 'CB_VA01',
@@ -129,14 +127,14 @@ describe('getRecord function', () => {
           .reply(400, expectResult);
         const getRecordResult = recordModule.getRecord('', recordID);
         return getRecordResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneAPIException);
+          expect(err).toBeInstanceOf(KintoneException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
     });
 
     describe('The error will be displayed when using method without record ID', () => {
-      it('should return the error in the result', () => {
+      it('[Record-6] should return the error in the result', () => {
         const appID = 1;
         const expectResult = {
           'code': 'CB_VA01',
@@ -166,14 +164,14 @@ describe('getRecord function', () => {
           .reply(400, expectResult);
         const getRecordResult = recordModule.getRecord(appID, '');
         return getRecordResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneAPIException);
+          expect(err).toBeInstanceOf(KintoneException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
     });
 
     describe('Error will display when user does not have View records permission for app', () => {
-      it('should return the error in the result', () => {
+      it('[Record-7] should return the error in the result', () => {
         const appID = 1;
         const recordID = 1;
         const expectResult = {
@@ -198,14 +196,14 @@ describe('getRecord function', () => {
           .reply(400, expectResult);
         const getRecordResult = recordModule.getRecord(appID, recordID);
         return getRecordResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneAPIException);
+          expect(err).toBeInstanceOf(KintoneException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
     });
 
     describe('Error will display when user does not have View records permission for the record', () => {
-      it('should return the error in the result', () => {
+      it('[Record-8] should return the error in the result', () => {
         const appID = 1;
         const recordID = 1;
         const expectResult = {
@@ -230,14 +228,14 @@ describe('getRecord function', () => {
           .reply(400, expectResult);
         const getRecordResult = recordModule.getRecord(appID, recordID);
         return getRecordResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneAPIException);
+          expect(err).toBeInstanceOf(KintoneException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
     });
 
     describe('When user does not have View permission for field, the data of this field is not displayed', () => {
-      it('should return the error in the result', () => {
+      it('[Record-9] should return the error in the result', () => {
         const appID = 1;
         const recordID = 1;
 
@@ -285,7 +283,7 @@ describe('getRecord function', () => {
     });
 
     describe('Verify error displays when getting the record data of app in guest space', () => {
-      it('should return the error in the result', () => {
+      it('[Record-10] should return the error in the result', () => {
         const guestappID = 1;
         const recordID = 1;
         const expectResult = {
@@ -310,14 +308,14 @@ describe('getRecord function', () => {
           .reply(400, expectResult);
         const getRecordResult = recordModule.getRecord(guestappID, recordID);
         return getRecordResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneAPIException);
+          expect(err).toBeInstanceOf(KintoneException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
     });
 
     describe('Verify the system fields are returned for record in app without any fields', () => {
-      it('should return the error in the result', () => {
+      it('[Record-12] should return the error in the result', () => {
         const appID = 1;
         const recordID = 1;
         const expectResult = {
@@ -381,7 +379,7 @@ describe('getRecord function', () => {
     });
 
     describe('The record data is still displayed when executing with ID as string type', () => {
-      it('should have a "record" property in the result', () => {
+      it('[Record-11] should have a "record" property in the result', () => {
         const appID = '1';
         const recordID = '1';
         nock('https://' + common.DOMAIN)
@@ -409,7 +407,7 @@ describe('getRecord function', () => {
     });
 
     describe('invalid appID param is specified', () => {
-      it('should return the error in the result', () => {
+      it('[Record-3] should return the error in the result', () => {
         const expectResult = {
           'code': 'CB_VA01',
           'id': 'PmcT6fVjQMsl4BhMw9Uo',
@@ -433,7 +431,7 @@ describe('getRecord function', () => {
           .reply(400, expectResult);
         const getRecordResult = recordModule.getRecord(-2);
         return getRecordResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneAPIException);
+          expect(err).toBeInstanceOf(KintoneException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });

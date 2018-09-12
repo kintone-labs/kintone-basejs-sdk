@@ -4,10 +4,9 @@
  */
 
 const nock = require('nock');
-const common = require('../../common');
-const Connection = require('../../../src/connection/Connection');
-const Auth = require('../../../src/authentication/Auth');
-const Record = require('../../../src/module/record/Record');
+const common = require('../../../test/utils/common');
+
+const {Connection, Auth, Record, KintoneException} = require(common.MAIN_PATH);
 
 const auth = new Auth();
 auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
@@ -27,12 +26,12 @@ describe('getRecords function', () => {
 
   describe('success case', () => {
     describe('valid params are specificed', () => {
-      it('should have a "records" property in the result', () => {
+      it('[Record-13] should have a "records" property in the result', () => {
         const body = {
           app: 844,
           query: 'Created_datetime = TODAY()',
           fields: ['Created_datetime', '$id', 'dropdown', 'radio', 'checkbox'],
-          totalCount: false
+          totalCount: false,
         };
 
         nock('https://' + common.DOMAIN)
@@ -59,7 +58,7 @@ describe('getRecords function', () => {
     });
 
     describe('Verify the number of records that can be retrieved at once is 500', () => {
-      it('should have a "records" property in the result', () => {
+      it('[Record-25] should have a "records" property in the result', () => {
         const number = 500;
         const body = {
           app: 844,
@@ -109,7 +108,7 @@ describe('getRecords function', () => {
 
   describe('error case', () => {
     describe('The error will be displayed when using invalid query', () => {
-      it('should return the error in the result', () => {
+      it('[Record-15] should return the error in the result', () => {
         const body = {
           app: 1,
           query: 'Record_number in 1',
@@ -146,13 +145,14 @@ describe('getRecords function', () => {
 
         const getRecordsResult = recordModule.getRecords(body.app, body.query, body.fields, body.totalCount);
         return getRecordsResult.catch((err) => {
+          expect(err).toBeInstanceOf(KintoneException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
     });
 
     describe('The error will be displayed when using invalid fields', () => {
-      it('should return the error in the result', () => {
+      it('[Record-16] should return the error in the result', () => {
         const body = {
           app: 1,
           query: 'Error_fields >= 1',
@@ -182,13 +182,14 @@ describe('getRecords function', () => {
 
         const getRecordsResult = recordModule.getRecords(body.app, body.query, body.fields, body.totalCount);
         return getRecordsResult.catch((err) => {
+          expect(err).toBeInstanceOf(KintoneException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
     });
 
     describe('The error will be displayed when using invalid isShowTotalCount', () => {
-      it('should return the error in the result', () => {
+      it('[Record-17] should return the error in the result', () => {
         const body = {
           app: 1,
           query: 'Record_number >= 1',
@@ -225,13 +226,14 @@ describe('getRecords function', () => {
 
         const getRecordsResult = recordModule.getRecords(body.app, body.query, body.fields, body.totalCount);
         return getRecordsResult.catch((err) => {
+          expect(err).toBeInstanceOf(KintoneException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
     });
 
     describe('The error will be displayed when using method without app ID', () => {
-      it('should return the error in the result', () => {
+      it('[Record-18] should return the error in the result', () => {
         const body = {
           query: 'Record_number >= 1',
           fields: ['Record_number', 'dropdown', 'radio', 'checkbox'],
@@ -267,13 +269,14 @@ describe('getRecords function', () => {
 
         const getRecordsResult = recordModule.getRecords('', body.query, body.fields, body.totalCount);
         return getRecordsResult.catch((err) => {
+          expect(err).toBeInstanceOf(KintoneException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
     });
 
     describe('Error will display when user does not have View records permission for app', () => {
-      it('should return the error in the result', () => {
+      it('[Record-20] should return the error in the result', () => {
         const body = {
           app: 1,
           query: 'Record_number >= 1',
@@ -301,13 +304,14 @@ describe('getRecords function', () => {
           .reply(400, expectResult);
         const getRecordsResult = recordModule.getRecords(body.app, body.query, body.fields, body.totalCount);
         return getRecordsResult.catch((err) => {
+          expect(err).toBeInstanceOf(KintoneException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
     });
 
     describe('Error will display when user does not have View records permission for the record', () => {
-      it('should return the error in the result', () => {
+      it('[Record-21] should return the error in the result', () => {
         const body = {
           app: 1,
           query: 'Record_number >= 1',
@@ -335,13 +339,14 @@ describe('getRecords function', () => {
           .reply(400, expectResult);
         const getRecordsResult = recordModule.getRecords(body.app, body.query, body.fields, body.totalCount);
         return getRecordsResult.catch((err) => {
+          expect(err).toBeInstanceOf(KintoneException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
     });
 
     describe('When user does not have View permission for field, the data of this field is not displayed', () => {
-      it('should return the error in the result', () => {
+      it('[Record-22] should return the error in the result', () => {
         const body = {
           app: 1,
           query: 'Record_number >= 1',
@@ -395,7 +400,7 @@ describe('getRecords function', () => {
     });
 
     describe('Verify error displays when getting the record data of app in guest space', () => {
-      it('should return the error in the result', () => {
+      it('[Record-23] should return the error in the result', () => {
         const body = {
           app: 1,
           query: 'Record_number >= 1',
@@ -423,13 +428,14 @@ describe('getRecords function', () => {
           .reply(400, expectResult);
         const getRecordsResult = recordModule.getRecords(body.app, body.query, body.fields, body.totalCount);
         return getRecordsResult.catch((err) => {
+          expect(err).toBeInstanceOf(KintoneException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
     });
 
     describe('The record data is still displayed when executing with ID as string type', () => {
-      it('should have a "record" property in the result', () => {
+      it('[Record-24] should have a "record" property in the result', () => {
         const body = {
           app: '1',
           query: 'Record_number >= 1',
@@ -460,7 +466,7 @@ describe('getRecords function', () => {
     });
 
     describe('Verify the error displays when number of records is > 500', () => {
-      it('should return the error in the result', () => {
+      it('[Record-26] should return the error in the result', () => {
         const body = {
           app: 1,
           query: 'Record_number > 0 order by Record_number asc limit 999 offset 0',
@@ -488,13 +494,14 @@ describe('getRecords function', () => {
           .reply(400, expectResult);
         const getRecordsResult = recordModule.getRecords(body.app, body.query, body.fields, body.totalCount);
         return getRecordsResult.catch((err) => {
+          expect(err).toBeInstanceOf(KintoneException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
     });
 
     describe('the app ID param is invalid', () => {
-      it('should return the error in the result', () => {
+      it('[Record-14] should return the error in the result', () => {
         const body = {
           app: -2,
           query: 'Created_datetime = TODAY()',
@@ -517,6 +524,7 @@ describe('getRecords function', () => {
 
         const getRecordsResult = recordModule.getRecords(body.app, body.query, body.fields, body.totalCount);
         return getRecordsResult.catch((err) => {
+          expect(err).toBeInstanceOf(KintoneException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
