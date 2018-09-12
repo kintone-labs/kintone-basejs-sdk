@@ -1,25 +1,17 @@
 /**
- * kintone api - nodejs client
- */
-
-const appID = new WeakMap();
-const recordID = new WeakMap();
-const commentID = new WeakMap();
-
-/**
  * DeleteCommentRequest model
  */
 class DeleteCommentRequest {
   /**
      * constructor
-     * @param {Initeger} appIDInput
-     * @param {Initeger} recordIDInput
-     * @param {String} commentIDInput
+     * @param {Initeger} appID
+     * @param {Initeger} recordID
+     * @param {Initeger} commentID
      */
-  constructor(appIDInput, recordIDInput, commentIDInput) {
-    appID.set(this, appIDInput);
-    recordID.set(this, recordIDInput);
-    commentID.set(this, commentIDInput);
+  constructor(appID, recordID, commentID) {
+    this.appID = appID;
+    this.recordID = recordID;
+    this.commentID = commentID;
   }
   /**
      * Get JSON struct of this model
@@ -27,9 +19,9 @@ class DeleteCommentRequest {
      */
   toJSON() {
     return {
-      app: appID.get(this),
-      record: recordID.get(this),
-      comment: commentID.get(this),
+      app: this.appID,
+      record: this.recordID,
+      comment: this.commentID
     };
   }
   /**

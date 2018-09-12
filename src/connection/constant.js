@@ -14,6 +14,7 @@ const constant = function() {
       PREFIX_GUESTSPACEID: '{GUEST_SPACE_ID}',
       USER_AGENT: 'User-Agent',
       USER_AGENT_BASE_VALUE: '{name}/{version}',
+      HTTPS_AGENT: 'httpsAgent'
     },
     PATH: {
       APP_CUSTOMIZE: 'app/customize',

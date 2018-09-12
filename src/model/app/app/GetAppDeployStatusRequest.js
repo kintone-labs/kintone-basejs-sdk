@@ -1,12 +1,5 @@
 /**
- * kintone api - nodejs client
- */
-
-const kintoneApps = new WeakMap();
-
-/**
  * GetAppDeployStatusRequest model
- * TODO: Unit testing
  */
 class GetAppDeployStatusRequest {
   /**
@@ -15,7 +8,22 @@ class GetAppDeployStatusRequest {
      * @param {Integer} revision
      */
   constructor(apps) {
-    kintoneApps.set(this, apps);
+    this.apps = apps;
+  }
+  /**
+   * Get apps
+   * @return {Array}
+   */
+  getApps() {
+    return this.apps;
+  }
+  /**
+     * @param {Array} apps
+     * @return {this}
+     */
+  setApps(apps) {
+    this.apps = apps;
+    return this;
   }
   /**
      * Get JSON struct of this model
@@ -23,7 +31,7 @@ class GetAppDeployStatusRequest {
      */
   toJSON() {
     const data = {
-      apps: kintoneApps.get(this)
+      apps: this.apps
     };
     return data;
   }

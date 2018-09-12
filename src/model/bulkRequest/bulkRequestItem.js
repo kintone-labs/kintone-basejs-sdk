@@ -1,26 +1,16 @@
 /**
- * kintone api - nodejs client
- */
-
-const method = new WeakMap();
-const api = new WeakMap();
-const payload = new WeakMap();
-
-/**
  * BulkRequestItem model
- * TODO: Unit testing
  */
 class BulkRequestItem {
   /**
-     * @param {String} methodInput
-     * @param {String} apiInput
-     * @param {String} payloadInput
+     * @param {String} method
+     * @param {String} api
+     * @param {String} payload
      */
-  constructor(methodInput, apiInput, payloadInput) {
-    method.set(this, methodInput);
-    api.set(this, apiInput);
-    payload.set(this,
-      payloadInput.toJSON ? payloadInput.toJSON() : payloadInput);
+  constructor(method, api, payload) {
+    this.method = method;
+    this.api = api;
+    this.payload = payload.toJSON ? payload.toJSON() : payload;
   }
   /**
      * Get JSON struct of this model
@@ -28,9 +18,9 @@ class BulkRequestItem {
      */
   toJSON() {
     return {
-      method: method.get(this),
-      api: api.get(this),
-      payload: payload.get(this),
+      method: this.method,
+      api: this.api,
+      payload: this.payload,
     };
   }
   /**

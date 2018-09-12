@@ -1,22 +1,14 @@
 /**
- * kintone api - nodejs client
- */
-
-const appID = new WeakMap();
-const lang = new WeakMap();
-
-/**
  * GetFormFieldsRequest model
- * TODO: Unit testing
  */
 class GetFormFieldsRequest {
   /**
-     * @param {Integer} appIDInput
-     * @param {String} langInput
+     * @param {Integer} appID
+     * @param {String} lang
      */
-  constructor(appIDInput, langInput) {
-    appID.set(this, appIDInput);
-    lang.set(this, langInput);
+  constructor(appID, lang) {
+    this.appID = appID;
+    this.lang = lang;
   }
   /**
      * Get JSON struct of this model
@@ -24,10 +16,10 @@ class GetFormFieldsRequest {
      */
   toJSON() {
     const data = {
-      app: appID.get(this),
+      app: this.appID
     };
-    if (lang.get(this)) {
-      data.lang = lang.get(this);
+    if (this.lang) {
+      data.lang = this.lang;
     }
     return data;
   }
