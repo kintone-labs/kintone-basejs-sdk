@@ -6,7 +6,7 @@
 const nock = require('nock');
 
 const common = require('../../common');
-const {KintoneException, Connection, Auth, Record} = require(common.MAIN_PATH);
+const { KintoneException, Connection, Auth, Record } = require(common.MAIN_PATH);
 
 const auth = new Auth();
 auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
@@ -18,7 +18,7 @@ describe('addRecord function', () => {
     it('should return a promise', () => {
       nock('https://' + common.DOMAIN)
         .post('/k/v1/record.json')
-        .reply(200, {'id': '100', 'revision': '1'});
+        .reply(200, { 'id': '100', 'revision': '1' });
       const recordModule = new Record(conn);
       const addRecordResult = recordModule.addRecord();
       expect(addRecordResult).toHaveProperty('then');
@@ -29,11 +29,11 @@ describe('addRecord function', () => {
   describe('success case', () => {
     describe('valid Data', () => {
       const body = {
-        appID: 1,
+        app: 1,
         record: {
-          Dropdown: {value: 1},
-          Text: {value: 'test'},
-          Number: {value: 1},
+          Dropdown: { value: 1 },
+          Text: { value: 'test' },
+          Number: { value: 1 },
           Table: {
             value: [
               {
@@ -52,7 +52,7 @@ describe('addRecord function', () => {
         nock('https://' + common.DOMAIN)
           .post('/k/v1/record.json', (rqBody) => {
             expect(rqBody.record).toMatchObject(body.record);
-            return rqBody.app === body.appID;
+            return rqBody.app === body.app;
           })
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
@@ -62,9 +62,9 @@ describe('addRecord function', () => {
             expect(type).toBe('application/json');
             return true;
           })
-          .reply(200, {'id': '100', 'revision': '1'});
+          .reply(200, { 'id': '100', 'revision': '1' });
         const recordModule = new Record(conn);
-        return recordModule.addRecord(body.appID, body.record)
+        return recordModule.addRecord(body.app, body.record)
           .then(rsp => {
             expect(rsp).toHaveProperty('id');
             expect(rsp).toHaveProperty('revision');
@@ -76,7 +76,7 @@ describe('addRecord function', () => {
           .post('/k/v1/record.json', (rqBody) => {
             expect(rqBody.record).toMatchObject(body.record);
             expect(rqBody.record.Table).toMatchObject(body.record.Table);
-            return rqBody.app === body.appID;
+            return rqBody.app === body.app;
           })
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
@@ -86,9 +86,9 @@ describe('addRecord function', () => {
             expect(type).toBe('application/json');
             return true;
           })
-          .reply(200, {'id': '100', 'revision': '1'});
+          .reply(200, { 'id': '100', 'revision': '1' });
         const recordModule = new Record(conn);
-        return recordModule.addRecord(body.appID, body.record)
+        return recordModule.addRecord(body.app, body.record)
           .then(rsp => {
             expect(rsp).toHaveProperty('id');
             expect(rsp).toHaveProperty('revision');
@@ -99,7 +99,7 @@ describe('addRecord function', () => {
         nock('https://' + common.DOMAIN)
           .post('/k/guest/1/v1/record.json', (rqBody) => {
             expect(rqBody.record).toMatchObject(body.record);
-            return rqBody.app === body.appID;
+            return rqBody.app === body.app;
           })
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
@@ -109,10 +109,10 @@ describe('addRecord function', () => {
             expect(type).toBe('application/json');
             return true;
           })
-          .reply(200, {'id': '100', 'revision': '1'});
+          .reply(200, { 'id': '100', 'revision': '1' });
         const conn1 = new Connection(common.DOMAIN, auth, common.GUEST_SPACEID);
         const recordModule = new Record(conn1);
-        return recordModule.addRecord(body.appID, body.record)
+        return recordModule.addRecord(body.app, body.record)
           .then(rsp => {
             expect(rsp).toHaveProperty('id');
             expect(rsp).toHaveProperty('revision');
@@ -121,7 +121,7 @@ describe('addRecord function', () => {
 
       it('[Record-45] the record is added for app without any fields is normally', () => {
         const bodyWithoutFields = {
-          appID: 1,
+          app: 1,
           record: {
           }
         };
@@ -129,7 +129,7 @@ describe('addRecord function', () => {
         nock('https://' + common.DOMAIN)
           .post('/k/v1/record.json', (rqBody) => {
             expect(rqBody.record).toMatchObject(bodyWithoutFields.record);
-            return rqBody.app === bodyWithoutFields.appID;
+            return rqBody.app === bodyWithoutFields.app;
           })
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
@@ -139,9 +139,9 @@ describe('addRecord function', () => {
             expect(type).toBe('application/json');
             return true;
           })
-          .reply(200, {'id': '100', 'revision': '1'});
+          .reply(200, { 'id': '100', 'revision': '1' });
         const recordModule = new Record(conn);
-        return recordModule.addRecord(bodyWithoutFields.appID, bodyWithoutFields.record)
+        return recordModule.addRecord(bodyWithoutFields.app, bodyWithoutFields.record)
           .then(rsp => {
             expect(rsp).toHaveProperty('id');
             expect(rsp).toHaveProperty('revision');
@@ -150,16 +150,16 @@ describe('addRecord function', () => {
 
       it('[Record-44] the record is added executing with ID as string type (input string for interger)', () => {
         const bodyStringID = {
-          appID: '1',
+          app: '1',
           record: {
-            Dropdown: {value: 1},
-            Text: {value: 'test'},
+            Dropdown: { value: 1 },
+            Text: { value: 'test' },
           }
         };
         nock('https://' + common.DOMAIN)
           .post('/k/v1/record.json', (rqBody) => {
             expect(rqBody.record).toMatchObject(bodyStringID.record);
-            return rqBody.app === bodyStringID.appID;
+            return rqBody.app === bodyStringID.app;
           })
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
@@ -169,9 +169,9 @@ describe('addRecord function', () => {
             expect(type).toBe('application/json');
             return true;
           })
-          .reply(200, {'id': '100', 'revision': '1'});
+          .reply(200, { 'id': '100', 'revision': '1' });
         const recordModule = new Record(conn);
-        return recordModule.addRecord(bodyStringID.appID, bodyStringID.record)
+        return recordModule.addRecord(bodyStringID.app, bodyStringID.record)
           .then(rsp => {
             expect(rsp).toHaveProperty('id');
             expect(rsp).toHaveProperty('revision');
@@ -182,13 +182,13 @@ describe('addRecord function', () => {
     describe('required field', () => {
       it('[Record-35] record with blank data is added when using method without record data', () => {
         const body = {
-          appID: 1,
+          app: 1,
           record: {}
         };
         nock('https://' + common.DOMAIN)
           .post('/k/v1/record.json', (rqBody) => {
             expect(rqBody.record).toMatchObject(body.record);
-            return rqBody.app === body.appID;
+            return rqBody.app === body.app;
           })
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
@@ -198,9 +198,9 @@ describe('addRecord function', () => {
             expect(type).toBe('application/json');
             return true;
           })
-          .reply(200, {'id': '100', 'revision': '1'});
+          .reply(200, { 'id': '100', 'revision': '1' });
         const recordModule = new Record(conn);
-        return recordModule.addRecord(body.appID, body.record)
+        return recordModule.addRecord(body.app, body.record)
           .then(rsp => {
             expect(rsp).toHaveProperty('id');
             expect(rsp).toHaveProperty('revision');
@@ -210,31 +210,31 @@ describe('addRecord function', () => {
   });
 
   describe('error case', () => {
-    describe('invalid appID', () => {
-      it('[Record-28] should return error when using unexisted appID', () => {
-        const unexistedAppID = 999;
+    describe('invalid app', () => {
+      it('[Record-28] should return error when using unexisted app', () => {
+        const unexistedapp = 999;
         const expectResult = {
           'code': 'GAIA_AP01',
           'id': 'id when request to invalid app',
           'message': 'The app (ID: 999) not found. The app may have been deleted.'
         };
         nock('https://' + common.DOMAIN, (rqBody) => {
-          expect(rqBody.app).toEqual(unexistedAppID);
+          expect(rqBody.app).toEqual(unexistedapp);
           return true;
         })
           .post('/k/v1/record.json')
           .reply(404, expectResult);
 
         const recordModule = new Record(conn);
-        return recordModule.addRecord(unexistedAppID)
+        return recordModule.addRecord(unexistedapp)
           .catch(err => {
             expect(err.get()).toHaveProperty('id');
             expect(err.get().code).toEqual(expectResult.code);
             expect(err.get().message).toEqual(expectResult.message);
           });
       });
-      it('[Record-28] should return error when using negative appID', () => {
-        const negativeAppID = -1;
+      it('[Record-28] should return error when using negative app', () => {
+        const negativeapp = -1;
         const expectResult = {
           'code': 'CB_VA01',
           'id': '0hjc1OJbmY29cl2SoDey',
@@ -251,14 +251,14 @@ describe('addRecord function', () => {
           .reply(400, expectResult);
 
         const recordModule = new Record(conn);
-        return recordModule.addRecord(negativeAppID)
+        return recordModule.addRecord(negativeapp)
           .catch(err => {
             expect(err).toBeInstanceOf(KintoneException);
             expect(err.get()).toMatchObject(expectResult);
           });
       });
-      it('[Record-28] should return error when appID is 0', () => {
-        const appID = 0;
+      it('[Record-28] should return error when app is 0', () => {
+        const app = 0;
         const expectResult = {
           'code': 'CB_VA01',
           'id': '0hjc1OJbmY29cl2SoDey',
@@ -275,7 +275,7 @@ describe('addRecord function', () => {
           .reply(400, expectResult);
 
         const recordModule = new Record(conn);
-        return recordModule.addRecord(appID)
+        return recordModule.addRecord(app)
           .catch(err => {
             expect(err).toBeInstanceOf(KintoneException);
             expect(err.get()).toMatchObject(expectResult);
@@ -286,9 +286,9 @@ describe('addRecord function', () => {
     describe('invalid data', () => {
       it('[Record-30] error will be displayed when adding invalid data (text for number field)', () => {
         const body = {
-          appID: 1,
+          app: 1,
           record: {
-            Number: {value: 'test'}
+            Number: { value: 'test' }
           }
         };
         const expectResult = {
@@ -319,7 +319,7 @@ describe('addRecord function', () => {
           })
           .reply(400, expectResult);
         const recordModule = new Record(conn);
-        return recordModule.addRecord(body.appID, body.record)
+        return recordModule.addRecord(body.app, body.record)
           .catch(err => {
             expect(err).toBeInstanceOf(KintoneException);
             expect(err.get()).toMatchObject(expectResult);
@@ -328,9 +328,9 @@ describe('addRecord function', () => {
 
       it('[Record-31] error will be displayed when adding invalid data (duplicate data for "prohibit duplicate value" field)', () => {
         const body = {
-          appID: 1,
+          app: 1,
           record: {
-            Number: {value: 1}
+            Number: { value: 1 }
           }
         };
         const expectResult = {
@@ -361,7 +361,7 @@ describe('addRecord function', () => {
           })
           .reply(400, expectResult);
         const recordModule = new Record(conn);
-        return recordModule.addRecord(body.appID, body.record)
+        return recordModule.addRecord(body.app, body.record)
           .catch(err => {
             expect(err).toBeInstanceOf(KintoneException);
             expect(err.get()).toMatchObject(expectResult);
@@ -370,9 +370,9 @@ describe('addRecord function', () => {
 
       it('[Record-32] error will be displayed when adding invalid data (exceed maximum for number field)', () => {
         const body = {
-          appID: 1,
+          app: 1,
           record: {
-            Number: {value: 1000}
+            Number: { value: 1000 }
           }
         };
         const expectResult = {
@@ -403,7 +403,7 @@ describe('addRecord function', () => {
           })
           .reply(400, expectResult);
         const recordModule = new Record(conn);
-        return recordModule.addRecord(body.appID, body.record)
+        return recordModule.addRecord(body.app, body.record)
           .catch(err => {
             expect(err).toBeInstanceOf(KintoneException);
             expect(err.get()).toMatchObject(expectResult);
@@ -412,9 +412,9 @@ describe('addRecord function', () => {
 
       it('[Record-33] error will be displayed when adding data for cannot-update field', () => {
         const body = {
-          appID: 1,
+          app: 1,
           record: {
-            Calculated: {value: 1000}
+            Calculated: { value: 1000 }
           }
         };
         const expectResult = {
@@ -438,7 +438,7 @@ describe('addRecord function', () => {
           })
           .reply(400, expectResult);
         const recordModule = new Record(conn);
-        return recordModule.addRecord(body.appID, body.record)
+        return recordModule.addRecord(body.app, body.record)
           .catch(err => {
             expect(err).toBeInstanceOf(KintoneException);
             expect(err.get()).toMatchObject(expectResult);
@@ -449,35 +449,10 @@ describe('addRecord function', () => {
     describe('missing required field', () => {
       it('[Record-34] should return error when using method without app ID', () => {
         const body = {
-          appID: 1,
+          app: 1,
           record: {
-            Text: {value: 'test'}
+            Text: { value: 'test' }
           }
-        };
-        const expectResult = {
-          'code': 'GAIA_AP01',
-          'id': '0',
-          'message': 'Missing or invalid input.'
-        };
-        nock('https://' + common.DOMAIN, (rqBody) => {
-          expect(rqBody).not.toHaveProperty('app');
-          return true;
-        })
-          .post('/k/v1/record.json')
-          .reply(400, expectResult);
-
-        const recordModule = new Record(conn);
-        return recordModule.addRecord('', body.record)
-          .catch(err => {
-            expect(err).toBeInstanceOf(KintoneException);
-            expect(err.get()).toMatchObject(expectResult);
-          });
-      });
-
-      it('[Record-36] should return error when using method without data for required field', () => {
-        const body = {
-          appID: 1,
-          record: {}
         };
         const expectResult = {
           'code': 'GAIA_AP01',
@@ -492,6 +467,36 @@ describe('addRecord function', () => {
           }
         };
         nock('https://' + common.DOMAIN, (rqBody) => {
+          expect(rqBody).not.toHaveProperty('app');
+          return true;
+        })
+          .post('/k/v1/record.json')
+          .reply(400, expectResult);
+
+        const recordModule = new Record(conn);
+        return recordModule.addRecord(undefined, body.record)
+          .catch(err => {
+            expect(err).toBeInstanceOf(KintoneException);
+            expect(err.get()).toMatchObject(expectResult);
+          });
+      });
+
+      it('[Record-35] should return error when using method without data for required field', () => {
+        const body = {
+          app: 1,
+          record: {}
+        };
+        const expectResult = {
+          'code': 'GAIA_AP01',
+          'id': '0',
+          'message': 'Missing or invalid input.',
+          'errors': {
+            'messages': [
+              'Required.'
+            ]
+          }
+        };
+        nock('https://' + common.DOMAIN, (rqBody) => {
           expect(rqBody.record).toMatchObject(body.record);
           return true;
         })
@@ -499,7 +504,43 @@ describe('addRecord function', () => {
           .reply(400, expectResult);
 
         const recordModule = new Record(conn);
-        return recordModule.addRecord('', body.record)
+        return recordModule.addRecord(body.app, undefined)
+          .catch(err => {
+            expect(err).toBeInstanceOf(KintoneException);
+            expect(err.get()).toMatchObject(expectResult);
+          });
+      });
+    });
+
+    describe('missing required field', () => {
+      it('[Record-36] should return error when using method without data for required field', () => {
+        const body = {
+          app: 1,
+          record: {
+            Text: { value: 'test' }
+          }
+        };
+        const expectResult = {
+          'code': 'GAIA_AP01',
+          'id': '0',
+          'message': 'Missing or invalid input.',
+          'errors': {
+            'record.Number.value': {
+              'messages': [
+                'Required.'
+              ]
+            }
+          }
+        };
+        nock('https://' + common.DOMAIN, (rqBody) => {
+          expect(rqBody.record).toMatchObject(body.record);
+          return true;
+        })
+          .post('/k/v1/record.json')
+          .reply(400, expectResult);
+
+        const recordModule = new Record(conn);
+        return recordModule.addRecord(body.app, body.record)
           .catch(err => {
             expect(err).toBeInstanceOf(KintoneException);
             expect(err.get()).toMatchObject(expectResult);
@@ -510,9 +551,9 @@ describe('addRecord function', () => {
     describe('permission', () => {
       it('[Record-41] error will be displayed when user does not have Add records permission for app', () => {
         const body = {
-          appID: 1,
+          app: 1,
           record: {
-            Number: {value: 'test'}
+            Number: { value: 'test' }
           }
         };
         const expectResult = {
@@ -536,7 +577,7 @@ describe('addRecord function', () => {
           })
           .reply(400, expectResult);
         const recordModule = new Record(conn);
-        return recordModule.addRecord(body.appID, body.record)
+        return recordModule.addRecord(body.app, body.record)
           .catch(err => {
             expect(err).toBeInstanceOf(KintoneException);
             expect(err.get()).toMatchObject(expectResult);
