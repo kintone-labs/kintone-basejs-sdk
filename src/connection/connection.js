@@ -63,10 +63,14 @@ class Connection {
     // set data to param if using GET method
     if (requestOptions.method === 'GET') {
       requestOptions.params = body;
+
+      // requestOptions.paramsSerializer = (params) => {
+      //   return new Connection(undefined, new Auth()).getParamQuery(params);
+      // };
+      requestOptions.paramsSerializer = this.getParamQuery.bind(this);
     } else {
       requestOptions.data = body;
     }
-
     // Execute request
     return axios(requestOptions).then(response => {
       return response.data;
@@ -106,7 +110,6 @@ class Connection {
     } else {
       requestOptions.data = body;
     }
-
     // Execute request
     return axios(requestOptions).then(response => {
       return response.data;
@@ -134,6 +137,27 @@ class Connection {
   upload(formData) {
     this.setHeader(CONTENT_TYPE_KEY, CONTENT_TYPE_VALUE);
     return this.requestFile('POST', 'FILE', formData);
+  }
+
+  getParamQuery(object, prefix) {
+    const queryArray = [];
+    for (const key in object) {
+      if (object.hasOwnProperty(key)) {
+        let subPrefix = '';
+        if (Array.isArray(object)) {
+          subPrefix = prefix ? prefix + '[' + key + ']' : key;
+        } else {
+          subPrefix = prefix ? prefix + '.' + key : key;
+        }
+        const value = object[key];
+        if (value !== undefined) {
+          queryArray.push(
+            (value !== null && typeof value === 'object') ? this.getParamQuery(value, subPrefix) : subPrefix + '=' + encodeURIComponent(value)
+          );
+        }
+      }
+    }
+    return queryArray.join('&');
   }
 
   /**
