@@ -9,7 +9,6 @@ const KintoneExeption = require('../exception/KintoneAPIException');
 const CONNECTION_CONST = require('./constant');
 const DEFAULT_PORT = '443';
 const CONTENT_TYPE_KEY = 'Content-Type';
-const CONTENT_TYPE_VALUE = 'multipart/form-data';
 const RESPONSE_TYPE_KEY = 'responseType';
 const RESPONSE_TYPE_VALUE = 'arraybuffer';
 
@@ -63,10 +62,6 @@ class Connection {
     // set data to param if using GET method
     if (requestOptions.method === 'GET') {
       requestOptions.params = body;
-
-      // requestOptions.paramsSerializer = (params) => {
-      //   return new Connection(undefined, new Auth()).getParamQuery(params);
-      // };
       requestOptions.paramsSerializer = this.getParamQuery.bind(this);
     } else {
       requestOptions.data = body;
@@ -135,7 +130,7 @@ class Connection {
        * @return {Promise}
        */
   upload(formData) {
-    this.setHeader(CONTENT_TYPE_KEY, CONTENT_TYPE_VALUE);
+    this.setHeader(CONTENT_TYPE_KEY, formData.getHeaders()['content-type']);
     return this.requestFile('POST', 'FILE', formData);
   }
 

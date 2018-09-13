@@ -1,5 +1,4 @@
 const Connection = require('../../connection/Connection');
-const common = require('../../utils/Common');
 
 /**
  * File module
@@ -14,15 +13,6 @@ class File {
       throw new Error(`${connection} not an instance of Connection`);
     }
     this.connection = connection;
-  }
-  /**
-     * @param {String} method
-     * @param {String} url
-     * @param {RecordModle} model
-     * @return {Promise} Promise
-     */
-  sendRequest(method, url, model) {
-    return common.sendRequest(method, url, model, this.connection);
   }
   /**
      * Download file from kintone
