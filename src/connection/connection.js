@@ -3,9 +3,15 @@ const tunnel = require('tunnel');
 
 const Auth = require('../authentication/Auth');
 const HTTPHeader = require('../model/http/HTTPHeader');
+const FileModel = require('../../src/model/file/FileModels');
+const KintoneExeption = require('../exception/KintoneAPIException');
 
 const CONNECTION_CONST = require('./constant');
 const DEFAULT_PORT = '443';
+const CONTENT_TYPE_KEY = 'Content-Type';
+const CONTENT_TYPE_VALUE = 'multipart/form-data';
+const RESPONSE_TYPE_KEY = 'responseType';
+const RESPONSE_TYPE_VALUE = 'arraybuffer';
 
 /**
  * Connection module
@@ -66,6 +72,70 @@ class Connection {
       return response.data;
     });
   }
+  /**
+     * request to URL
+     * @param {String} method
+     * @param {String} restAPIName
+     * @param {String} body
+     * @return {Promise}
+     */
+  requestFile(methodName, restAPIName, body) {
+    // Set Header
+    const headersRequet = {};
+    // set header with credentials
+    this.auth.createHeaderCredentials().forEach((httpHeaderObj) => {
+      headersRequet[httpHeaderObj.getKey()] = httpHeaderObj.getValue();
+    });
+    this.headers.forEach((httpHeaderObj) => {
+      const headerKey = httpHeaderObj.getKey();
+      if (headersRequet.hasOwnProperty(headerKey) && headerKey === CONNECTION_CONST.BASE.USER_AGENT) {
+        headersRequet[headerKey] += ' ' + httpHeaderObj.getValue();
+      } else {
+        headersRequet[headerKey] = httpHeaderObj.getValue();
+      }
+    });
+
+    // Set request options
+    const requestOptions = this.options;
+    requestOptions.method = String(methodName).toUpperCase();
+    requestOptions.url = this.getUri(restAPIName);
+    requestOptions.headers = headersRequet;
+    // set data to param if using GET method
+    if (requestOptions.method === 'GET') {
+      requestOptions.params = body;
+    } else {
+      requestOptions.data = body;
+    }
+
+    // Execute request
+    return axios(requestOptions).then(response => {
+      return response.data;
+    }).catch(err => {
+      throw new KintoneExeption(err);
+    });
+  }
+
+  /**
+     * Download file from kintone
+     * @param {String} fileKey
+     * @return {Promise}
+     */
+  download(fileKey) {
+    const dataRequest =
+              new FileModel.GetFileRequest(fileKey);
+    this.addRequestOption(RESPONSE_TYPE_KEY, RESPONSE_TYPE_VALUE);
+    return this.requestFile('GET', 'FILE', dataRequest.toJSON());
+  }
+  /**
+       * upload file to kintone
+       * @param {JSONObjectg} formData
+       * @return {Promise}
+       */
+  upload(formData) {
+    this.setHeader(CONTENT_TYPE_KEY, CONTENT_TYPE_VALUE);
+    return this.requestFile('POST', 'FILE', formData);
+  }
+
   /**
      * auto get uri for request
      * @param {String} url - api name or FQDN
