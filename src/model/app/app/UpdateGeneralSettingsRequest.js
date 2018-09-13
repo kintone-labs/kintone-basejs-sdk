@@ -1,14 +1,5 @@
 /**
- * kintone api - nodejs client
- */
-
-const kintoneApp = new WeakMap();
-const kintoneGeneralSettings = new WeakMap();
-const kintoneRevision = new WeakMap();
-
-/**
  * UpdateGeneralSettingsRequest model
- * TODO: Unit testing
  */
 class UpdateGeneralSettingsRequest {
   /**
@@ -17,18 +8,18 @@ class UpdateGeneralSettingsRequest {
      * @param {Integer} revision
      */
   constructor(app, generalSettings, revision) {
-    kintoneApp.set(this, app);
-    kintoneGeneralSettings.set(this, generalSettings);
-    kintoneRevision.set(this, revision);
+    this.app = app;
+    this.generalSettings = generalSettings;
+    this.revision = revision;
   }
   /**
      * Get JSON struct of this model
      * @return {JSON}
      */
   toJSON() {
-    const data = kintoneGeneralSettings.get(this) ? kintoneGeneralSettings.get(this) : {};
-    data.app = kintoneApp.get(this);
-    data.revision = kintoneRevision.get(this);
+    const data = this.generalSettings ? this.generalSettings : {};
+    data.app = this.app;
+    data.revision = this.revision;
     return data;
   }
   /**

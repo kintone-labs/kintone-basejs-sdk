@@ -1,13 +1,4 @@
-/**
- * kintone api - nodejs client
- */
-
 const RecordUpdateKey = require('./RecordUpdateKey');
-
-const id = new WeakMap();
-const revision = new WeakMap();
-const updateKey = new WeakMap();
-const record = new WeakMap();
 
 /**
  * RecordUpdateItem model
@@ -16,23 +7,28 @@ class RecordUpdateItem {
   /**
      * constructor
      */
-  constructor() {}
+  constructor() {
+    this.id = null;
+    this.revision = null;
+    this.updateKey = null;
+    this.record = null;
+  }
   /**
      * set ID of record to update
-     * @param {String} idInput
+     * @param {String} id
      * @return {this}
      */
-  setID(idInput) {
-    id.set(this, idInput);
+  setID(id) {
+    this.id = id;
     return this;
   }
   /**
      * set revision of record to update
-     * @param {String} revisionInput
+     * @param {String} revision
      * @return {this}
      */
-  setRevision(revisionInput) {
-    revision.set(this, revisionInput);
+  setRevision(revision) {
+    this.revision = revision;
     return this;
   }
   /**
@@ -42,16 +38,16 @@ class RecordUpdateItem {
      * @return {this}
      */
   setUpdateKey(field, value) {
-    updateKey.set(this, new RecordUpdateKey(field, value));
+    this.updateKey = new RecordUpdateKey(field, value);
     return this;
   }
   /**
      * set record data to update
-     * @param {String} recordInput
+     * @param {String} record
      * @return {this}
      */
-  setRecord(recordInput) {
-    record.set(this, recordInput);
+  setRecord(record) {
+    this.record = record;
     return this;
   }
   /**
@@ -59,15 +55,15 @@ class RecordUpdateItem {
      * @return {integer}
      */
   toJSON() {
-    const updateKeyPriv = updateKey.get(this);
+    const updateKeyPriv = this.updateKey;
     const data = {
-      revision: revision.get(this) || null,
-      record: record.get(this),
+      revision: this.revision || null,
+      record: this.record
     };
     if (updateKeyPriv) {
       data.updateKey = updateKeyPriv.toJSON();
     } else {
-      data.id = id.get(this);
+      data.id = this.id;
     }
 
     return data;

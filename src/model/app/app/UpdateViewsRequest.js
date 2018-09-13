@@ -1,14 +1,5 @@
 /**
- * kintone api - nodejs client
- */
-
-const kintoneApp = new WeakMap();
-const kintoneViews = new WeakMap();
-const kintoneRevision = new WeakMap();
-
-/**
  * UpdateViewsRequest model
- * TODO: Unit testing
  */
 class UpdateViewsRequest {
   /**
@@ -17,9 +8,9 @@ class UpdateViewsRequest {
      * @param {Integer} revision
      */
   constructor(app, views, revision) {
-    kintoneApp.set(this, app);
-    kintoneViews.set(this, views);
-    kintoneRevision.set(this, revision);
+    this.app = app;
+    this.views = views;
+    this.revision = revision;
   }
   /**
      * Get JSON struct of this model
@@ -27,9 +18,9 @@ class UpdateViewsRequest {
      */
   toJSON() {
     const data = {
-      app: kintoneApp.get(this),
-      views: kintoneViews.get(this),
-      revision: kintoneRevision.get(this)
+      app: this.app,
+      views: this.views,
+      revision: this.revision
     };
     return data;
   }

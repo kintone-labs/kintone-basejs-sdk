@@ -1,15 +1,9 @@
-/**
- * kintone api - nodejs client
- */
-
-const KintoneExeption = require('../../exception/KintoneAPIException');
-const KintoneConnection = require('../../connection/Connection');
+const KintoneAPIException = require('../../exception/KintoneAPIException');
+const Connection = require('../../connection/Connection');
 const BulkRequestModel = require('../../model/bulkRequest/BulkRequest');
 const BulkRequestItemModel = require('../../model/bulkRequest/BulkRequestItem');
 const RecordModel = require('../../model/record/RecordModels');
 
-const kintoneConnection = new WeakMap();
-const bulkRequests = new WeakMap();
 /**
  * BulkRequest module
  */
@@ -19,12 +13,11 @@ class BulkRequest {
      * @param {Connection} connection
      */
   constructor(connection) {
-    if (!(connection instanceof KintoneConnection)) {
-      throw new Error(`${connection} \
-                not an instance of KintoneConnection`);
+    if (!(connection instanceof Connection)) {
+      throw new Error(`${connection} not an instance of Connection`);
     }
-    kintoneConnection.set(this, connection);
-    bulkRequests.set(this, new BulkRequestModel());
+    this.connection = connection;
+    this.bulkRequests = new BulkRequestModel();
   }
 
   /**
@@ -34,14 +27,9 @@ class BulkRequest {
      * @return {this}
      */
   addRecord(app, record) {
-    const addRecordRequest =
-            new RecordModel.AddRecordRequest(app, record);
-    const bulkRequestItem = new BulkRequestItemModel(
-      'POST',
-      kintoneConnection.get(this).getPathURI('RECORD'),
-      addRecordRequest
-    );
-    bulkRequests.get(this).addRequest(bulkRequestItem);
+    const addRecordRequest = new RecordModel.AddRecordRequest(app, record);
+    const bulkRequestItem = new BulkRequestItemModel('POST', this.connection.getPathURI('RECORD'), addRecordRequest);
+    this.bulkRequests.addRequest(bulkRequestItem);
     return this;
   }
 
@@ -52,16 +40,11 @@ class BulkRequest {
      * @return {this}
      */
   addRecords(app, records) {
-    const addRecordsRequest =
-            new RecordModel.AddRecordsRequest(app);
+    const addRecordsRequest = new RecordModel.AddRecordsRequest(app);
     addRecordsRequest.setRecords(records);
 
-    const bulkRequestItem = new BulkRequestItemModel(
-      'POST',
-      kintoneConnection.get(this).getPathURI('RECORDS'),
-      addRecordsRequest
-    );
-    bulkRequests.get(this).addRequest(bulkRequestItem);
+    const bulkRequestItem = new BulkRequestItemModel('POST', this.connection.getPathURI('RECORDS'), addRecordsRequest);
+    this.bulkRequests.addRequest(bulkRequestItem);
     return this;
   }
 
@@ -74,19 +57,11 @@ class BulkRequest {
      * @return {this}
      */
   updateRecordByID(app, id, record, revision) {
-    const updateRecordRequest =
-            new RecordModel.UpdateRecordRequest(app);
-    updateRecordRequest
-      .setID(id)
-      .setRecord(record)
-      .setRevision(revision || 0);
+    const updateRecordRequest = new RecordModel.UpdateRecordRequest(app);
+    updateRecordRequest.setID(id).setRecord(record).setRevision(revision || 0);
 
-    const bulkRequestItem = new BulkRequestItemModel(
-      'PUT',
-      kintoneConnection.get(this).getPathURI('RECORD'),
-      updateRecordRequest
-    );
-    bulkRequests.get(this).addRequest(bulkRequestItem);
+    const bulkRequestItem = new BulkRequestItemModel('PUT', this.connection.getPathURI('RECORD'), updateRecordRequest);
+    this.bulkRequests.addRequest(bulkRequestItem);
     return this;
   }
 
@@ -99,19 +74,11 @@ class BulkRequest {
      * @return {this}
      */
   updateRecordByUpdateKey(app, updateKey, record, revision) {
-    const updateRecordRequest =
-            new RecordModel.UpdateRecordRequest(app);
-    updateRecordRequest
-      .setUpdateKey(updateKey.field, updateKey.value)
-      .setRecord(record)
-      .setRevision(revision || 0);
+    const updateRecordRequest = new RecordModel.UpdateRecordRequest(app);
+    updateRecordRequest.setUpdateKey(updateKey.field, updateKey.value).setRecord(record).setRevision(revision || 0);
 
-    const bulkRequestItem = new BulkRequestItemModel(
-      'PUT',
-      kintoneConnection.get(this).getPathURI('RECORD'),
-      updateRecordRequest
-    );
-    bulkRequests.get(this).addRequest(bulkRequestItem);
+    const bulkRequestItem = new BulkRequestItemModel('PUT', this.connection.getPathURI('RECORD'), updateRecordRequest);
+    this.bulkRequests.addRequest(bulkRequestItem);
     return this;
   }
 
@@ -122,15 +89,9 @@ class BulkRequest {
      * @return {this}
      */
   updateRecords(app, records) {
-    const updateRecordsRequest =
-            new RecordModel.UpdateRecordsRequest(app, records);
-
-    const bulkRequestItem = new BulkRequestItemModel(
-      'PUT',
-      kintoneConnection.get(this).getPathURI('RECORDS'),
-      updateRecordsRequest
-    );
-    bulkRequests.get(this).addRequest(bulkRequestItem);
+    const updateRecordsRequest = new RecordModel.UpdateRecordsRequest(app, records);
+    const bulkRequestItem = new BulkRequestItemModel('PUT', this.connection.getPathURI('RECORDS'), updateRecordsRequest);
+    this.bulkRequests.addRequest(bulkRequestItem);
     return this;
   }
 
@@ -141,15 +102,11 @@ class BulkRequest {
      * @return {this}
      */
   deleteRecords(app, ids) {
-    const deleteRecordsRequest =
-            new RecordModel.DeleteRecordsRequest(app);
+    const deleteRecordsRequest = new RecordModel.DeleteRecordsRequest(app);
     deleteRecordsRequest.setIDs(ids);
-    const bulkRequestItem = new BulkRequestItemModel(
-      'DELETE',
-      kintoneConnection.get(this).getPathURI('RECORDS'),
-      deleteRecordsRequest
-    );
-    bulkRequests.get(this).addRequest(bulkRequestItem);
+
+    const bulkRequestItem = new BulkRequestItemModel('DELETE', this.connection.getPathURI('RECORDS'), deleteRecordsRequest);
+    this.bulkRequests.addRequest(bulkRequestItem);
     return this;
   }
 
@@ -160,16 +117,11 @@ class BulkRequest {
      * @return {this}
      */
   deleteRecordsWithRevision(app, idsWithRevision) {
-    const deleteRecordsRequest =
-            new RecordModel.DeleteRecordsRequest(app);
+    const deleteRecordsRequest = new RecordModel.DeleteRecordsRequest(app);
     deleteRecordsRequest.setIDsWithRevision(idsWithRevision);
 
-    const bulkRequestItem = new BulkRequestItemModel(
-      'DELETE',
-      kintoneConnection.get(this).getPathURI('RECORDS'),
-      deleteRecordsRequest
-    );
-    bulkRequests.get(this).addRequest(bulkRequestItem);
+    const bulkRequestItem = new BulkRequestItemModel('DELETE', this.connection.getPathURI('RECORDS'), deleteRecordsRequest);
+    this.bulkRequests.addRequest(bulkRequestItem);
     return this;
   }
 
@@ -182,16 +134,9 @@ class BulkRequest {
      * @return {this}
      */
   updateRecordAssignees(app, record, assignees, revision) {
-    const updateRecordRequest =
-            new RecordModel.UpdateRecordAssigneesRequest(
-              app, record, assignees, revision);
-
-    const bulkRequestItem = new BulkRequestItemModel(
-      'PUT',
-      kintoneConnection.get(this).getPathURI('RECORD_ASSIGNEES'),
-      updateRecordRequest
-    );
-    bulkRequests.get(this).addRequest(bulkRequestItem);
+    const updateRecordRequest = new RecordModel.UpdateRecordAssigneesRequest(app, record, assignees, revision);
+    const bulkRequestItem = new BulkRequestItemModel('PUT', this.connection.getPathURI('RECORD_ASSIGNEES'), updateRecordRequest);
+    this.bulkRequests.addRequest(bulkRequestItem);
     return this;
   }
 
@@ -205,16 +150,9 @@ class BulkRequest {
      * @return {this}
      */
   updateRecordStatus(app, id, action, assignee, revision) {
-    const updateRecordRequest =
-            new RecordModel.UpdateRecordStatusRequest(
-              app, id, action, assignee, revision);
-
-    const bulkRequestItem = new BulkRequestItemModel(
-      'PUT',
-      kintoneConnection.get(this).getPathURI('RECORD_STATUS'),
-      updateRecordRequest
-    );
-    bulkRequests.get(this).addRequest(bulkRequestItem);
+    const updateRecordRequest = new RecordModel.UpdateRecordStatusRequest(app, id, action, assignee, revision);
+    const bulkRequestItem = new BulkRequestItemModel('PUT', this.connection.getPathURI('RECORD_STATUS'), updateRecordRequest);
+    this.bulkRequests.addRequest(bulkRequestItem);
     return this;
   }
 
@@ -225,15 +163,9 @@ class BulkRequest {
      * @return {this}
      */
   updateRecordsStatus(app, records) {
-    const updateRecordsRequest = new RecordModel.UpdateRecordsRequest(
-      app, records);
-
-    const bulkRequestItem = new BulkRequestItemModel(
-      'PUT',
-      kintoneConnection.get(this).getPathURI('RECORDS_STATUS'),
-      updateRecordsRequest
-    );
-    bulkRequests.get(this).addRequest(bulkRequestItem);
+    const updateRecordsRequest = new RecordModel.UpdateRecordsRequest(app, records);
+    const bulkRequestItem = new BulkRequestItemModel('PUT', this.connection.getPathURI('RECORDS_STATUS'), updateRecordsRequest);
+    this.bulkRequests.addRequest(bulkRequestItem);
     return this;
   }
 
@@ -242,13 +174,13 @@ class BulkRequest {
      * @return {promise}
      */
   execute() {
-    return kintoneConnection.get(this)
-      .addRequestOption('json', true)
-      .request('POST', 'BULK_REQUEST', bulkRequests.get(this).toJSON())
+    return this.connection.addRequestOption('json', true)
+      .request('POST', 'BULK_REQUEST', this.bulkRequests.toJSON())
       .then((result) => {
         return result;
-      }).catch((err) => {
-        throw new KintoneExeption(err);
+      })
+      .catch((err) => {
+        throw new KintoneAPIException(err);
       });
   }
 }

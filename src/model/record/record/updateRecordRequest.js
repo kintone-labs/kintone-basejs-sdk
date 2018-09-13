@@ -1,21 +1,15 @@
-/**
- * kintone api - nodejs client
- */
-
 const RecordUpdateItem = require('./RecordUpdateItem');
-
-const app = new WeakMap();
 
 /**
  * UpdateRecordRequest model
  */
 class UpdateRecordRequest extends RecordUpdateItem {
   /**
-     * @param {String} appIDInput
+     * @param {String} appID
      */
-  constructor(appIDInput) {
+  constructor(appID) {
     super();
-    app.set(this, appIDInput);
+    this.app = appID;
   }
   /**
      * Get JSON struct of this model
@@ -23,7 +17,7 @@ class UpdateRecordRequest extends RecordUpdateItem {
      */
   toJSON() {
     const data = super.toJSON();
-    data.app = app.get(this);
+    data.app = this.app;
     return data;
   }
   /**

@@ -1,11 +1,4 @@
 /**
- * kintone api - nodejs client
- * AddRecordRequest model
- */
-
-const app = new WeakMap();
-const record = new WeakMap();
-/**
  * AddRecordRequest model
  */
 class AddRecordRequest {
@@ -15,22 +8,22 @@ class AddRecordRequest {
      * @param {HashTable<String, FieldValue>} recordHashTableData
      */
   constructor(appID, recordHashTableData) {
-    app.set(this, appID);
-    record.set(this, recordHashTableData);
+    this.app = appID;
+    this.record = recordHashTableData;
   }
   /**
      * Get app id
      * @return {integer}
      */
   getAppID() {
-    return app.get(this);
+    return this.app;
   }
   /**
      * Get record data
      * @return {HashTable<String, FieldValue>}
      */
   getRecordData() {
-    return record.get(this);
+    return this.record;
   }
   /**
      * Get JSON struct of this model
