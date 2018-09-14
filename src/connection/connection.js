@@ -29,6 +29,7 @@ class Connection {
     this.options = {};
 
     this.setAuth(auth);
+    this.addRequestOption(CONNECTION_CONST.BASE.PROXY, false);
   }
 
   /**
@@ -228,7 +229,6 @@ class Connection {
     const httpsAgent = tunnel.httpsOverHttp({
       proxy: {host: proxyHost, port: proxyPort}
     });
-    this.addRequestOption(CONNECTION_CONST.BASE.PROXY, false);
     this.addRequestOption(CONNECTION_CONST.BASE.HTTPS_AGENT, httpsAgent);
     return this;
   }
