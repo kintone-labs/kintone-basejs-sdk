@@ -17,7 +17,7 @@ class Common {
      */
   sendRequest(method, url, model, connection) {
     const body = model.toJSON ? model.toJSON() : model;
-    connection.addRequestOption(CONTENT_TYPE_KEY, CONTENT_TYPE_VALUE);
+    connection.setHeader(CONTENT_TYPE_KEY, CONTENT_TYPE_VALUE);
     return connection.request(method, url, body)
       .then((result) => {
         return result;
