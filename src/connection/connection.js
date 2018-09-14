@@ -8,7 +8,6 @@ const KintoneExeption = require('../exception/KintoneAPIException');
 
 const CONNECTION_CONST = require('./constant');
 const DEFAULT_PORT = '443';
-const CONTENT_TYPE_KEY = 'Content-Type';
 const RESPONSE_TYPE_KEY = 'responseType';
 const RESPONSE_TYPE_VALUE = 'arraybuffer';
 
@@ -131,7 +130,6 @@ class Connection {
        * @return {Promise}
        */
   upload(formData) {
-    this.setHeader(CONTENT_TYPE_KEY, formData.getHeaders()['content-type']);
     return this.requestFile('POST', 'FILE', formData);
   }
 
