@@ -1,7 +1,7 @@
 const requestPromise = require('request-promise');
 const nock = require('nock');
 
-const common = require('../../common');
+const common = require('../../utils/common');
 const KintoneAPIException = require('../../../src/exception/KintoneAPIException');
 
 const expectResult = {

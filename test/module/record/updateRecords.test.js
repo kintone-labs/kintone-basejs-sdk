@@ -5,7 +5,7 @@
  */
 const nock = require('nock');
 
-const common = require('../../common');
+const common = require('../../utils/common');
 
 const Connection = require('../../../src/connection/Connection');
 const Auth = require('../../../src/authentication/Auth');

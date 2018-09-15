@@ -5,7 +5,7 @@
  */
 const nock = require('nock');
 
-const common = require('../../common');
+const common = require('../../utils/common');
 
 const {Record, Auth, Connection, KintoneException} = require('../../../src/main.js');
 
