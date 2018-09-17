@@ -14,10 +14,10 @@ const CONTENT_TYPE_KEY = 'Content-Type';
  */
 class Connection {
   /**
-     * @param {String} domain
-     * @param {Auth} auth
-     * @param {Integer} guestSpaceID
-     */
+   * @param {String} domain
+   * @param {Auth} auth
+   * @param {Number} guestSpaceID
+   */
   constructor(domain, auth, guestSpaceID) {
     this.domain = domain;
     this.guestSpaceID = parseInt(guestSpaceID, 10);
@@ -30,12 +30,12 @@ class Connection {
   }
 
   /**
-     * request to URL
-     * @param {String} method
-     * @param {String} restAPIName
-     * @param {String} body
-     * @return {Promise}
-     */
+   * request to URL
+   * @param {String} methodName
+   * @param {String} restAPIName
+   * @param {String} body
+   * @return {Promise}
+   */
   request(methodName, restAPIName, body) {
     // Set Header
     const headersRequet = {};
@@ -70,12 +70,12 @@ class Connection {
     });
   }
   /**
-     * request to URL
-     * @param {String} method
-     * @param {String} restAPIName
-     * @param {String} body
-     * @return {Promise}
-     */
+   * request to URL
+   * @param {String} methodName
+   * @param {String} restAPIName
+   * @param {String} body
+   * @return {Promise}
+   */
   requestFile(methodName, restAPIName, body) {
     // Set Header
     const headersRequet = {};
@@ -112,18 +112,19 @@ class Connection {
   }
 
   /**
-     * Download file from kintone
-     * @param {String} fileKey
-     * @return {Promise}
-     */
+   * Download file from kintone
+   * @param {String} body
+   * @return {Promise}
+   */
   download(body) {
     return this.requestFile('GET', 'FILE', body);
   }
   /**
-       * upload file to kintone
-       * @param {JSONObjectg} formData
-       * @return {Promise}
-       */
+   * upload file to kintone
+   * @param {String} fileName
+   * @param {String} fileContent
+   * @return {Promise}
+   */
   upload(fileName, fileContent) {
     const formData = new FormData();
     formData.append('file', fileContent, fileName);
@@ -158,10 +159,10 @@ class Connection {
   }
 
   /**
-     * auto get uri for request
-     * @param {String} url - api name or FQDN
-     * @return {String}
-     */
+   * auto get uri for request
+   * @param {String} url - api name or FQDN
+   * @return {String}
+   */
   getUri(url) {
     let urlFQDN = CONNECTION_CONST.BASE.SCHEMA + '://' + this.domain;
     const apiNameUpperCase = String(url).toUpperCase();
@@ -174,10 +175,10 @@ class Connection {
     return urlFQDN;
   }
   /**
-     * getPathURI
-     * @param {String} apiName
-     * @return {String}
-     */
+   * getPathURI
+   * @param {String} apiName
+   * @return {String}
+   */
   getPathURI(apiName) {
     let pathURI = '';
     if (this.guestSpaceID > 0) {
@@ -189,30 +190,30 @@ class Connection {
     return pathURI;
   }
   /**
-     * Add option for request
-     * @param {String} key
-     * @param {String} value
-     * @return {this}
-     */
+   * Add option for request
+   * @param {String} key
+   * @param {String} value
+   * @return {this}
+   */
   addRequestOption(key, value) {
     this.options[key] = value;
     return this;
   }
   /**
-     * set header for request
-     * @param {String} key
-     * @param {String} value
-     * @return {this}
-     */
+   * set header for request
+   * @param {String} key
+   * @param {String} value
+   * @return {this}
+   */
   setHeader(key, value) {
     this.headers.push(new HTTPHeader(key, value));
     return this;
   }
   /**
-     * set auth for connection
-     * @param {Auth} auth
-     * @return {this}
-     */
+   * set auth for connection
+   * @param {Auth} auth
+   * @return {this}
+   */
   setAuth(auth) {
     if (!(auth instanceof Auth)) {
       throw new Error(`${auth} not an instance of Auth`);
@@ -221,11 +222,11 @@ class Connection {
     return this;
   }
   /**
-     * Sett proxy for request
-     * @param {String} proxyHost
-     * @param {String} proxyPort
-     * @return {this}
-     */
+   * Sett proxy for request
+   * @param {String} proxyHost
+   * @param {String} proxyPort
+   * @return {this}
+   */
   setProxy(proxyHost, proxyPort) {
     const httpsAgent = tunnel.httpsOverHttp({
       proxy: {host: proxyHost, port: proxyPort}
