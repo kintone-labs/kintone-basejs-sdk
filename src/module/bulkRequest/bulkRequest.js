@@ -22,7 +22,7 @@ class BulkRequest {
 
   /**
      * Add the record
-     * @param {Number} app
+     * @param {Integer} app
      * @param {Record} record
      * @return {this}
      */
@@ -35,7 +35,7 @@ class BulkRequest {
 
   /**
      * Add multi records
-     * @param {Number} app
+     * @param {Integer} app
      * @param {Array<record>} records
      * @return {this}
      */
@@ -50,10 +50,10 @@ class BulkRequest {
 
   /**
      * Update the specific record by ID
-     * @param {Number} app
-     * @param {Number} id
+     * @param {Integer} app
+     * @param {Integer} id
      * @param {Record} record
-     * @param {Number} revision
+     * @param {Integer} revision
      * @return {this}
      */
   updateRecordByID(app, id, record, revision) {
@@ -67,10 +67,10 @@ class BulkRequest {
 
   /**
      * Update the specific record by updateKey
-     * @param {Number} app
+     * @param {Integer} app
      * @param {RecordUpdateKey} updateKey
      * @param {Record} record
-     * @param {Number} revision
+     * @param {Integer} revision
      * @return {this}
      */
   updateRecordByUpdateKey(app, updateKey, record, revision) {
@@ -84,7 +84,7 @@ class BulkRequest {
 
   /**
      * Update multi records
-     * @param {Number} app
+     * @param {Integer} app
      * @param {Array<RecordUpdateItem>} records
      * @return {this}
      */
@@ -97,8 +97,8 @@ class BulkRequest {
 
   /**
      * Delete multi records
-     * @param {Number} app
-     * @param {Array<Number>} ids
+     * @param {Integer} app
+     * @param {Array<Integer>} ids
      * @return {this}
      */
   deleteRecords(app, ids) {
@@ -112,8 +112,8 @@ class BulkRequest {
 
   /**
      * Delete records at the specific revision
-     * @param {Number} app
-     * @param {Object} idsWithRevision
+     * @param {Integer} app
+     * @param {HashTable <Integer, Integer>} idsWithRevision
      * @return {this}
      */
   deleteRecordsWithRevision(app, idsWithRevision) {
@@ -127,10 +127,10 @@ class BulkRequest {
 
   /**
      * Update assignees of the specific record
-     * @param {Number} app
-     * @param {Number} record
+     * @param {*} app
+     * @param {*} record
      * @param {Array<String>} assignees
-     * @param {Number} revision
+     * @param {Integer} revision
      * @return {this}
      */
   updateRecordAssignees(app, record, assignees, revision) {
@@ -142,11 +142,11 @@ class BulkRequest {
 
   /**
      * Update status of the specific record
-     * @param {Number} app
-     * @param {Number} id
+     * @param {Integer} app
+     * @param {Integer} id
      * @param {String} action
      * @param {String} assignee
-     * @param {Number} revision
+     * @param {Integer} revision
      * @return {this}
      */
   updateRecordStatus(app, id, action, assignee, revision) {
@@ -158,8 +158,8 @@ class BulkRequest {
 
   /**
      * Update status of the multi records
-     * @param {Number} app
-     * @param {Array<{RecordStatusUpdate}>} records
+     * @param {Integer} app
+     * @param {Array<RecordStatusUpdate>} recordsStatusUpdate
      * @return {this}
      */
   updateRecordsStatus(app, records) {

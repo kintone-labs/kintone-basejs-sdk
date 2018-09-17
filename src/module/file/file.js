@@ -32,8 +32,7 @@ class File {
   }
   /**
      * upload file to kintone
-     * @param {String} fileName
-     * @param {String} fileContent
+     * @param {JSONObjectg} formData
      * @return {Promise}
      */
   upload(fileName, fileContent) {

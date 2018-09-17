@@ -8,7 +8,7 @@ class Common {
   /**
      * @param {String} method
      * @param {String} url
-     * @param {RecordModel} model
+     * @param {RecordModle} model
      * @param {Connection} connection
      * @return {Promise} Promise
      */

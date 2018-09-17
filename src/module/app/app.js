@@ -19,7 +19,7 @@ class App {
   /**
      * @param {String} method
      * @param {String} url
-     * @param {RecordModel} model
+     * @param {RecordModle} model
      * @return {Promise} Promise
      */
   sendRequest(method, url, model) {
@@ -27,18 +27,18 @@ class App {
   }
   /**
      * Get single app details
-     * @param {Number} appId
+     * @param {Integer} appID
      * @return {Promise} Promise
      */
-  getApp(appId) {
+  getApp(appID) {
     const dataRequest =
-            new AppModel.GetAppRequest(appId);
+            new AppModel.GetAppRequest(appID);
     return this.sendRequest('GET', 'app', dataRequest);
   }
   /**
      * Get multiple apps details
-     * @param {Number} offset
-     * @param {Number} limit
+     * @param {Integer} offset
+     * @param {Integer} limit
      * @return {Promise} Promise
      */
   getApps(offset, limit) {
@@ -48,8 +48,8 @@ class App {
   /**
      * Get multiple apps details
      * @param {Array<String>} codes
-     * @param {Number} offset
-     * @param {Number} limit
+     * @param {Integer} offset
+     * @param {Integer} limit
      * @return {Promise} Promise
      */
   getAppsByCodes(codes, offset, limit) {
@@ -60,8 +60,8 @@ class App {
   /**
      * Get multiple apps details
      * @param {String} name
-     * @param {Number} offset
-     * @param {Number} limit
+     * @param {Integer} offset
+     * @param {Integer} limit
      * @return {Promise} Promise
      */
   getAppsByName(name, offset, limit) {
@@ -71,9 +71,9 @@ class App {
   }
   /**
      * Get multiple apps details
-     * @param {Array<Number>} ids
-     * @param {Number} offset
-     * @param {Number} limit
+     * @param {Array<Integer>} ids
+     * @param {Integer} offset
+     * @param {Integer} limit
      * @return {Promise} Promise
      */
   getAppsByIDs(ids, offset, limit) {
@@ -85,8 +85,8 @@ class App {
   /**
      * Get multiple apps details
      * @param {Array<String>} spaceIds
-     * @param {Number} offset
-     * @param {Number} limit
+     * @param {Integer} offset
+     * @param {Integer} limit
      * @return {Promise} Promise
      */
   getAppsBySpaceIDs(spaceIds, offset, limit) {
@@ -96,20 +96,19 @@ class App {
   }
   /**
      * Get app's form fields details
-     * @param {Number} app
+     * @param {Integer} appID
      * @param {Boolean} isPreview
      * @return {Promise} Promise
      */
-  getFormLayout(app, isPreview) {
-    const dataRequest = new AppModel.GetFormLayoutsRequest(app);
+  getFormLayout(appID, isPreview) {
+    const dataRequest = new AppModel.GetFormLayoutsRequest(appID);
     const apiName = isPreview === true ? 'APP_LAYOUT_PREVIEW' : 'APP_LAYOUT';
     return this.sendRequest('GET', apiName, dataRequest);
   }
   /**
      * Update app's form fields details
-     * @param {Number} app
-     * @param {Array<{ItemLayout}>} layout
-     * @param {Number} revision
+     * @param {Integer} appID
+     * @param {Boolean} isPreview
      * @return {Promise} Promise
      */
   updateFormLayout(app, layout, revision) {
@@ -118,21 +117,21 @@ class App {
   }
   /**
      * Get app's form fields details
-     * @param {Number} app
+     * @param {Integer} appID
      * @param {String} lang
      * @param {Boolean} isPreview
      * @return {Promise} Promise
      */
-  getFormFields(app, lang, isPreview) {
-    const dataRequest = new AppModel.GetFormFieldsRequest(app, lang);
+  getFormFields(appID, lang, isPreview) {
+    const dataRequest = new AppModel.GetFormFieldsRequest(appID, lang);
     const apiName = isPreview === true ? 'APP_FIELDS_PREVIEW' : 'APP_FIELDS';
     return this.sendRequest('GET', apiName, dataRequest);
   }
   /**
    * Add form fields
-   * @param {Number} app
-   * @param {Object} fields
-   * @param {Number} revision
+   * @param {*} app
+   * @param {*} fields
+   * @param {*} revision
    * @returns {Promise} Promise
    */
   addFormFields(app, fields, revision) {
@@ -142,9 +141,9 @@ class App {
 
   /**
    * Update form fields
-   * @param {Number} app
-   * @param {Object} fields
-   * @param {Number} revision
+   * @param {*} app
+   * @param {*} fields
+   * @param {*} revision
    * @returns {Promise} Promise
    */
   updateFormFields(app, fields, revision) {
@@ -154,9 +153,9 @@ class App {
 
   /**
    * Delete form fields
-   * @param {Number} app
-   * @param {Object} fields
-   * @param {Number} revision
+   * @param {*} app
+   * @param {*} fields
+   * @param {*} revision
    * @returns {Promise} Promise
    */
   deleteFormFields(app, fields, revision) {
@@ -167,8 +166,8 @@ class App {
   /**
    * Add form fields
    * @param {String} name
-   * @param {Number} space
-   * @param {Number} thread
+   * @param {Integer} space
+   * @param {Integer} thread
    * @returns {Promise} Promise
    */
   addPreviewApp(name, space, thread) {
@@ -178,8 +177,8 @@ class App {
 
   /**
    * Deploy App Settings
-   * @param {Array<{AddPreviewAppResponse}>} apps
-   * @param {Boolean} revert
+   * @param {Array} apps
+   * @param {Integer} revert
    * @returns {Promise} Promise
    */
   deployAppSettings(apps, revert) {
@@ -199,7 +198,7 @@ class App {
 
   /**
    * Get Views
-   * @param {Number} app
+   * @param {String} app
    * @param {String} lang
    * @param {Boolean} isPreview
    * @returns {Promise} Promise
@@ -212,9 +211,9 @@ class App {
 
   /**
    * Update Views
-   * @param {Number} app
-   * @param {Object} views
-   * @param {Number} revision
+   * @param {String} app
+   * @param {HashTable<String, View>} views
+   * @param {Integer} revision
    * @returns {Promise} Promise
    */
   updateViews(app, views, revision) {
@@ -224,7 +223,7 @@ class App {
 
   /**
    * Get Views
-   * @param {Number} app
+   * @param {String} app
    * @param {String} lang
    * @param {Boolean} isPreview
    * @returns {Promise} Promise
@@ -237,8 +236,8 @@ class App {
 
   /**
    * Get Views
-   * @param {Number} app
-   * @param {{GeneralSettings}} generalSettings
+   * @param {String} app
+   * @param {GeneralSettings} generalSettings
    * @param {Boolean} revision
    * @returns {Promise} Promise
    */

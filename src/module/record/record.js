@@ -20,7 +20,7 @@ class Record {
   /**
      * @param {String} method
      * @param {String} url
-     * @param {RecordModel} model
+     * @param {RecordModle} model
      * @return {Promise} Promise
      */
   sendRequest(method, url, model) {
@@ -29,8 +29,8 @@ class Record {
   /**
      * Get record by specific ID
      * TODO: Parse to response model
-     * @param {Number} app
-     * @param {Number} id
+     * @param {Integer} app
+     * @param {Integer} id
      * @return {Promise} Promise
      */
   getRecord(app, id) {
@@ -40,7 +40,7 @@ class Record {
   /**
      * Get multi record with options
      * TODO: Parse to response model
-     * @param {Number} app
+     * @param {Integer} app
      * @param {String} query
      * @param {Array<String>} fields
      * @param {Boolean} totalCount
@@ -52,7 +52,7 @@ class Record {
   }
   /**
      * Add the record
-     * @param {Number} app
+     * @param {Integer} app
      * @param {Record} record
      * @return {Promise} Promise
      */
@@ -63,7 +63,7 @@ class Record {
 
   /**
      * Add multi records
-     * @param {Number} app
+     * @param {Integer} app
      * @param {Array<record>} records
      * @return {Promise} Promise
      */
@@ -75,10 +75,10 @@ class Record {
 
   /**
      * Update the specific record by ID
-     * @param {Number} app
-     * @param {Number} id
+     * @param {Integer} app
+     * @param {Integer} id
      * @param {Record} record
-     * @param {Number} revision
+     * @param {Integer} revision
      * @return {Promise} Promise
      */
   updateRecordByID(app, id, record, revision) {
@@ -95,10 +95,10 @@ class Record {
 
   /**
      * Update the specific record by updateKey
-     * @param {Number} app
+     * @param {Integer} app
      * @param {RecordUpdateKey} updateKey
      * @param {Record} record
-     * @param {Number} revision
+     * @param {Integer} revision
      * @return {Promise} Promise
      */
   updateRecordByUpdateKey(app, updateKey, record, revision) {
@@ -139,7 +139,7 @@ class Record {
   }
   /**
      * Update multi records
-     * @param {Number} app
+     * @param {Integer} app
      * @param {Array<RecordUpdateItem>} records
      * @return {Promise} Promise
      */
@@ -151,7 +151,7 @@ class Record {
 
   /**
      * Delete multi records
-     * @param {Number} app
+     * @param {Integer} app
      * @param {Array<Integer>} ids
      * @return {Promise} Promise
      */
@@ -163,7 +163,7 @@ class Record {
 
   /**
      * Delete records at the specific revision
-     * @param {Number} app
+     * @param {Integer} app
      * @param {HashTable <Integer, Integer>} idsWithRevision
      * @return {this}
      */
@@ -179,7 +179,7 @@ class Record {
      * @param {*} app
      * @param {*} id
      * @param {Array<String>} assignees
-     * @param {Number} revision
+     * @param {Integer} revision
      * @return {Promise}
      */
   updateRecordAssignees(app, id, assignees, revision) {
@@ -190,11 +190,11 @@ class Record {
 
   /**
      * Update status of the specific record
-     * @param {Number} app
-     * @param {Number} id
+     * @param {Integer} app
+     * @param {Integer} id
      * @param {String} action
      * @param {String} assignee
-     * @param {Number} revision
+     * @param {Integer} revision
      * @return {Promise}
      */
   updateRecordStatus(app, id, action, assignee, revision) {
@@ -205,7 +205,7 @@ class Record {
 
   /**
      * Update status of the multi records
-     * @param {Number} app
+     * @param {Integer} app
      * @param {Array <RecordStatusUpdate>} records
      * @return {Promise}
      */
@@ -216,7 +216,7 @@ class Record {
   }
   /**
      * createRecordStatusItem for use with update multi record status
-     * @param {Number} recordIDInput
+     * @param {Integer} recordIDInput
      * @param {String} actionNameInput
      * @param {String} assigneeIDInput
      * @param {String} revisionIDInput
@@ -228,11 +228,11 @@ class Record {
   }
   /**
      * Get comments of the specific record
-     * @param {Number} app
-     * @param {Number} record
+     * @param {Integer} app
+     * @param {Integer} record
      * @param {string} order  {asc|desc}
-     * @param {Number} offset
-     * @param {Number} limit
+     * @param {Integer} offset
+     * @param {Integer} limit
      * @return {Promise}
      */
   getComments(app, record, order, offset, limit) {
@@ -242,8 +242,8 @@ class Record {
 
   /**
      * Add new comment to the specific record
-     * @param {Number} app
-     * @param {Number} record
+     * @param {Integer} app
+     * @param {Integer} record
      * @param {CommentContent} comment
      * @return {Promise}
      */
@@ -254,9 +254,9 @@ class Record {
 
   /**
      *
-     * @param {Number} app
-     * @param {Number} record
-     * @param {Number} comment
+     * @param {Integer} app
+     * @param {Integer} record
+     * @param {Integer} comment
      * @return {Promise}
      */
   deleteComment(app, record, comment) {

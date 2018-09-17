@@ -16,7 +16,7 @@ class Connection {
   /**
      * @param {String} domain
      * @param {Auth} auth
-     * @param {Number} guestSpaceID
+     * @param {Integer} guestSpaceID
      */
   constructor(domain, auth, guestSpaceID) {
     this.domain = domain;
@@ -31,7 +31,7 @@ class Connection {
 
   /**
      * request to URL
-     * @param {String} methodName
+     * @param {String} method
      * @param {String} restAPIName
      * @param {String} body
      * @return {Promise}
@@ -71,7 +71,7 @@ class Connection {
   }
   /**
      * request to URL
-     * @param {String} methodName
+     * @param {String} method
      * @param {String} restAPIName
      * @param {String} body
      * @return {Promise}
@@ -113,18 +113,17 @@ class Connection {
 
   /**
      * Download file from kintone
-     * @param {String} body
+     * @param {String} fileKey
      * @return {Promise}
      */
   download(body) {
     return this.requestFile('GET', 'FILE', body);
   }
   /**
-     * upload file to kintone
-     * @param {String} fileName
-     * @param {String} fileContent
-     * @return {Promise}
-     */
+       * upload file to kintone
+       * @param {JSONObjectg} formData
+       * @return {Promise}
+       */
   upload(fileName, fileContent) {
     const formData = new FormData();
     formData.append('file', fileContent, fileName);
