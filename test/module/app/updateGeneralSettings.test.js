@@ -4,30 +4,46 @@
  */
 const nock = require('nock');
 
-const common = require('../../utils/common');
+const common = require('../utils/common');
 
-const KintoneAPIException = require('../../../src/exception/KintoneAPIException');
-const Connection = require('../../../src/connection/Connection');
-const Auth = require('../../../src/authentication/Auth');
-const App = require('../../../src/module/app/App');
+const {App, Auth, Connection, KintoneAPIException} = require('../../../src/main.js');
 
 const URI = 'https://' + common.DOMAIN;
+const preLiveRoute = '/k/v1/preview/app/settings.json';
+const guest_PreLiveRoute = `/k/guest/${common.GUEST_SPACEID}/v1/preview/app/settings.json`;
 
 const auth = new Auth();
 auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
-
 const conn = new Connection(common.DOMAIN, auth);
-
 const appModule = new App(conn);
+
+const authAPI = new Auth();
+authAPI.setApiToken('testAPIToken');
+const connAPI = new Connection(common.DOMAIN, authAPI);
+const appModule_API = new App(connAPI);
+const conn_API_Guest_Space = new Connection(common.DOMAIN, authAPI, common.GUEST_SPACEID);
+const appModule_API_Guest_Space = new App(conn_API_Guest_Space);
+
+const conn_Guest_Space = new Connection(common.DOMAIN, auth, common.GUEST_SPACEID);
+const appModule_Guest_Space = new App(conn_Guest_Space);
 
 describe('updateGeneralSettings function', () => {
   describe('common function', () => {
     it('should return promise', () => {
       nock(URI)
-        .put('/k/v1/preview/app/settings.json')
+        .put(preLiveRoute)
         .reply(200, {});
 
       const updateGeneralSettingsResult = appModule.updateGeneralSettings();
+      expect(updateGeneralSettingsResult).toHaveProperty('then');
+      expect(updateGeneralSettingsResult).toHaveProperty('catch');
+    });
+    it('should return promise - GUEST SPACE', () => {
+      nock(URI)
+        .put(guest_PreLiveRoute)
+        .reply(200, {});
+
+      const updateGeneralSettingsResult = appModule_Guest_Space.updateGeneralSettings();
       expect(updateGeneralSettingsResult).toHaveProperty('then');
       expect(updateGeneralSettingsResult).toHaveProperty('catch');
     });
@@ -35,9 +51,459 @@ describe('updateGeneralSettings function', () => {
 
   describe('success case', () => {
     describe('Valid request', () => {
-      it('should get successfully the app views information', () => {
+      describe('app in normal space', () => {
+        it('should update successfully the general settings', () => {
+          const appId = 1;
+          const generalSetings = {
+            'name': 'APP_NAME',
+            'description': 'Here is app description.',
+            'icon': {
+              'type': 'PRESET',
+              'key': 'APP72'
+            },
+            'theme': 'WHITE'
+          };
+          const revision = 1;
+          const expectBody = {
+            'app': 1,
+            'name': 'APP_NAME',
+            'description': 'Here is app description.',
+            'icon': {
+              'type': 'PRESET',
+              'key': 'APP72'
+            },
+            'theme': 'WHITE',
+            'revision': 1
+          };
+          const expectResult = {
+            'revision': '2'
+          };
+          nock(URI)
+            .put(preLiveRoute, (rqBody) => {
+              expect(rqBody).toEqual(expectBody);
+              return true;
+            })
+            .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+              expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+              return true;
+            })
+            .matchHeader('Content-Type', (type) => {
+              expect(type).toBe('application/json;charset=utf-8');
+              return true;
+            })
+            .reply(200, expectResult);
+          const updateGeneralSettingsResult = appModule.updateGeneralSettings(appId, generalSetings, revision);
+          return updateGeneralSettingsResult.then((rsp) => {
+            expect(rsp).toEqual(expectResult);
+          });
+        });
+        it('should update successfully the name', () => {
+          const appId = 1;
+          const generalSetings = {
+            'name': 'APP_NAME',
+          };
+          const expectBody = {
+            'app': 1,
+            'name': 'APP_NAME',
+          };
+          const expectResult = {
+            'revision': '2'
+          };
+          nock(URI)
+            .put(preLiveRoute, (rqBody) => {
+              expect(rqBody).toEqual(expectBody);
+              return true;
+            })
+            .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+              expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+              return true;
+            })
+            .matchHeader('Content-Type', (type) => {
+              expect(type).toBe('application/json;charset=utf-8');
+              return true;
+            })
+            .reply(200, expectResult);
+          const updateGeneralSettingsResult = appModule.updateGeneralSettings(appId, generalSetings);
+          return updateGeneralSettingsResult.then((rsp) => {
+            expect(rsp).toEqual(expectResult);
+          });
+        });
+        it('should update successfully the description', () => {
+          const appId = 1;
+          const generalSetings = {
+            'description': 'Here is app description.'
+          };
+          const expectBody = {
+            'app': 1,
+            'description': 'Here is app description.'
+          };
+          const expectResult = {
+            'revision': '2'
+          };
+          nock(URI)
+            .put(preLiveRoute, (rqBody) => {
+              expect(rqBody).toEqual(expectBody);
+              return true;
+            })
+            .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+              expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+              return true;
+            })
+            .matchHeader('Content-Type', (type) => {
+              expect(type).toBe('application/json;charset=utf-8');
+              return true;
+            })
+            .reply(200, expectResult);
+          const updateGeneralSettingsResult = appModule.updateGeneralSettings(appId, generalSetings);
+          return updateGeneralSettingsResult.then((rsp) => {
+            expect(rsp).toEqual(expectResult);
+          });
+        });
+        it('should update successfully the icon', () => {
+          const appId = 1;
+          const generalSetings = {
+            'icon': {
+              'type': 'PRESET',
+              'key': 'APP72'
+            }
+          };
+          const expectBody = {
+            'app': 1,
+            'icon': {
+              'type': 'PRESET',
+              'key': 'APP72'
+            }
+          };
+          const expectResult = {
+            'revision': '2'
+          };
+          nock(URI)
+            .put(preLiveRoute, (rqBody) => {
+              expect(rqBody).toEqual(expectBody);
+              return true;
+            })
+            .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+              expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+              return true;
+            })
+            .matchHeader('Content-Type', (type) => {
+              expect(type).toBe('application/json;charset=utf-8');
+              return true;
+            })
+            .reply(200, expectResult);
+          const updateGeneralSettingsResult = appModule.updateGeneralSettings(appId, generalSetings);
+          return updateGeneralSettingsResult.then((rsp) => {
+            expect(rsp).toEqual(expectResult);
+          });
+        });
+        it('should update successfully the theme = WHITE', () => {
+          const appId = 1;
+          const generalSetings = {
+            'theme': 'WHITE'
+          };
+          const expectBody = {
+            'app': 1,
+            'theme': 'WHITE'
+          };
+          const expectResult = {
+            'revision': '2'
+          };
+          nock(URI)
+            .put(preLiveRoute, (rqBody) => {
+              expect(rqBody).toEqual(expectBody);
+              return true;
+            })
+            .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+              expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+              return true;
+            })
+            .matchHeader('Content-Type', (type) => {
+              expect(type).toBe('application/json;charset=utf-8');
+              return true;
+            })
+            .reply(200, expectResult);
+          const updateGeneralSettingsResult = appModule.updateGeneralSettings(appId, generalSetings);
+          return updateGeneralSettingsResult.then((rsp) => {
+            expect(rsp).toEqual(expectResult);
+          });
+        });
+        it('should update successfully the theme = RED', () => {
+          const appId = 1;
+          const generalSetings = {
+            'theme': 'RED'
+          };
+          const expectBody = {
+            'app': 1,
+            'theme': 'RED'
+          };
+          const expectResult = {
+            'revision': '2'
+          };
+          nock(URI)
+            .put(preLiveRoute, (rqBody) => {
+              expect(rqBody).toEqual(expectBody);
+              return true;
+            })
+            .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+              expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+              return true;
+            })
+            .matchHeader('Content-Type', (type) => {
+              expect(type).toBe('application/json;charset=utf-8');
+              return true;
+            })
+            .reply(200, expectResult);
+          const updateGeneralSettingsResult = appModule.updateGeneralSettings(appId, generalSetings);
+          return updateGeneralSettingsResult.then((rsp) => {
+            expect(rsp).toEqual(expectResult);
+          });
+        });
+        it('should update successfully the theme = BLUE', () => {
+          const appId = 1;
+          const generalSetings = {
+            'theme': 'BLUE'
+          };
+          const expectBody = {
+            'app': 1,
+            'theme': 'BLUE'
+          };
+          const expectResult = {
+            'revision': '2'
+          };
+          nock(URI)
+            .put(preLiveRoute, (rqBody) => {
+              expect(rqBody).toEqual(expectBody);
+              return true;
+            })
+            .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+              expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+              return true;
+            })
+            .matchHeader('Content-Type', (type) => {
+              expect(type).toBe('application/json;charset=utf-8');
+              return true;
+            })
+            .reply(200, expectResult);
+          const updateGeneralSettingsResult = appModule.updateGeneralSettings(appId, generalSetings);
+          return updateGeneralSettingsResult.then((rsp) => {
+            expect(rsp).toEqual(expectResult);
+          });
+        });
+        it('should update successfully the theme = GREEN', () => {
+          const appId = 1;
+          const generalSetings = {
+            'theme': 'GREEN'
+          };
+          const expectBody = {
+            'app': 1,
+            'theme': 'GREEN'
+          };
+          const expectResult = {
+            'revision': '2'
+          };
+          nock(URI)
+            .put(preLiveRoute, (rqBody) => {
+              expect(rqBody).toEqual(expectBody);
+              return true;
+            })
+            .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+              expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+              return true;
+            })
+            .matchHeader('Content-Type', (type) => {
+              expect(type).toBe('application/json;charset=utf-8');
+              return true;
+            })
+            .reply(200, expectResult);
+          const updateGeneralSettingsResult = appModule.updateGeneralSettings(appId, generalSetings);
+          return updateGeneralSettingsResult.then((rsp) => {
+            expect(rsp).toEqual(expectResult);
+          });
+        });
+        it('should update successfully the theme = YELLOW', () => {
+          const appId = 1;
+          const generalSetings = {
+            'theme': 'YELLOW'
+          };
+          const expectBody = {
+            'app': 1,
+            'theme': 'YELLOW'
+          };
+          const expectResult = {
+            'revision': '2'
+          };
+          nock(URI)
+            .put(preLiveRoute, (rqBody) => {
+              expect(rqBody).toEqual(expectBody);
+              return true;
+            })
+            .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+              expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+              return true;
+            })
+            .matchHeader('Content-Type', (type) => {
+              expect(type).toBe('application/json;charset=utf-8');
+              return true;
+            })
+            .reply(200, expectResult);
+          const updateGeneralSettingsResult = appModule.updateGeneralSettings(appId, generalSetings);
+          return updateGeneralSettingsResult.then((rsp) => {
+            expect(rsp).toEqual(expectResult);
+          });
+        });
+        it('should update successfully the theme = BLACK', () => {
+          const appId = 1;
+          const generalSetings = {
+            'theme': 'BLACK'
+          };
+          const expectBody = {
+            'app': 1,
+            'theme': 'BLACK'
+          };
+          const expectResult = {
+            'revision': '2'
+          };
+          nock(URI)
+            .put(preLiveRoute, (rqBody) => {
+              expect(rqBody).toEqual(expectBody);
+              return true;
+            })
+            .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+              expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+              return true;
+            })
+            .matchHeader('Content-Type', (type) => {
+              expect(type).toBe('application/json;charset=utf-8');
+              return true;
+            })
+            .reply(200, expectResult);
+          const updateGeneralSettingsResult = appModule.updateGeneralSettings(appId, generalSetings);
+          return updateGeneralSettingsResult.then((rsp) => {
+            expect(rsp).toEqual(expectResult);
+          });
+        });
+        it('should update successfully without revision', () => {
+          const appId = 1;
+          const generalSetings = {
+            'name': 'APP_NAME',
+            'description': 'Here is app description.',
+            'icon': {
+              'type': 'PRESET',
+              'key': 'APP72'
+            },
+            'theme': 'WHITE'
+          };
+          const expectBody = {
+            'app': 1,
+            'name': 'APP_NAME',
+            'description': 'Here is app description.',
+            'icon': {
+              'type': 'PRESET',
+              'key': 'APP72'
+            },
+            'theme': 'WHITE'
+          };
+          const expectResult = {
+            'revision': '2'
+          };
+          nock(URI)
+            .put(preLiveRoute, (rqBody) => {
+              expect(rqBody).toEqual(expectBody);
+              return true;
+            })
+            .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+              expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+              return true;
+            })
+            .matchHeader('Content-Type', (type) => {
+              expect(type).toBe('application/json;charset=utf-8');
+              return true;
+            })
+            .reply(200, expectResult);
+          const updateGeneralSettingsResult = appModule.updateGeneralSettings(appId, generalSetings, undefined);
+          return updateGeneralSettingsResult.then((rsp) => {
+            expect(rsp).toEqual(expectResult);
+          });
+        });
+        it('should update successfully when input revision = -1', () => {
+          const appId = 1;
+          const generalSetings = {
+            'name': 'APP_NAME',
+            'description': 'Here is app description.',
+            'icon': {
+              'type': 'PRESET',
+              'key': 'APP72'
+            },
+            'theme': 'WHITE'
+          };
+          const revision = -1;
+          const expectBody = {
+            'app': 1,
+            'name': 'APP_NAME',
+            'description': 'Here is app description.',
+            'icon': {
+              'type': 'PRESET',
+              'key': 'APP72'
+            },
+            'theme': 'WHITE',
+            'revision': -1
+          };
+          const expectResult = {
+            'revision': '2'
+          };
+          nock(URI)
+            .put(preLiveRoute, (rqBody) => {
+              expect(rqBody).toEqual(expectBody);
+              return true;
+            })
+            .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+              expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+              return true;
+            })
+            .matchHeader('Content-Type', (type) => {
+              expect(type).toBe('application/json;charset=utf-8');
+              return true;
+            })
+            .reply(200, expectResult);
+          const updateGeneralSettingsResult = appModule.updateGeneralSettings(appId, generalSetings, revision);
+          return updateGeneralSettingsResult.then((rsp) => {
+            expect(rsp).toEqual(expectResult);
+          });
+        });
+        it('should update successfully without general settings', () => {
+          const appId = 1;
+          const revision = 2;
+          const expectBody = {
+            'app': 1,
+            'revision': 2
+          };
+          const expectResult = {
+            'revision': '3'
+          };
+          nock(URI)
+            .put(preLiveRoute, (rqBody) => {
+              expect(rqBody).toEqual(expectBody);
+              return true;
+            })
+            .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+              expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+              return true;
+            })
+            .matchHeader('Content-Type', (type) => {
+              expect(type).toBe('application/json;charset=utf-8');
+              return true;
+            })
+            .reply(200, expectResult);
+          const updateGeneralSettingsResult = appModule.updateGeneralSettings(appId, undefined, revision);
+          return updateGeneralSettingsResult.then((rsp) => {
+            expect(rsp).toEqual(expectResult);
+          });
+        });
+      });
+      describe('app in GUEST SPACE', () => {});
+      it('should update successfully the general settings in GUEST SPACE', () => {
         const appId = 1;
-        const genaralSetings = {
+        const generalSettings = {
           'name': 'APP_NAME',
           'description': 'Here is app description.',
           'icon': {
@@ -46,7 +512,336 @@ describe('updateGeneralSettings function', () => {
           },
           'theme': 'WHITE'
         };
-
+        const revision = 1;
+        const expectBody = {
+          'app': 1,
+          'name': 'APP_NAME',
+          'description': 'Here is app description.',
+          'icon': {
+            'type': 'PRESET',
+            'key': 'APP72'
+          },
+          'theme': 'WHITE',
+          'revision': 1
+        };
+        const expectResult = {
+          'revision': '2'
+        };
+        nock(URI)
+          .put(guest_PreLiveRoute, (rqBody) => {
+            expect(rqBody).toEqual(expectBody);
+            return true;
+          })
+          .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+            expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+            return true;
+          })
+          .matchHeader('Content-Type', (type) => {
+            expect(type).toBe('application/json;charset=utf-8');
+            return true;
+          })
+          .reply(200, expectResult);
+        const updateGeneralSettingsResult = appModule_Guest_Space.updateGeneralSettings(appId, generalSettings, revision);
+        return updateGeneralSettingsResult.then((rsp) => {
+          expect(rsp).toEqual(expectResult);
+        });
+      });
+      it('should update successfully the name in GUEST SPACE', () => {
+        const appId = 1;
+        const generalSetings = {
+          'name': 'APP_NAME',
+        };
+        const expectBody = {
+          'app': 1,
+          'name': 'APP_NAME',
+        };
+        const expectResult = {
+          'revision': '2'
+        };
+        nock(URI)
+          .put(guest_PreLiveRoute, (rqBody) => {
+            expect(rqBody).toEqual(expectBody);
+            return true;
+          })
+          .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+            expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+            return true;
+          })
+          .matchHeader('Content-Type', (type) => {
+            expect(type).toBe('application/json;charset=utf-8');
+            return true;
+          })
+          .reply(200, expectResult);
+        const updateGeneralSettingsResult = appModule_Guest_Space.updateGeneralSettings(appId, generalSetings);
+        return updateGeneralSettingsResult.then((rsp) => {
+          expect(rsp).toEqual(expectResult);
+        });
+      });
+      it('should update successfully the description in GUEST SPACE', () => {
+        const appId = 1;
+        const generalSetings = {
+          'description': 'Here is app description.'
+        };
+        const expectBody = {
+          'app': 1,
+          'description': 'Here is app description.'
+        };
+        const expectResult = {
+          'revision': '2'
+        };
+        nock(URI)
+          .put(guest_PreLiveRoute, (rqBody) => {
+            expect(rqBody).toEqual(expectBody);
+            return true;
+          })
+          .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+            expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+            return true;
+          })
+          .matchHeader('Content-Type', (type) => {
+            expect(type).toBe('application/json;charset=utf-8');
+            return true;
+          })
+          .reply(200, expectResult);
+        const updateGeneralSettingsResult = appModule_Guest_Space.updateGeneralSettings(appId, generalSetings);
+        return updateGeneralSettingsResult.then((rsp) => {
+          expect(rsp).toEqual(expectResult);
+        });
+      });
+      it('should update successfully the icon in GUEST SPACE', () => {
+        const appId = 1;
+        const generalSetings = {
+          'icon': {
+            'type': 'PRESET',
+            'key': 'APP72'
+          }
+        };
+        const expectBody = {
+          'app': 1,
+          'icon': {
+            'type': 'PRESET',
+            'key': 'APP72'
+          }
+        };
+        const expectResult = {
+          'revision': '2'
+        };
+        nock(URI)
+          .put(guest_PreLiveRoute, (rqBody) => {
+            expect(rqBody).toEqual(expectBody);
+            return true;
+          })
+          .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+            expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+            return true;
+          })
+          .matchHeader('Content-Type', (type) => {
+            expect(type).toBe('application/json;charset=utf-8');
+            return true;
+          })
+          .reply(200, expectResult);
+        const updateGeneralSettingsResult = appModule_Guest_Space.updateGeneralSettings(appId, generalSetings);
+        return updateGeneralSettingsResult.then((rsp) => {
+          expect(rsp).toEqual(expectResult);
+        });
+      });
+      it('should update successfully the theme = WHITE in GUEST SPACE', () => {
+        const appId = 1;
+        const generalSetings = {
+          'theme': 'WHITE'
+        };
+        const expectBody = {
+          'app': 1,
+          'theme': 'WHITE'
+        };
+        const expectResult = {
+          'revision': '2'
+        };
+        nock(URI)
+          .put(guest_PreLiveRoute, (rqBody) => {
+            expect(rqBody).toEqual(expectBody);
+            return true;
+          })
+          .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+            expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+            return true;
+          })
+          .matchHeader('Content-Type', (type) => {
+            expect(type).toBe('application/json;charset=utf-8');
+            return true;
+          })
+          .reply(200, expectResult);
+        const updateGeneralSettingsResult = appModule_Guest_Space.updateGeneralSettings(appId, generalSetings);
+        return updateGeneralSettingsResult.then((rsp) => {
+          expect(rsp).toEqual(expectResult);
+        });
+      });
+      it('should update successfully the theme = RED in GUEST SPACE', () => {
+        const appId = 1;
+        const generalSetings = {
+          'theme': 'RED'
+        };
+        const expectBody = {
+          'app': 1,
+          'theme': 'RED'
+        };
+        const expectResult = {
+          'revision': '2'
+        };
+        nock(URI)
+          .put(guest_PreLiveRoute, (rqBody) => {
+            expect(rqBody).toEqual(expectBody);
+            return true;
+          })
+          .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+            expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+            return true;
+          })
+          .matchHeader('Content-Type', (type) => {
+            expect(type).toBe('application/json;charset=utf-8');
+            return true;
+          })
+          .reply(200, expectResult);
+        const updateGeneralSettingsResult = appModule_Guest_Space.updateGeneralSettings(appId, generalSetings);
+        return updateGeneralSettingsResult.then((rsp) => {
+          expect(rsp).toEqual(expectResult);
+        });
+      });
+      it('should update successfully the theme = BLUE in GUEST SPACE', () => {
+        const appId = 1;
+        const generalSetings = {
+          'theme': 'BLUE'
+        };
+        const expectBody = {
+          'app': 1,
+          'theme': 'BLUE'
+        };
+        const expectResult = {
+          'revision': '2'
+        };
+        nock(URI)
+          .put(guest_PreLiveRoute, (rqBody) => {
+            expect(rqBody).toEqual(expectBody);
+            return true;
+          })
+          .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+            expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+            return true;
+          })
+          .matchHeader('Content-Type', (type) => {
+            expect(type).toBe('application/json;charset=utf-8');
+            return true;
+          })
+          .reply(200, expectResult);
+        const updateGeneralSettingsResult = appModule_Guest_Space.updateGeneralSettings(appId, generalSetings);
+        return updateGeneralSettingsResult.then((rsp) => {
+          expect(rsp).toEqual(expectResult);
+        });
+      });
+      it('should update successfully the theme = GREEN in GUEST SPACE', () => {
+        const appId = 1;
+        const generalSetings = {
+          'theme': 'GREEN'
+        };
+        const expectBody = {
+          'app': 1,
+          'theme': 'GREEN'
+        };
+        const expectResult = {
+          'revision': '2'
+        };
+        nock(URI)
+          .put(guest_PreLiveRoute, (rqBody) => {
+            expect(rqBody).toEqual(expectBody);
+            return true;
+          })
+          .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+            expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+            return true;
+          })
+          .matchHeader('Content-Type', (type) => {
+            expect(type).toBe('application/json;charset=utf-8');
+            return true;
+          })
+          .reply(200, expectResult);
+        const updateGeneralSettingsResult = appModule_Guest_Space.updateGeneralSettings(appId, generalSetings);
+        return updateGeneralSettingsResult.then((rsp) => {
+          expect(rsp).toEqual(expectResult);
+        });
+      });
+      it('should update successfully the theme = YELLOW in GUEST SPACE', () => {
+        const appId = 1;
+        const generalSetings = {
+          'theme': 'YELLOW'
+        };
+        const expectBody = {
+          'app': 1,
+          'theme': 'YELLOW'
+        };
+        const expectResult = {
+          'revision': '2'
+        };
+        nock(URI)
+          .put(guest_PreLiveRoute, (rqBody) => {
+            expect(rqBody).toEqual(expectBody);
+            return true;
+          })
+          .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+            expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+            return true;
+          })
+          .matchHeader('Content-Type', (type) => {
+            expect(type).toBe('application/json;charset=utf-8');
+            return true;
+          })
+          .reply(200, expectResult);
+        const updateGeneralSettingsResult = appModule_Guest_Space.updateGeneralSettings(appId, generalSetings);
+        return updateGeneralSettingsResult.then((rsp) => {
+          expect(rsp).toEqual(expectResult);
+        });
+      });
+      it('should update successfully the theme = BLACK in GUEST SPACE', () => {
+        const appId = 1;
+        const generalSetings = {
+          'theme': 'BLACK'
+        };
+        const expectBody = {
+          'app': 1,
+          'theme': 'BLACK'
+        };
+        const expectResult = {
+          'revision': '2'
+        };
+        nock(URI)
+          .put(guest_PreLiveRoute, (rqBody) => {
+            expect(rqBody).toEqual(expectBody);
+            return true;
+          })
+          .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+            expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+            return true;
+          })
+          .matchHeader('Content-Type', (type) => {
+            expect(type).toBe('application/json;charset=utf-8');
+            return true;
+          })
+          .reply(200, expectResult);
+        const updateGeneralSettingsResult = appModule_Guest_Space.updateGeneralSettings(appId, generalSetings);
+        return updateGeneralSettingsResult.then((rsp) => {
+          expect(rsp).toEqual(expectResult);
+        });
+      });
+      it('should update successfully without revision in GUEST SPACE', () => {
+        const appId = 1;
+        const generalSetings = {
+          'name': 'APP_NAME',
+          'description': 'Here is app description.',
+          'icon': {
+            'type': 'PRESET',
+            'key': 'APP72'
+          },
+          'theme': 'WHITE'
+        };
         const expectBody = {
           'app': 1,
           'name': 'APP_NAME',
@@ -57,20 +852,12 @@ describe('updateGeneralSettings function', () => {
           },
           'theme': 'WHITE'
         };
-
         const expectResult = {
-          'name': 'San Francisco Lunch Map',
-          'description': 'A list of great places to go!',
-          'icon': {
-            'type': 'PRESET',
-            'key': 'APP60'
-          },
-          'theme': 'WHITE',
-          'revision': '24'
+          'revision': '2'
         };
         nock(URI)
-          .put('/k/v1/preview/app/settings.json', (rqBody) => {
-            expect(rqBody).toMatchObject(expectBody);
+          .put(guest_PreLiveRoute, (rqBody) => {
+            expect(rqBody).toEqual(expectBody);
             return true;
           })
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
@@ -78,47 +865,824 @@ describe('updateGeneralSettings function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toBe('application/json;charset=utf-8');
             return true;
           })
           .reply(200, expectResult);
-        const updateGeneralSettingsResult = appModule.updateGeneralSettings(appId, genaralSetings);
+        const updateGeneralSettingsResult = appModule_Guest_Space.updateGeneralSettings(appId, generalSetings, undefined);
         return updateGeneralSettingsResult.then((rsp) => {
-          expect(rsp).toMatchObject(expectResult);
+          expect(rsp).toEqual(expectResult);
+        });
+      });
+      it('should update successfully when input revision = -1 in GUEST SPACE', () => {
+        const appId = 1;
+        const generalSetings = {
+          'name': 'APP_NAME',
+          'description': 'Here is app description.',
+          'icon': {
+            'type': 'PRESET',
+            'key': 'APP72'
+          },
+          'theme': 'WHITE'
+        };
+        const revision = -1;
+        const expectBody = {
+          'app': 1,
+          'name': 'APP_NAME',
+          'description': 'Here is app description.',
+          'icon': {
+            'type': 'PRESET',
+            'key': 'APP72'
+          },
+          'theme': 'WHITE',
+          'revision': -1
+        };
+        const expectResult = {
+          'revision': '2'
+        };
+        nock(URI)
+          .put(guest_PreLiveRoute, (rqBody) => {
+            expect(rqBody).toEqual(expectBody);
+            return true;
+          })
+          .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+            expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+            return true;
+          })
+          .matchHeader('Content-Type', (type) => {
+            expect(type).toBe('application/json;charset=utf-8');
+            return true;
+          })
+          .reply(200, expectResult);
+        const updateGeneralSettingsResult = appModule_Guest_Space.updateGeneralSettings(appId, generalSetings, revision);
+        return updateGeneralSettingsResult.then((rsp) => {
+          expect(rsp).toEqual(expectResult);
+        });
+      });
+      it('should update successfully without general settings in GUEST SPACE', () => {
+        const appId = 1;
+        const revision = 1;
+        const expectBody = {
+          'app': 1,
+          'revision': 1
+        };
+        const expectResult = {
+          'revision': '2'
+        };
+        nock(URI)
+          .put(guest_PreLiveRoute, (rqBody) => {
+            expect(rqBody).toEqual(expectBody);
+            return true;
+          })
+          .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+            expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+            return true;
+          })
+          .matchHeader('Content-Type', (type) => {
+            expect(type).toBe('application/json;charset=utf-8');
+            return true;
+          })
+          .reply(200, expectResult);
+        const updateGeneralSettingsResult = appModule_Guest_Space.updateGeneralSettings(appId, undefined, revision);
+        return updateGeneralSettingsResult.then((rsp) => {
+          expect(rsp).toEqual(expectResult);
         });
       });
     });
-    /**
-     * Todo: Implement another success case
-     */
   });
 
   describe('error case', () => {
     describe('Invalid request', () => {
-      it('should return error when the appID is unexist', () => {
-        const appID = '444444';
-        const expectResult = {
-          'code': 'GAIA_AP01',
-          'id': 'K45k0CEPV5802MKyPcu1',
-          'message': 'The app (ID: 444444) not found. The app may have been deleted.'
-        };
+      describe('app in normal space', () => {
+        it('should return error when use API token', () => {
+          const appId = 1;
+          const expectBody = {
+            'app': 1,
+          };
+          const expectResult = {
+            'code': 'GAIA_NO01',
+            'id': 'fjQ4hXjZdiKCadmt3ZKn',
+            'message': 'Using this API token, you cannot run the specified API.',
+            'errors': '{}'
+          };
+          nock(URI)
+            .put(preLiveRoute, (rqBody) => {
+              expect(rqBody).toEqual(expectBody);
+              return true;
+            })
+            .matchHeader(common.API_TOKEN, (authHeader) => {
+              expect(authHeader).toBe(authAPI.getApiToken());
+              return true;
+            })
+            .matchHeader('Content-Type', (type) => {
+              expect(type).toBe('application/json;charset=utf-8');
+              return true;
+            })
+            .reply(403, expectResult);
+          const updateGeneralSettingsResult = appModule_API.updateGeneralSettings(appId);
+          return updateGeneralSettingsResult.catch((err) => {
+            expect(err).toBeInstanceOf(KintoneAPIException);
+            expect(err.get()).toEqual(expectResult);
+          });
+        });
+        it('should return error when input revision is incorrectly', () => {
+          const appId = 1;
+          const generalSettings = {
+            'name': 'APP_NAME',
+            'description': 'Here is app description.',
+            'icon': {
+              'type': 'PRESET',
+              'key': 'APP72'
+            },
+            'theme': 'WHITE'
+          };
+          const revision = '9999999999';
+          const expectBody = {
+            'app': 1,
+            'name': 'APP_NAME',
+            'description': 'Here is app description.',
+            'icon': {
+              'type': 'PRESET',
+              'key': 'APP72'
+            },
+            'theme': 'WHITE',
+            'revision': '9999999999'
+          };
+          const expectResult = {
+            'code': 'GAIA_CO03',
+            'id': 'ZpGZUiUR4OWHTmNTUETW',
+            'message': 'The revision is not the latest. Someone may update the app settings (ID: 32).',
+            'errors': '{}'
+          };
+          nock(URI)
+            .put(preLiveRoute, (rqBody) => {
+              expect(rqBody).toEqual(expectBody);
+              return true;
+            })
+            .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+              expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+              return true;
+            })
+            .matchHeader('Content-Type', (type) => {
+              expect(type).toBe('application/json;charset=utf-8');
+              return true;
+            })
+            .reply(409, expectResult);
+          const updateGeneralSettingsResult = appModule.updateGeneralSettings(appId, generalSettings, revision);
+          return updateGeneralSettingsResult.catch((err) => {
+            expect(err).toBeInstanceOf(KintoneAPIException);
+            expect(err.get()).toEqual(expectResult);
+          });
+        });
+        it('should return error when input revision is invalid', () => {
+          const appId = 1;
+          const generalSettings = {
+            'name': 'APP_NAME',
+            'description': 'Here is app description.',
+            'icon': {
+              'type': 'PRESET',
+              'key': 'APP72'
+            },
+            'theme': 'WHITE'
+          };
+          const revision = 'testInvalidRevision';
+          const expectBody = {
+            'app': 1,
+            'name': 'APP_NAME',
+            'description': 'Here is app description.',
+            'icon': {
+              'type': 'PRESET',
+              'key': 'APP72'
+            },
+            'theme': 'WHITE',
+            'revision': 'testInvalidRevision'
+          };
+          const expectResult = {
+            'code': 'GAIA_CO03',
+            'id': 'ZpGZUiUR4OWHTmNTUETW',
+            'message': 'The revision is not the latest. Someone may update the app settings (ID: 32).',
+            'errors': '{}'
+          };
+          nock(URI)
+            .put(preLiveRoute, (rqBody) => {
+              expect(rqBody).toEqual(expectBody);
+              return true;
+            })
+            .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+              expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+              return true;
+            })
+            .matchHeader('Content-Type', (type) => {
+              expect(type).toBe('application/json;charset=utf-8');
+              return true;
+            })
+            .reply(400, expectResult);
+          const updateGeneralSettingsResult = appModule.updateGeneralSettings(appId, generalSettings, revision);
+          return updateGeneralSettingsResult.catch((err) => {
+            expect(err).toBeInstanceOf(KintoneAPIException);
+            expect(err.get()).toEqual(expectResult);
+          });
+        });
+        it('should return error when input no appID', () => {
+          const expectResult = {
+            'code': 'CB_VA01',
+            'id': 'XRcP1vV2tHV1ikuYHbMC',
+            'message': 'Missing or invalid input.',
+            'errors': {
+              'app': {
+                'messages': [
+                  'Required field.'
+                ]
+              }
+            }
+          };
+          nock(URI)
+            .put(preLiveRoute)
+            .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+              expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+              return true;
+            })
+            .matchHeader('Content-Type', (type) => {
+              expect(type).toBe('application/json;charset=utf-8');
+              return true;
+            })
+            .reply(404, expectResult);
+          const updateGeneralSettingsResult = appModule.updateGeneralSettings();
+          return updateGeneralSettingsResult.catch((err) => {
+            expect(err).toBeInstanceOf(KintoneAPIException);
+            expect(err.get()).toEqual(expectResult);
+          });
+        });
+        it('should return error when the appID is none exist', () => {
+          const appID = '444444';
+          const expectResult = {
+            'code': 'GAIA_AP01',
+            'id': 'K45k0CEPV5802MKyPcu1',
+            'message': 'The app (ID: 444444) not found. The app may have been deleted.',
+            'errors': '{}'
+          };
 
-        nock(URI)
-          .put('/k/v1/preview/app/settings.json', (rqBody) => {
-            expect(rqBody.app).toEqual(appID);
-            return true;
-          })
-          .reply(404, expectResult);
-        const updateGeneralSettingsResult = appModule.updateGeneralSettings(appID);
-        return updateGeneralSettingsResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneAPIException);
-          expect(err.get()).toMatchObject(expectResult);
+          nock(URI)
+            .put(preLiveRoute, (rqBody) => {
+              expect(rqBody.app).toEqual(appID);
+              return true;
+            })
+            .reply(404, expectResult);
+          const updateGeneralSettingsResult = appModule.updateGeneralSettings(appID);
+          return updateGeneralSettingsResult.catch((err) => {
+            expect(err).toBeInstanceOf(KintoneAPIException);
+            expect(err.get()).toEqual(expectResult);
+          });
+        });
+        it('should return error when the appID is zero', () => {
+          const appID = 0;
+          const expectResult = {
+            'code': 'CB_VA01',
+            'id': 'B8GcJ7HlLSwxIEVWktLf',
+            'message': 'Missing or invalid input.',
+            'errors': {
+              'app': {
+                'messages': [
+                  'must be greater than or equal to 1'
+                ]
+              }
+            }
+          };
+          nock(URI)
+            .put(preLiveRoute, (rqBody) => {
+              expect(rqBody.app).toEqual(appID);
+              return true;
+            })
+            .reply(400, expectResult);
+          const updateGeneralSettingsResult = appModule.updateGeneralSettings(appID);
+          return updateGeneralSettingsResult.catch((err) => {
+            expect(err).toBeInstanceOf(KintoneAPIException);
+            expect(err.get()).toEqual(expectResult);
+          });
+        });
+        it('should return error when the appID is negative', () => {
+          const appID = -1;
+          const expectResult = {
+            'code': 'CB_VA01',
+            'id': 'B8GcJ7HlLSwxIEVWktLf',
+            'message': 'Missing or invalid input.',
+            'errors': {
+              'app': {
+                'messages': [
+                  'must be greater than or equal to 1'
+                ]
+              }
+            }
+          };
+          nock(URI)
+            .put(preLiveRoute, (rqBody) => {
+              expect(rqBody.app).toEqual(appID);
+              return true;
+            })
+            .reply(400, expectResult);
+          const updateGeneralSettingsResult = appModule.updateGeneralSettings(appID);
+          return updateGeneralSettingsResult.catch((err) => {
+            expect(err).toBeInstanceOf(KintoneAPIException);
+            expect(err.get()).toEqual(expectResult);
+          });
+        });
+        it('should return error when input invalid theme', () => {
+          const appId = 1;
+          const generalSetings = {
+            'theme': 'testInvalidTheme'
+          };
+          const expectBody = {
+            'app': 1,
+            'theme': 'testInvalidTheme'
+          };
+          const expectResult = {
+            'code': 'CB_VA01',
+            'id': 'AfDS5Vm1GyWCylIHznfS',
+            'message': 'Missing or invalid input.',
+            'errors': {
+              'theme': {
+                'messages': [
+                  'must be one of the enum value'
+                ]
+              }
+            }
+          };
+          nock(URI)
+            .put(preLiveRoute, (rqBody) => {
+              expect(rqBody).toEqual(expectBody);
+              return true;
+            })
+            .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+              expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+              return true;
+            })
+            .matchHeader('Content-Type', (type) => {
+              expect(type).toBe('application/json;charset=utf-8');
+              return true;
+            })
+            .reply(400, expectResult);
+          const updateGeneralSettingsResult = appModule.updateGeneralSettings(appId, generalSetings);
+          return updateGeneralSettingsResult.catch((err) => {
+            expect(err).toBeInstanceOf(KintoneAPIException);
+            expect(err.get()).toEqual(expectResult);
+          });
+        });
+        it('should return error when input no icon.type', () => {
+          const appId = 1;
+          const generalSetings = {
+            'icon': {
+              'key': 'APP72'
+            }
+          };
+          const expectBody = {
+            'app': 1,
+            'icon': {
+              'key': 'APP72'
+            }
+          };
+          const expectResult = {
+            'code': 'CB_VA01',
+            'id': 'dq1sftI6nlPYeNjglyhn',
+            'message': 'Missing or invalid input.',
+            'errors': {
+              'icon.type': {
+                'messages': [
+                  'Required field.'
+                ]
+              }
+            }
+          };
+          nock(URI)
+            .put(preLiveRoute, (rqBody) => {
+              expect(rqBody).toEqual(expectBody);
+              return true;
+            })
+            .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+              expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+              return true;
+            })
+            .matchHeader('Content-Type', (type) => {
+              expect(type).toBe('application/json;charset=utf-8');
+              return true;
+            })
+            .reply(400, expectResult);
+          const updateGeneralSettingsResult = appModule.updateGeneralSettings(appId, generalSetings);
+          return updateGeneralSettingsResult.catch((err) => {
+            expect(err).toBeInstanceOf(KintoneAPIException);
+            expect(err.get()).toEqual(expectResult);
+          });
+        });
+        it('should return error when input no icon.key', () => {
+          const appId = 1;
+          const generalSetings = {
+            'icon': {
+              'type': 'PRESET',
+            }
+          };
+          const expectBody = {
+            'app': 1,
+            'icon': {
+              'type': 'PRESET'
+            }
+          };
+          const expectResult = {
+            'code': 'CB_VA01',
+            'id': 'vC0CS0aTWUHI468jgyl5',
+            'message': 'Missing or invalid input.',
+            'errors': {
+              'icon.key': {
+                'messages': [
+                  'Required field.'
+                ]
+              }
+            }
+          };
+          nock(URI)
+            .put(preLiveRoute, (rqBody) => {
+              expect(rqBody).toEqual(expectBody);
+              return true;
+            })
+            .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+              expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+              return true;
+            })
+            .matchHeader('Content-Type', (type) => {
+              expect(type).toBe('application/json;charset=utf-8');
+              return true;
+            })
+            .reply(400, expectResult);
+          const updateGeneralSettingsResult = appModule.updateGeneralSettings(appId, generalSetings);
+          return updateGeneralSettingsResult.catch((err) => {
+            expect(err).toBeInstanceOf(KintoneAPIException);
+            expect(err.get()).toEqual(expectResult);
+          });
+        });
+      });
+      describe('app in GUEST SPACE', () => {
+        it('should return error when use API token in GUEST SPACE', () => {
+          const appId = 1;
+          const expectBody = {
+            'app': 1,
+          };
+          const expectResult = {
+            'code': 'GAIA_NO01',
+            'id': 'fjQ4hXjZdiKCadmt3ZKn',
+            'message': 'Using this API token, you cannot run the specified API.',
+            'errors': '{}'
+          };
+          nock(URI)
+            .put(guest_PreLiveRoute, (rqBody) => {
+              expect(rqBody).toEqual(expectBody);
+              return true;
+            })
+            .matchHeader(common.API_TOKEN, (authHeader) => {
+              expect(authHeader).toBe(authAPI.getApiToken());
+              return true;
+            })
+            .matchHeader('Content-Type', (type) => {
+              expect(type).toBe('application/json;charset=utf-8');
+              return true;
+            })
+            .reply(403, expectResult);
+          const updateGeneralSettingsResult = appModule_API_Guest_Space.updateGeneralSettings(appId);
+          return updateGeneralSettingsResult.catch((err) => {
+            expect(err).toBeInstanceOf(KintoneAPIException);
+            expect(err.get()).toEqual(expectResult);
+          });
+        });
+        it('should return error when input revision is incorrectly in GUEST SPACE', () => {
+          const appId = 1;
+          const generalSettings = {
+            'name': 'APP_NAME',
+            'description': 'Here is app description.',
+            'icon': {
+              'type': 'PRESET',
+              'key': 'APP72'
+            },
+            'theme': 'WHITE'
+          };
+          const revision = '9999999999';
+          const expectBody = {
+            'app': 1,
+            'name': 'APP_NAME',
+            'description': 'Here is app description.',
+            'icon': {
+              'type': 'PRESET',
+              'key': 'APP72'
+            },
+            'theme': 'WHITE',
+            'revision': '9999999999'
+          };
+          const expectResult = {
+            'code': 'GAIA_CO03',
+            'id': 'ZpGZUiUR4OWHTmNTUETW',
+            'message': 'The revision is not the latest. Someone may update the app settings (ID: 32).',
+            'errors': '{}'
+          };
+          nock(URI)
+            .put(guest_PreLiveRoute, (rqBody) => {
+              expect(rqBody).toEqual(expectBody);
+              return true;
+            })
+            .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+              expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+              return true;
+            })
+            .matchHeader('Content-Type', (type) => {
+              expect(type).toBe('application/json;charset=utf-8');
+              return true;
+            })
+            .reply(409, expectResult);
+          const updateGeneralSettingsResult = appModule_Guest_Space.updateGeneralSettings(appId, generalSettings, revision);
+          return updateGeneralSettingsResult.catch((err) => {
+            expect(err).toBeInstanceOf(KintoneAPIException);
+            expect(err.get()).toEqual(expectResult);
+          });
+        });
+        it('should return error when input revision is invalid in GUEST SPACE', () => {
+          const appId = 1;
+          const generalSettings = {
+            'name': 'APP_NAME',
+            'description': 'Here is app description.',
+            'icon': {
+              'type': 'PRESET',
+              'key': 'APP72'
+            },
+            'theme': 'WHITE'
+          };
+          const revision = 'testInvalidRevision';
+          const expectBody = {
+            'app': 1,
+            'name': 'APP_NAME',
+            'description': 'Here is app description.',
+            'icon': {
+              'type': 'PRESET',
+              'key': 'APP72'
+            },
+            'theme': 'WHITE',
+            'revision': 'testInvalidRevision'
+          };
+          const expectResult = {
+            'code': 'GAIA_CO03',
+            'id': 'ZpGZUiUR4OWHTmNTUETW',
+            'message': 'The revision is not the latest. Someone may update the app settings (ID: 32).',
+            'errors': '{}'
+          };
+          nock(URI)
+            .put(guest_PreLiveRoute, (rqBody) => {
+              expect(rqBody).toEqual(expectBody);
+              return true;
+            })
+            .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+              expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+              return true;
+            })
+            .matchHeader('Content-Type', (type) => {
+              expect(type).toBe('application/json;charset=utf-8');
+              return true;
+            })
+            .reply(400, expectResult);
+          const updateGeneralSettingsResult = appModule_Guest_Space.updateGeneralSettings(appId, generalSettings, revision);
+          return updateGeneralSettingsResult.catch((err) => {
+            expect(err).toBeInstanceOf(KintoneAPIException);
+            expect(err.get()).toEqual(expectResult);
+          });
+        });
+        it('should return error when input no appID in GUEST SPACE', () => {
+          const expectResult = {
+            'code': 'CB_VA01',
+            'id': 'XRcP1vV2tHV1ikuYHbMC',
+            'message': 'Missing or invalid input.',
+            'errors': {
+              'app': {
+                'messages': [
+                  'Required field.'
+                ]
+              }
+            }
+          };
+          nock(URI)
+            .put(guest_PreLiveRoute)
+            .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+              expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+              return true;
+            })
+            .matchHeader('Content-Type', (type) => {
+              expect(type).toBe('application/json;charset=utf-8');
+              return true;
+            })
+            .reply(404, expectResult);
+          const updateGeneralSettingsResult = appModule_Guest_Space.updateGeneralSettings();
+          return updateGeneralSettingsResult.catch((err) => {
+            expect(err).toBeInstanceOf(KintoneAPIException);
+            expect(err.get()).toEqual(expectResult);
+          });
+        });
+        it('should return error when the appID is none exist in GUEST SPACE', () => {
+          const appID = '444444';
+          const expectResult = {
+            'code': 'GAIA_AP01',
+            'id': 'K45k0CEPV5802MKyPcu1',
+            'message': 'The app (ID: 444444) not found. The app may have been deleted.',
+            'errors': '{}'
+          };
+
+          nock(URI)
+            .put(guest_PreLiveRoute, (rqBody) => {
+              expect(rqBody.app).toEqual(appID);
+              return true;
+            })
+            .reply(404, expectResult);
+          const updateGeneralSettingsResult = appModule_Guest_Space.updateGeneralSettings(appID);
+          return updateGeneralSettingsResult.catch((err) => {
+            expect(err).toBeInstanceOf(KintoneAPIException);
+            expect(err.get()).toEqual(expectResult);
+          });
+        });
+        it('should return error when the appID is zero in GUEST SPACE', () => {
+          const appID = 0;
+          const expectResult = {
+            'code': 'CB_VA01',
+            'id': 'B8GcJ7HlLSwxIEVWktLf',
+            'message': 'Missing or invalid input.',
+            'errors': {
+              'app': {
+                'messages': [
+                  'must be greater than or equal to 1'
+                ]
+              }
+            }
+          };
+          nock(URI)
+            .put(guest_PreLiveRoute, (rqBody) => {
+              expect(rqBody.app).toEqual(appID);
+              return true;
+            })
+            .reply(400, expectResult);
+          const updateGeneralSettingsResult = appModule_Guest_Space.updateGeneralSettings(appID);
+          return updateGeneralSettingsResult.catch((err) => {
+            expect(err).toBeInstanceOf(KintoneAPIException);
+            expect(err.get()).toEqual(expectResult);
+          });
+        });
+        it('should return error when the appID is negative in GUEST SPACE', () => {
+          const appID = -1;
+          const expectResult = {
+            'code': 'CB_VA01',
+            'id': 'B8GcJ7HlLSwxIEVWktLf',
+            'message': 'Missing or invalid input.',
+            'errors': {
+              'app': {
+                'messages': [
+                  'must be greater than or equal to 1'
+                ]
+              }
+            }
+          };
+          nock(URI)
+            .put(guest_PreLiveRoute, (rqBody) => {
+              expect(rqBody.app).toEqual(appID);
+              return true;
+            })
+            .reply(400, expectResult);
+          const updateGeneralSettingsResult = appModule_Guest_Space.updateGeneralSettings(appID);
+          return updateGeneralSettingsResult.catch((err) => {
+            expect(err).toBeInstanceOf(KintoneAPIException);
+            expect(err.get()).toEqual(expectResult);
+          });
+        });
+        it('should return error when input invalid theme in GUEST SPACE', () => {
+          const appId = 1;
+          const generalSetings = {
+            'theme': 'testInvalidTheme'
+          };
+          const expectBody = {
+            'app': 1,
+            'theme': 'testInvalidTheme'
+          };
+          const expectResult = {
+            'code': 'CB_VA01',
+            'id': 'AfDS5Vm1GyWCylIHznfS',
+            'message': 'Missing or invalid input.',
+            'errors': {
+              'theme': {
+                'messages': [
+                  'must be one of the enum value'
+                ]
+              }
+            }
+          };
+          nock(URI)
+            .put(guest_PreLiveRoute, (rqBody) => {
+              expect(rqBody).toEqual(expectBody);
+              return true;
+            })
+            .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+              expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+              return true;
+            })
+            .matchHeader('Content-Type', (type) => {
+              expect(type).toBe('application/json;charset=utf-8');
+              return true;
+            })
+            .reply(400, expectResult);
+          const updateGeneralSettingsResult = appModule_Guest_Space.updateGeneralSettings(appId, generalSetings);
+          return updateGeneralSettingsResult.catch((err) => {
+            expect(err).toBeInstanceOf(KintoneAPIException);
+            expect(err.get()).toEqual(expectResult);
+          });
+        });
+        it('should return error when input no icon.type in GUEST SPACE', () => {
+          const appId = 1;
+          const generalSetings = {
+            'icon': {
+              'key': 'APP72'
+            }
+          };
+          const expectBody = {
+            'app': 1,
+            'icon': {
+              'key': 'APP72'
+            }
+          };
+          const expectResult = {
+            'code': 'CB_VA01',
+            'id': 'dq1sftI6nlPYeNjglyhn',
+            'message': 'Missing or invalid input.',
+            'errors': {
+              'icon.type': {
+                'messages': [
+                  'Required field.'
+                ]
+              }
+            }
+          };
+          nock(URI)
+            .put(guest_PreLiveRoute, (rqBody) => {
+              expect(rqBody).toEqual(expectBody);
+              return true;
+            })
+            .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+              expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+              return true;
+            })
+            .matchHeader('Content-Type', (type) => {
+              expect(type).toBe('application/json;charset=utf-8');
+              return true;
+            })
+            .reply(400, expectResult);
+          const updateGeneralSettingsResult = appModule_Guest_Space.updateGeneralSettings(appId, generalSetings);
+          return updateGeneralSettingsResult.catch((err) => {
+            expect(err).toBeInstanceOf(KintoneAPIException);
+            expect(err.get()).toEqual(expectResult);
+          });
+        });
+        it('should return error when input no icon.key in GUEST SPACE', () => {
+          const appId = 1;
+          const generalSetings = {
+            'icon': {
+              'type': 'PRESET'
+            }
+          };
+          const expectBody = {
+            'app': 1,
+            'icon': {
+              'type': 'PRESET'
+            }
+          };
+          const expectResult = {
+            'code': 'CB_VA01',
+            'id': 'dq1sftI6nlPYeNjglyhn',
+            'message': 'Missing or invalid input.',
+            'errors': {
+              'icon.type': {
+                'messages': [
+                  'Required field.'
+                ]
+              }
+            }
+          };
+          nock(URI)
+            .put(guest_PreLiveRoute, (rqBody) => {
+              expect(rqBody).toEqual(expectBody);
+              return true;
+            })
+            .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+              expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+              return true;
+            })
+            .matchHeader('Content-Type', (type) => {
+              expect(type).toBe('application/json;charset=utf-8');
+              return true;
+            })
+            .reply(400, expectResult);
+          const updateGeneralSettingsResult = appModule_Guest_Space.updateGeneralSettings(appId, generalSetings);
+          return updateGeneralSettingsResult.catch((err) => {
+            expect(err).toBeInstanceOf(KintoneAPIException);
+            expect(err.get()).toEqual(expectResult);
+          });
         });
       });
     });
   });
-
-  /**
-     * Todo: Implement another error case
-     */
 });
