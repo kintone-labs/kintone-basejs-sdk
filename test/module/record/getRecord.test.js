@@ -8,7 +8,7 @@ const nock = require('nock');
 
 const common = require('../../../test/utils/common');
 
-const {Connection, Auth, Record, KintoneException} = require(common.MAIN_PATH);
+const {Connection, Auth, Record, KintoneAPIException} = require(common.MAIN_PATH);
 
 const auth = new Auth();
 auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
@@ -22,7 +22,7 @@ describe('getRecord function', () => {
       const appID = 1;
       const recordID = 1;
       nock('https://' + common.DOMAIN)
-        .get(`/k/v1/record.json`)
+        .get(`/k/v1/record.json?app=${appID}&id=${recordID}`)
         .reply(200, {
           'record': {}
         });
@@ -39,17 +39,9 @@ describe('getRecord function', () => {
         const appID = 1;
         const recordID = 1;
         nock('https://' + common.DOMAIN)
-          .get(`/k/v1/record.json`, (rqBody) => {
-            expect(rqBody.app).toBe(appID);
-            expect(rqBody.id).toBe(recordID);
-            return true;
-          })
+          .get(`/k/v1/record.json?app=${appID}&id=${recordID}`)
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(Buffer.from(common.USERNAME + ':' + common.PASSWORD).toString('base64'));
-            return true;
-          })
-          .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
             return true;
           })
           .reply(200, {
@@ -74,23 +66,15 @@ describe('getRecord function', () => {
           'message': 'The specified record (ID: 100) is not found.'
         };
         nock('https://' + common.DOMAIN)
-          .get(`/k/v1/record.json`, (rqBody) => {
-            expect(rqBody.app).toEqual(appID);
-            expect(rqBody.id).toEqual(recordID);
-            return true;
-          })
+          .get(`/k/v1/record.json?app=${appID}&id=${recordID}`)
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(Buffer.from(common.USERNAME + ':' + common.PASSWORD).toString('base64'));
-            return true;
-          })
-          .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
             return true;
           })
           .reply(400, expectResult);
         const getRecordResult = recordModule.getRecord(appID, recordID);
         return getRecordResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -112,22 +96,15 @@ describe('getRecord function', () => {
           }
         };
         nock('https://' + common.DOMAIN)
-          .get(`/k/v1/record.json`, (rqBody) => {
-            expect(rqBody.id).toEqual(recordID);
-            return true;
-          })
+          .get(`/k/v1/record.json?id=${recordID}`)
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(Buffer.from(common.USERNAME + ':' + common.PASSWORD).toString('base64'));
             return true;
           })
-          .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
-            return true;
-          })
           .reply(400, expectResult);
-        const getRecordResult = recordModule.getRecord('', recordID);
+        const getRecordResult = recordModule.getRecord(undefined, recordID);
         return getRecordResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -149,22 +126,15 @@ describe('getRecord function', () => {
           }
         };
         nock('https://' + common.DOMAIN)
-          .get(`/k/v1/record.json`, (rqBody) => {
-            expect(rqBody.app).toEqual(appID);
-            return true;
-          })
+          .get(`/k/v1/record.json?app=${appID}`)
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(Buffer.from(common.USERNAME + ':' + common.PASSWORD).toString('base64'));
             return true;
           })
-          .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
-            return true;
-          })
           .reply(400, expectResult);
-        const getRecordResult = recordModule.getRecord(appID, '');
+        const getRecordResult = recordModule.getRecord(appID, undefined);
         return getRecordResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -180,23 +150,15 @@ describe('getRecord function', () => {
           'message': 'No privilege to proceed.'
         };
         nock('https://' + common.DOMAIN)
-          .get(`/k/v1/record.json`, (rqBody) => {
-            expect(rqBody.app).toEqual(appID);
-            expect(rqBody.id).toEqual(recordID);
-            return true;
-          })
+          .get(`/k/v1/record.json?app=${appID}&id=${recordID}`)
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(Buffer.from(common.USERNAME + ':' + common.PASSWORD).toString('base64'));
-            return true;
-          })
-          .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
             return true;
           })
           .reply(400, expectResult);
         const getRecordResult = recordModule.getRecord(appID, recordID);
         return getRecordResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -212,23 +174,15 @@ describe('getRecord function', () => {
           'message': 'No privilege to proceed.'
         };
         nock('https://' + common.DOMAIN)
-          .get(`/k/v1/record.json`, (rqBody) => {
-            expect(rqBody.app).toEqual(appID);
-            expect(rqBody.id).toEqual(recordID);
-            return true;
-          })
+          .get(`/k/v1/record.json?app=${appID}&id=${recordID}`)
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(Buffer.from(common.USERNAME + ':' + common.PASSWORD).toString('base64'));
-            return true;
-          })
-          .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
             return true;
           })
           .reply(400, expectResult);
         const getRecordResult = recordModule.getRecord(appID, recordID);
         return getRecordResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -261,17 +215,9 @@ describe('getRecord function', () => {
           }
         };
         nock('https://' + common.DOMAIN)
-          .get(`/k/v1/record.json`, (rqBody) => {
-            expect(rqBody.app).toEqual(appID);
-            expect(rqBody.id).toEqual(recordID);
-            return true;
-          })
+          .get(`/k/v1/record.json?app=${appID}&id=${recordID}`)
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(Buffer.from(common.USERNAME + ':' + common.PASSWORD).toString('base64'));
-            return true;
-          })
-          .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
             return true;
           })
           .reply(200, expectResult);
@@ -292,23 +238,15 @@ describe('getRecord function', () => {
           'message': 'You need to send a request to the URL: "/k/guest/<Space ID>/v1/..." to execute apps in Guest Spaces.'
         };
         nock('https://' + common.DOMAIN)
-          .get(`/k/v1/record.json`, (rqBody) => {
-            expect(rqBody.app).toEqual(guestappID);
-            expect(rqBody.id).toEqual(recordID);
-            return true;
-          })
+          .get(`/k/v1/record.json?app=${guestappID}&id=${recordID}`)
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(Buffer.from(common.USERNAME + ':' + common.PASSWORD).toString('base64'));
-            return true;
-          })
-          .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
             return true;
           })
           .reply(400, expectResult);
         const getRecordResult = recordModule.getRecord(guestappID, recordID);
         return getRecordResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -357,17 +295,9 @@ describe('getRecord function', () => {
           }
         };
         nock('https://' + common.DOMAIN)
-          .get(`/k/v1/record.json`, (rqBody) => {
-            expect(rqBody.app).toEqual(appID);
-            expect(rqBody.id).toEqual(recordID);
-            return true;
-          })
+          .get(`/k/v1/record.json?app=${appID}&id=${recordID}`)
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(Buffer.from(common.USERNAME + ':' + common.PASSWORD).toString('base64'));
-            return true;
-          })
-          .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
             return true;
           })
           .reply(200, expectResult);
@@ -383,17 +313,9 @@ describe('getRecord function', () => {
         const appID = '1';
         const recordID = '1';
         nock('https://' + common.DOMAIN)
-          .get(`/k/v1/record.json`, (rqBody) => {
-            expect(rqBody.app).toBe(appID);
-            expect(rqBody.id).toBe(recordID);
-            return true;
-          })
+          .get(`/k/v1/record.json?app=${appID}&id=${recordID}`)
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(Buffer.from(common.USERNAME + ':' + common.PASSWORD).toString('base64'));
-            return true;
-          })
-          .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
             return true;
           })
           .reply(200, {
@@ -416,22 +338,15 @@ describe('getRecord function', () => {
         };
 
         nock('https://' + common.DOMAIN)
-          .get(`/k/v1/record.json`, (rqBody) => {
-            expect(rqBody.app).toBe(-2);
-            return true;
-          })
+          .get(`/k/v1/record.json?app=-2`)
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(Buffer.from(common.USERNAME + ':' + common.PASSWORD).toString('base64'));
-            return true;
-          })
-          .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
             return true;
           })
           .reply(400, expectResult);
         const getRecordResult = recordModule.getRecord(-2);
         return getRecordResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });

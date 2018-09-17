@@ -7,7 +7,7 @@ const nock = require('nock');
 
 const common = require('../../../test/utils/common');
 
-const {Connection, Auth, Record, KintoneException} = require(common.MAIN_PATH);
+const {Connection, Auth, Record, KintoneAPIException} = require(common.MAIN_PATH);
 
 const auth = new Auth();
 auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
@@ -59,7 +59,7 @@ describe('updateRecordStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(200, expectResult);
@@ -93,7 +93,7 @@ describe('updateRecordStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(200, expectResult);
@@ -127,7 +127,7 @@ describe('updateRecordStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(200, expectResult);
@@ -161,7 +161,7 @@ describe('updateRecordStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(200, expectResult);
@@ -196,7 +196,7 @@ describe('updateRecordStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(200, expectResult);
@@ -231,7 +231,7 @@ describe('updateRecordStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(200, expectResult);
@@ -266,7 +266,7 @@ describe('updateRecordStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(200, expectResult);
@@ -301,7 +301,7 @@ describe('updateRecordStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(200, expectResult);
@@ -341,7 +341,7 @@ describe('updateRecordStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(403, expectResult);
@@ -349,7 +349,7 @@ describe('updateRecordStatus function', () => {
         const recordModule = new Record(conn);
         const updateRecordStatusResult = recordModule.updateRecordStatus(data.app, data.id, data.action, '', data.revision);
         return updateRecordStatusResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -381,7 +381,7 @@ describe('updateRecordStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(520, expectResult);
@@ -389,7 +389,7 @@ describe('updateRecordStatus function', () => {
         const recordModule = new Record(conn);
         const updateRecordStatusResult = recordModule.updateRecordStatus(data.app, data.id, data.action, data.assignee, data.revision);
         return updateRecordStatusResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -421,7 +421,7 @@ describe('updateRecordStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(400, expectResult);
@@ -429,7 +429,7 @@ describe('updateRecordStatus function', () => {
         const recordModule = new Record(conn);
         const updateRecordStatusResult = recordModule.updateRecordStatus(data.app, data.id, data.action, data.assignee, data.revision);
         return updateRecordStatusResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -461,7 +461,7 @@ describe('updateRecordStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(520, expectResult);
@@ -469,7 +469,7 @@ describe('updateRecordStatus function', () => {
         const recordModule = new Record(conn);
         const updateRecordStatusResult = recordModule.updateRecordStatus(data.app, data.id, data.action, data.assignee, data.revision);
         return updateRecordStatusResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -508,7 +508,7 @@ describe('updateRecordStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(400, expectResult);
@@ -516,7 +516,7 @@ describe('updateRecordStatus function', () => {
         const recordModule = new Record(conn);
         const updateRecordStatusResult = recordModule.updateRecordStatus(data.app, data.id, data.action, data.assignee, data.revision);
         return updateRecordStatusResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -548,7 +548,7 @@ describe('updateRecordStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(403, expectResult);
@@ -556,7 +556,7 @@ describe('updateRecordStatus function', () => {
         const recordModule = new Record(conn);
         const updateRecordStatusResult = recordModule.updateRecordStatus(data.app, data.id, data.action, data.assignee, data.revision);
         return updateRecordStatusResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -588,7 +588,7 @@ describe('updateRecordStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(400, expectResult);
@@ -596,7 +596,7 @@ describe('updateRecordStatus function', () => {
         const recordModule = new Record(conn);
         const updateRecordStatusResult = recordModule.updateRecordStatus(data.app, data.id, data.action, data.assignee, data.revision);
         return updateRecordStatusResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -634,7 +634,7 @@ describe('updateRecordStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(400, expectResult);
@@ -642,7 +642,7 @@ describe('updateRecordStatus function', () => {
         const recordModule = new Record(conn);
         const updateRecordStatusResult = recordModule.updateRecordStatus('', data.id, data.action, data.assignee, data.revision);
         return updateRecordStatusResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -680,7 +680,7 @@ describe('updateRecordStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(400, expectResult);
@@ -688,7 +688,7 @@ describe('updateRecordStatus function', () => {
         const recordModule = new Record(conn);
         const updateRecordStatusResult = recordModule.updateRecordStatus(data.app, '', data.action, data.assignee, data.revision);
         return updateRecordStatusResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -718,7 +718,7 @@ describe('updateRecordStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(520, expectResult);
@@ -726,7 +726,7 @@ describe('updateRecordStatus function', () => {
         const recordModule = new Record(conn);
         const updateRecordStatusResult = recordModule.updateRecordStatus(data.app, '', data.action, data.assignee, data.revision);
         return updateRecordStatusResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -758,7 +758,7 @@ describe('updateRecordStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(520, expectResult);
@@ -766,7 +766,7 @@ describe('updateRecordStatus function', () => {
         const recordModule = new Record(conn);
         const updateRecordStatusResult = recordModule.updateRecordStatus(data.app, data.id, data.action, data.assignee, data.revision);
         return updateRecordStatusResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -794,7 +794,7 @@ describe('updateRecordStatus function', () => {
         const recordModule = new Record(conn);
         const updateRecordStatusResult = recordModule.updateRecordStatus(data.app, data.id, data.action, data.assignee, data.revision);
         return updateRecordStatusResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });

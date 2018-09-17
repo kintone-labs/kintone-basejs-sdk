@@ -7,7 +7,7 @@ const nock = require('nock');
 
 const common = require('../../../test/utils/common');
 
-const {Connection, Auth, Record, KintoneException} = require(common.MAIN_PATH);
+const {Connection, Auth, Record, KintoneAPIException} = require(common.MAIN_PATH);
 
 const auth = new Auth();
 auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
@@ -78,7 +78,7 @@ describe('updateRecordsStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(200, expectResult);
@@ -130,7 +130,7 @@ describe('updateRecordsStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(200, expectResult);
@@ -182,7 +182,7 @@ describe('updateRecordsStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(200, expectResult);
@@ -235,7 +235,7 @@ describe('updateRecordsStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(200, expectResult);
@@ -271,7 +271,7 @@ describe('updateRecordsStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(200, {'records': {}});
@@ -319,7 +319,7 @@ describe('updateRecordsStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(400, expectResult);
@@ -327,7 +327,7 @@ describe('updateRecordsStatus function', () => {
         const recordModule = new Record(conn);
         const updateRecordsStatusResult = recordModule.updateRecordsStatus(data.app, data.records);
         return updateRecordsStatusResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -379,7 +379,7 @@ describe('updateRecordsStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(400, expectResult);
@@ -387,7 +387,7 @@ describe('updateRecordsStatus function', () => {
         const recordModule = new Record(conn);
         const updateRecordsStatusResult = recordModule.updateRecordsStatus(data.app, data.records);
         return updateRecordsStatusResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -439,7 +439,7 @@ describe('updateRecordsStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(400, expectResult);
@@ -447,7 +447,7 @@ describe('updateRecordsStatus function', () => {
         const recordModule = new Record(conn);
         const updateRecordsStatusResult = recordModule.updateRecordsStatus(data.app, data.records);
         return updateRecordsStatusResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -494,7 +494,7 @@ describe('updateRecordsStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(400, expectResult);
@@ -502,7 +502,7 @@ describe('updateRecordsStatus function', () => {
         const recordModule = new Record(conn);
         const updateRecordsStatusResult = recordModule.updateRecordsStatus(data.app, data.records);
         return updateRecordsStatusResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -548,7 +548,7 @@ describe('updateRecordsStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(400, expectResult);
@@ -556,7 +556,7 @@ describe('updateRecordsStatus function', () => {
         const recordModule = new Record(conn);
         const updateRecordsStatusResult = recordModule.updateRecordsStatus('', data.records);
         return updateRecordsStatusResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -602,7 +602,7 @@ describe('updateRecordsStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(400, expectResult);
@@ -610,7 +610,7 @@ describe('updateRecordsStatus function', () => {
         const recordModule = new Record(conn);
         const updateRecordsStatusResult = recordModule.updateRecordsStatus(data.app, data.records);
         return updateRecordsStatusResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -648,7 +648,7 @@ describe('updateRecordsStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(520, expectResult);
@@ -656,7 +656,7 @@ describe('updateRecordsStatus function', () => {
         const recordModule = new Record(conn);
         const updateRecordsStatusResult = recordModule.updateRecordsStatus(data.app, data.records);
         return updateRecordsStatusResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -696,7 +696,7 @@ describe('updateRecordsStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(520, expectResult);
@@ -704,7 +704,7 @@ describe('updateRecordsStatus function', () => {
         const recordModule = new Record(conn);
         const updateRecordsStatusResult = recordModule.updateRecordsStatus(data.app, data.records);
         return updateRecordsStatusResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -747,14 +747,14 @@ describe('updateRecordsStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(400, expectResult);
         const recordModule = new Record(conn);
         const updateRecordsStatusResult = recordModule.updateRecordsStatus(data.app, common.generateRecord(number, data.record));
         return updateRecordsStatusResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -791,7 +791,7 @@ describe('updateRecordsStatus function', () => {
         const recordModule = new Record(conn);
         const updateRecordsStatusResult = recordModule.updateRecordsStatus(data.app, data.records);
         return updateRecordsStatusResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });

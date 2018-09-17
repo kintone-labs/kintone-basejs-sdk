@@ -7,7 +7,7 @@ const nock = require('nock');
 
 const common = require('../../../test/utils/common');
 
-const {Connection, Auth, App, KintoneException} = require(common.MAIN_PATH);
+const {Connection, Auth, App, KintoneAPIException} = require(common.MAIN_PATH);
 
 const URI = 'https://' + common.DOMAIN;
 
@@ -49,22 +49,7 @@ describe('addFormFields function', () => {
           revision: 2
         };
         const expectResult = {
-          'properties': {
-            'Text__single_line_1': {
-              'type': 'SINGLE_LINE_TEXT',
-              'code': 'Text__single_line_1',
-              'label': 'Text (single-line)',
-              'noLabel': false,
-              'required': true,
-              'unique': true,
-              'maxLength': '64',
-              'minLength': '0',
-              'defaultValue': '',
-              'expression': '',
-              'hideExpression': false
-            },
-            'revision': '2'
-          }
+          'revision': '2'
         };
         nock(URI)
           .post('/k/v1/preview/app/form/fields.json', (rqBody) => {
@@ -76,7 +61,7 @@ describe('addFormFields function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(200, expectResult);
@@ -102,22 +87,7 @@ describe('addFormFields function', () => {
           },
         };
         const expectResult = {
-          'properties': {
-            'Text__single_line_1': {
-              'type': 'SINGLE_LINE_TEXT',
-              'code': 'Text__single_line_1',
-              'label': 'Text (single-line)',
-              'noLabel': false,
-              'required': true,
-              'unique': true,
-              'maxLength': '64',
-              'minLength': '0',
-              'defaultValue': '',
-              'expression': '',
-              'hideExpression': false
-            },
-            'revision': '2'
-          }
+          'revision': '2'
         };
         nock(URI)
           .post('/k/v1/preview/app/form/fields.json', (rqBody) => {
@@ -129,7 +99,7 @@ describe('addFormFields function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(200, expectResult);
@@ -156,22 +126,7 @@ describe('addFormFields function', () => {
           revision: -1
         };
         const expectResult = {
-          'properties': {
-            'Text__single_line_1': {
-              'type': 'SINGLE_LINE_TEXT',
-              'code': 'Text__single_line_1',
-              'label': 'Text (single-line)',
-              'noLabel': false,
-              'required': true,
-              'unique': true,
-              'maxLength': '64',
-              'minLength': '0',
-              'defaultValue': '',
-              'expression': '',
-              'hideExpression': false
-            },
-            'revision': '2'
-          }
+          'revision': '2'
         };
         nock(URI)
           .post('/k/v1/preview/app/form/fields.json', (rqBody) => {
@@ -183,7 +138,7 @@ describe('addFormFields function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(200, expectResult);
@@ -210,22 +165,7 @@ describe('addFormFields function', () => {
           revision: 1
         };
         const expectResult = {
-          'properties': {
-            'Text__single_line_1': {
-              'type': 'SINGLE_LINE_TEXT',
-              'code': 'Text__single_line_1',
-              'label': 'Text (single-line)',
-              'noLabel': false,
-              'required': true,
-              'unique': true,
-              'maxLength': '64',
-              'minLength': '0',
-              'defaultValue': '',
-              'expression': '',
-              'hideExpression': false
-            },
-            'revision': '2'
-          }
+          'revision': '2'
         };
         nock(URI)
           .post('/k/v1/preview/app/form/fields.json', (rqBody) => {
@@ -237,7 +177,7 @@ describe('addFormFields function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(200, expectResult);
@@ -264,22 +204,7 @@ describe('addFormFields function', () => {
           revision: 1
         };
         const expectResult = {
-          'properties': {
-            'Text__single_line_1': {
-              'type': 'SINGLE_LINE_TEXT',
-              'code': 'Text__single_line_1',
-              'label': 'Text (single-line)',
-              'noLabel': false,
-              'required': true,
-              'unique': true,
-              'maxLength': '64',
-              'minLength': '0',
-              'defaultValue': '',
-              'expression': '',
-              'hideExpression': false
-            },
-            'revision': '2'
-          }
+          'revision': '2'
         };
         nock(URI)
           .post('/k/guest/1/v1/preview/app/form/fields.json', (rqBody) => {
@@ -291,7 +216,7 @@ describe('addFormFields function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(200, expectResult);
@@ -368,14 +293,14 @@ describe('addFormFields function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(400, expectResult);
 
         const addFormFieldsResult = appModule.addFormFields('', data.properties, data.revision);
         return addFormFieldsResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -408,14 +333,14 @@ describe('addFormFields function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(400, expectResult);
 
         const addFormFieldsResult = appModule.addFormFields(data.app, '', data.revision);
         return addFormFieldsResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -457,14 +382,14 @@ describe('addFormFields function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(400, expectResult);
 
         const addFormFieldsResult = appModule.addFormFields(data.app, data.properties, data.revision);
         return addFormFieldsResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -506,14 +431,14 @@ describe('addFormFields function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(400, expectResult);
 
         const addFormFieldsResult = appModule.addFormFields(data.app, data.properties, data.revision);
         return addFormFieldsResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -555,14 +480,14 @@ describe('addFormFields function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(400, expectResult);
 
         const addFormFieldsResult = appModule.addFormFields(data.app, data.properties, data.revision);
         return addFormFieldsResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -597,14 +522,14 @@ describe('addFormFields function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(403, expectResult);
 
         const addFormFieldsResult = appModule.addFormFields(data.app, data.properties, data.revision);
         return addFormFieldsResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });

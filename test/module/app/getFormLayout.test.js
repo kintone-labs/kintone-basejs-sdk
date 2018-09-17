@@ -7,7 +7,7 @@ const nock = require('nock');
 
 const common = require('../../../test/utils/common');
 
-const {Connection, Auth, App, KintoneException} = require(common.MAIN_PATH);
+const {Connection, Auth, App, KintoneAPIException} = require(common.MAIN_PATH);
 
 const auth = new Auth();
 auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
@@ -21,7 +21,7 @@ describe('getFormLayout function', () => {
     const app = 1;
     it('should return promise', () => {
       nock('https://' + common.DOMAIN)
-        .get('/k/v1/app/form/layout.json')
+        .get(`/k/v1/app/form/layout.json?app=${app}`)
         .reply(200, {});
 
       const getAppResult = recordModule.getFormLayout(app);
@@ -53,16 +53,9 @@ describe('getFormLayout function', () => {
           ]
         };
         nock('https://' + common.DOMAIN)
-          .get('/k/v1/app/form/layout.json', (rqBody) => {
-            expect(rqBody.app).toEqual(app);
-            return true;
-          })
+          .get(`/k/v1/app/form/layout.json?app=${app}`)
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
-            return true;
-          })
-          .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
             return true;
           })
           .reply(200, expectResult);
@@ -95,16 +88,9 @@ describe('getFormLayout function', () => {
           'revision': '16'
         };
         nock('https://' + common.DOMAIN)
-          .get('/k/v1/app/form/layout.json', (rqBody) => {
-            expect(rqBody.app).toEqual(app);
-            return true;
-          })
+          .get(`/k/v1/app/form/layout.json?app=${app}`)
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
-            return true;
-          })
-          .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
             return true;
           })
           .reply(200, expectResult);
@@ -145,17 +131,9 @@ describe('getFormLayout function', () => {
           'revision': '20'
         };
         nock('https://' + common.DOMAIN)
-          .get('/k/v1/preview/app/form/layout.json', (rqBody) => {
-            expect(rqBody.app).toEqual(app);
-            expect(rqBody.isPreview).toBeFalsy();
-            return true;
-          })
+          .get(`/k/v1/preview/app/form/layout.json?app=${app}`)
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
-            return true;
-          })
-          .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
             return true;
           })
           .reply(200, expectResult);
@@ -189,17 +167,9 @@ describe('getFormLayout function', () => {
           ]
         };
         nock('https://' + common.DOMAIN)
-          .get('/k/v1/app/form/layout.json', (rqBody) => {
-            expect(rqBody.app).toEqual(app);
-            expect(rqBody.isPreview).toBeFalsy();
-            return true;
-          })
+          .get(`/k/v1/app/form/layout.json?app=${app}`)
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
-            return true;
-          })
-          .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
             return true;
           })
           .reply(200, expectResult);
@@ -233,17 +203,9 @@ describe('getFormLayout function', () => {
           ]
         };
         nock('https://' + common.DOMAIN)
-          .get('/k/guest/1/v1/app/form/layout.json', (rqBody) => {
-            expect(rqBody.app).toEqual(app);
-            expect(rqBody.isPreview).toBeFalsy();
-            return true;
-          })
+          .get(`/k/guest/1/v1/app/form/layout.json?app=${app}`)
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
-            return true;
-          })
-          .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
             return true;
           })
           .reply(200, expectResult);
@@ -276,24 +238,16 @@ describe('getFormLayout function', () => {
           }
         };
         nock('https://' + common.DOMAIN)
-          .get('/k/v1/app/form/layout.json', (rqBody) => {
-            expect(rqBody.app).toEqual(app);
-            expect(rqBody.isPreview).toBeFalsy();
-            return true;
-          })
+          .get(`/k/v1/app/form/layout.json?app=${app}`)
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
-            return true;
-          })
-          .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
             return true;
           })
           .reply(400, expectResult);
 
         const getFormLayoutResult = recordModule.getFormLayout(app, isPreview);
         return getFormLayoutResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -323,15 +277,11 @@ describe('getFormLayout function', () => {
             expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
             return true;
           })
-          .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
-            return true;
-          })
           .reply(400, expectResult);
 
-        const getFormLayoutResult = recordModule.getFormLayout('', isPreview);
+        const getFormLayoutResult = recordModule.getFormLayout(undefined, isPreview);
         return getFormLayoutResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -347,24 +297,16 @@ describe('getFormLayout function', () => {
           'message': 'No privilege to proceed.'
         };
         nock('https://' + common.DOMAIN)
-          .get('/k/v1/app/form/layout.json', (rqBody) => {
-            expect(rqBody.app).toEqual(app);
-            expect(rqBody.isPreview).toBeFalsy();
-            return true;
-          })
+          .get(`/k/v1/app/form/layout.json?app=${app}`)
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
-            return true;
-          })
-          .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
             return true;
           })
           .reply(400, expectResult);
 
         const getFormLayoutResult = recordModule.getFormLayout(app, isPreview);
         return getFormLayoutResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -378,7 +320,7 @@ describe('getFormLayout function', () => {
           'message': 'Using this API token, you cannot run the specified API.'
         };
         nock('https://' + common.DOMAIN)
-          .get('/k/v1/app/form/layout.json')
+          .get(`/k/v1/app/form/layout.json?app=10`)
           .reply(403, expectResult);
         const getFormLayoutResult = recordModule.getFormLayout(10);
         return getFormLayoutResult.catch((err) => {

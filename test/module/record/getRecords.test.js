@@ -6,7 +6,7 @@
 const nock = require('nock');
 const common = require('../../../test/utils/common');
 
-const {Connection, Auth, Record, KintoneException} = require(common.MAIN_PATH);
+const {Connection, Auth, Record, KintoneAPIException} = require(common.MAIN_PATH);
 
 const auth = new Auth();
 auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
@@ -30,21 +30,14 @@ describe('getRecords function', () => {
         const body = {
           app: 844,
           query: 'Created_datetime = TODAY()',
-          fields: ['Created_datetime', '$id', 'dropdown', 'radio', 'checkbox'],
+          fields: ['Created_datetime'],
           totalCount: false,
         };
 
         nock('https://' + common.DOMAIN)
-          .get(`/k/v1/records.json`, (rqbody) => {
-            expect(rqbody).toMatchObject(body);
-            return true;
-          })
+          .get(`/k/v1/records.json?app=${body.app}&query=${encodeURIComponent(body.query)}&fields[0]=${body.fields[0]}&totalCount=${body.totalCount}`)
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(Buffer.from(common.USERNAME + ':' + common.PASSWORD).toString('base64'));
-            return true;
-          })
-          .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
             return true;
           })
           .reply(200, {
@@ -84,16 +77,9 @@ describe('getRecords function', () => {
           'totalCount': null
         };
         nock('https://' + common.DOMAIN)
-          .get(`/k/v1/records.json`, (rqbody) => {
-            expect(rqbody).toMatchObject(body);
-            return true;
-          })
+          .get(`/k/v1/records.json?app=${body.app}&query=${encodeURIComponent(body.query)}&fields[0]=${body.fields[0]}&totalCount=${body.totalCount}`)
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(Buffer.from(common.USERNAME + ':' + common.PASSWORD).toString('base64'));
-            return true;
-          })
-          .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
             return true;
           })
           .reply(200, expectResult);
@@ -112,7 +98,7 @@ describe('getRecords function', () => {
         const body = {
           app: 1,
           query: 'Record_number in 1',
-          fields: ['Record_number', 'dropdown', 'radio', 'checkbox'],
+          fields: ['Record_number'],
           totalCount: false
         };
 
@@ -129,23 +115,16 @@ describe('getRecords function', () => {
           }
         };
         nock('https://' + common.DOMAIN)
-          .get(`/k/v1/records.json`, (rqbody) => {
-            expect(rqbody).toMatchObject(body);
-            return true;
-          })
+          .get(`/k/v1/records.json?app=${body.app}&query=${encodeURIComponent(body.query)}&fields[0]=${body.fields[0]}&totalCount=${body.totalCount}`)
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(Buffer.from(common.USERNAME + ':' + common.PASSWORD).toString('base64'));
-            return true;
-          })
-          .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
             return true;
           })
           .reply(400, expectResult);
 
         const getRecordsResult = recordModule.getRecords(body.app, body.query, body.fields, body.totalCount);
         return getRecordsResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -156,7 +135,7 @@ describe('getRecords function', () => {
         const body = {
           app: 1,
           query: 'Error_fields >= 1',
-          fields: ['Record_number', 'dropdown', 'radio', 'checkbox'],
+          fields: ['Record_number'],
           totalCount: false
         };
 
@@ -166,23 +145,16 @@ describe('getRecords function', () => {
           'message': 'Specified field (error) not found.'
         };
         nock('https://' + common.DOMAIN)
-          .get(`/k/v1/records.json`, (rqbody) => {
-            expect(rqbody).toMatchObject(body);
-            return true;
-          })
+          .get(`/k/v1/records.json?app=${body.app}&query=${encodeURIComponent(body.query)}&fields[0]=${body.fields[0]}&totalCount=${body.totalCount}`)
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(Buffer.from(common.USERNAME + ':' + common.PASSWORD).toString('base64'));
-            return true;
-          })
-          .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
             return true;
           })
           .reply(400, expectResult);
 
         const getRecordsResult = recordModule.getRecords(body.app, body.query, body.fields, body.totalCount);
         return getRecordsResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -193,7 +165,7 @@ describe('getRecords function', () => {
         const body = {
           app: 1,
           query: 'Record_number >= 1',
-          fields: ['Record_number', 'dropdown', 'radio', 'checkbox'],
+          fields: ['Record_number'],
           totalCount: 1,
         };
 
@@ -210,23 +182,16 @@ describe('getRecords function', () => {
           }
         };
         nock('https://' + common.DOMAIN)
-          .get(`/k/v1/records.json`, (rqbody) => {
-            expect(rqbody).toMatchObject(body);
-            return true;
-          })
+          .get(`/k/v1/records.json?app=${body.app}&query=${encodeURIComponent(body.query)}&fields[0]=${body.fields[0]}&totalCount=${body.totalCount}`)
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(Buffer.from(common.USERNAME + ':' + common.PASSWORD).toString('base64'));
-            return true;
-          })
-          .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
             return true;
           })
           .reply(400, expectResult);
 
         const getRecordsResult = recordModule.getRecords(body.app, body.query, body.fields, body.totalCount);
         return getRecordsResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -236,7 +201,7 @@ describe('getRecords function', () => {
       it('[Record-18] should return the error in the result', () => {
         const body = {
           query: 'Record_number >= 1',
-          fields: ['Record_number', 'dropdown', 'radio', 'checkbox'],
+          fields: ['Record_number'],
           totalCount: false,
         };
 
@@ -253,23 +218,16 @@ describe('getRecords function', () => {
           }
         };
         nock('https://' + common.DOMAIN)
-          .get(`/k/v1/records.json`, (rqbody) => {
-            expect(rqbody).toMatchObject(body);
-            return true;
-          })
+          .get(`/k/v1/records.json?query=${encodeURIComponent(body.query)}&fields[0]=${body.fields[0]}&totalCount=${body.totalCount}`)
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(Buffer.from(common.USERNAME + ':' + common.PASSWORD).toString('base64'));
             return true;
           })
-          .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
-            return true;
-          })
           .reply(400, expectResult);
 
-        const getRecordsResult = recordModule.getRecords('', body.query, body.fields, body.totalCount);
+        const getRecordsResult = recordModule.getRecords(undefined, body.query, body.fields, body.totalCount);
         return getRecordsResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -280,7 +238,7 @@ describe('getRecords function', () => {
         const body = {
           app: 1,
           query: 'Record_number >= 1',
-          fields: ['Record_number', 'dropdown', 'radio', 'checkbox'],
+          fields: ['Record_number'],
           totalCount: false,
         };
         const expectResult = {
@@ -289,22 +247,15 @@ describe('getRecords function', () => {
           'message': 'No privilege to proceed.'
         };
         nock('https://' + common.DOMAIN)
-          .get(`/k/v1/records.json`, (rqbody) => {
-            expect(rqbody).toMatchObject(body);
-            return true;
-          })
+          .get(`/k/v1/records.json?app=${body.app}&query=${encodeURIComponent(body.query)}&fields[0]=${body.fields[0]}&totalCount=${body.totalCount}`)
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(Buffer.from(common.USERNAME + ':' + common.PASSWORD).toString('base64'));
-            return true;
-          })
-          .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
             return true;
           })
           .reply(400, expectResult);
         const getRecordsResult = recordModule.getRecords(body.app, body.query, body.fields, body.totalCount);
         return getRecordsResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -315,7 +266,7 @@ describe('getRecords function', () => {
         const body = {
           app: 1,
           query: 'Record_number >= 1',
-          fields: ['Record_number', 'dropdown', 'radio', 'checkbox'],
+          fields: ['Record_number'],
           totalCount: false,
         };
         const expectResult = {
@@ -324,22 +275,15 @@ describe('getRecords function', () => {
           'message': 'No privilege to proceed.'
         };
         nock('https://' + common.DOMAIN)
-          .get(`/k/v1/records.json`, (rqbody) => {
-            expect(rqbody).toMatchObject(body);
-            return true;
-          })
+          .get(`/k/v1/records.json?app=${body.app}&query=${encodeURIComponent(body.query)}&fields[0]=${body.fields[0]}&totalCount=${body.totalCount}`)
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(Buffer.from(common.USERNAME + ':' + common.PASSWORD).toString('base64'));
-            return true;
-          })
-          .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
             return true;
           })
           .reply(400, expectResult);
         const getRecordsResult = recordModule.getRecords(body.app, body.query, body.fields, body.totalCount);
         return getRecordsResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -350,7 +294,7 @@ describe('getRecords function', () => {
         const body = {
           app: 1,
           query: 'Record_number >= 1',
-          fields: ['Record_number', 'dropdown'],
+          fields: ['Record_number'],
           totalCount: false,
         };
 
@@ -379,16 +323,9 @@ describe('getRecords function', () => {
           'totalCount': null
         };
         nock('https://' + common.DOMAIN)
-          .get(`/k/v1/records.json`, (rqbody) => {
-            expect(rqbody).toMatchObject(body);
-            return true;
-          })
+          .get(`/k/v1/records.json?app=${body.app}&query=${encodeURIComponent(body.query)}&fields[0]=${body.fields[0]}&totalCount=${body.totalCount}`)
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(Buffer.from(common.USERNAME + ':' + common.PASSWORD).toString('base64'));
-            return true;
-          })
-          .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
             return true;
           })
           .reply(200, expectResult);
@@ -404,7 +341,7 @@ describe('getRecords function', () => {
         const body = {
           app: 1,
           query: 'Record_number >= 1',
-          fields: ['Record_number', 'dropdown'],
+          fields: ['Record_number'],
           totalCount: false,
         };
         const expectResult = {
@@ -413,22 +350,15 @@ describe('getRecords function', () => {
           'message': 'You need to send a request to the URL: "/k/guest/<Space ID>/v1/..." to execute apps in Guest Spaces.'
         };
         nock('https://' + common.DOMAIN)
-          .get(`/k/v1/records.json`, (rqbody) => {
-            expect(rqbody).toMatchObject(body);
-            return true;
-          })
+          .get(`/k/v1/records.json?app=${body.app}&query=${encodeURIComponent(body.query)}&fields[0]=${body.fields[0]}&totalCount=${body.totalCount}`)
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(Buffer.from(common.USERNAME + ':' + common.PASSWORD).toString('base64'));
-            return true;
-          })
-          .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
             return true;
           })
           .reply(400, expectResult);
         const getRecordsResult = recordModule.getRecords(body.app, body.query, body.fields, body.totalCount);
         return getRecordsResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -439,20 +369,13 @@ describe('getRecords function', () => {
         const body = {
           app: '1',
           query: 'Record_number >= 1',
-          fields: ['Record_number', 'dropdown'],
+          fields: ['Record_number'],
           totalCount: false,
         };
         nock('https://' + common.DOMAIN)
-          .get(`/k/v1/records.json`, (rqbody) => {
-            expect(rqbody).toMatchObject(body);
-            return true;
-          })
+          .get(`/k/v1/records.json?app=${body.app}&query=${encodeURIComponent(body.query)}&fields[0]=${body.fields[0]}&totalCount=${body.totalCount}`)
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(Buffer.from(common.USERNAME + ':' + common.PASSWORD).toString('base64'));
-            return true;
-          })
-          .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
             return true;
           })
           .reply(200, {
@@ -470,7 +393,7 @@ describe('getRecords function', () => {
         const body = {
           app: 1,
           query: 'Record_number > 0 order by Record_number asc limit 999 offset 0',
-          fields: ['Record_number', 'dropdown', 'radio', 'checkbox'],
+          fields: ['Record_number'],
           totalCount: false,
         };
         const expectResult = {
@@ -479,22 +402,15 @@ describe('getRecords function', () => {
           'message': 'limit must be 500 or less.'
         };
         nock('https://' + common.DOMAIN)
-          .get(`/k/v1/records.json`, (rqbody) => {
-            expect(rqbody).toMatchObject(body);
-            return true;
-          })
+          .get(`/k/v1/records.json?app=${body.app}&query=${encodeURIComponent(body.query)}&fields[0]=${body.fields[0]}&totalCount=${body.totalCount}`)
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(Buffer.from(common.USERNAME + ':' + common.PASSWORD).toString('base64'));
-            return true;
-          })
-          .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
             return true;
           })
           .reply(400, expectResult);
         const getRecordsResult = recordModule.getRecords(body.app, body.query, body.fields, body.totalCount);
         return getRecordsResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -504,11 +420,10 @@ describe('getRecords function', () => {
       it('[Record-14] should return the error in the result', () => {
         const body = {
           app: -2,
-          query: 'Created_datetime = TODAY()',
-          fields: ['Created_datetime', '$id', 'dropdown', 'radio', 'checkbox'],
+          query: 'Created_datetime=TODAY()',
+          fields: ['Created_datetime'],
           totalCount: false
         };
-
         const expectResult = {
           'code': 'CB_VA01',
           'id': 'PmcT6fVjQMsl4BhMw9Uo',
@@ -516,15 +431,12 @@ describe('getRecords function', () => {
           'errors': {'app': {'messages': ['must be greater than or equal to 1']}}
         };
         nock('https://' + common.DOMAIN)
-          .get(`/k/v1/records.json`, (rqbody) => {
-            expect(rqbody).toMatchObject(body);
-            return true;
-          })
+          .get(`/k/v1/records.json?app=${body.app}&query=${encodeURIComponent(body.query)}&fields[0]=${body.fields[0]}&totalCount=${body.totalCount}`)
           .reply(400, expectResult);
 
         const getRecordsResult = recordModule.getRecords(body.app, body.query, body.fields, body.totalCount);
         return getRecordsResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });

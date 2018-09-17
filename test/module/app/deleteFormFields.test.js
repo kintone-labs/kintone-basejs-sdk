@@ -7,7 +7,7 @@ const nock = require('nock');
 
 const common = require('../../../test/utils/common');
 
-const {Connection, Auth, App, KintoneException} = require(common.MAIN_PATH);
+const {Connection, Auth, App, KintoneAPIException} = require(common.MAIN_PATH);
 
 const URI = 'https://' + common.DOMAIN;
 
@@ -56,7 +56,7 @@ describe('deleteFormFields function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(200, expectResult);
@@ -89,7 +89,7 @@ describe('deleteFormFields function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(200, expectResult);
@@ -123,7 +123,7 @@ describe('deleteFormFields function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(200, expectResult);
@@ -157,7 +157,7 @@ describe('deleteFormFields function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(200, expectResult);
@@ -193,7 +193,7 @@ describe('deleteFormFields function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(200, expectResult);
@@ -263,14 +263,14 @@ describe('deleteFormFields function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(400, expectResult);
 
         const deleteFormFieldsResult = appModule.deleteFormFields('', data.fields, data.revision);
         return deleteFormFieldsResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -304,14 +304,14 @@ describe('deleteFormFields function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(400, expectResult);
 
         const deleteFormFieldsResult = appModule.deleteFormFields(data.app, '', data.revision);
         return deleteFormFieldsResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -348,14 +348,14 @@ describe('deleteFormFields function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(400, expectResult);
 
         const deleteFormFieldsResult = appModule.deleteFormFields(data.app, data.fields, data.revision);
         return deleteFormFieldsResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -385,14 +385,14 @@ describe('deleteFormFields function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(520, expectResult);
 
         const deleteFormFieldsResult = appModule.deleteFormFields(data.app, data.fields, data.revision);
         return deleteFormFieldsResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -429,14 +429,14 @@ describe('deleteFormFields function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(400, expectResult);
 
         const deleteFormFieldsResult = appModule.deleteFormFields(data.app, data.fields, data.revision);
         return deleteFormFieldsResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -472,14 +472,14 @@ describe('deleteFormFields function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(400, expectResult);
 
         const deleteFormFieldsResult = appModule.deleteFormFields(data.app, common.generateRecord(number, data.fields), data.revision);
         return deleteFormFieldsResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
