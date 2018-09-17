@@ -9,8 +9,8 @@ const common = require('../utils/common');
 const {App, Auth, Connection, KintoneAPIException} = require(common.MAIN_PATH);
 
 const URI = 'https://' + common.DOMAIN;
-const PRE_LIVE_ROUTE = '/k/v1/preview/app/settings.json';
-const GUEST_PRE_LIVE_ROUTE = `/k/guest/${common.GUEST_SPACEID}/v1/preview/app/settings.json`;
+const APP_PREVIEW_SETTINGS_ROUTE = '/k/v1/preview/app/settings.json';
+const GUEST_APP_PREVIEW_SETTINGS_ROUTE = `/k/guest/${common.GUEST_SPACEID}/v1/preview/app/settings.json`;
 
 const auth = new Auth();
 auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
@@ -31,7 +31,7 @@ describe('updateGeneralSettings function', () => {
   describe('common function', () => {
     it('should return promise', () => {
       nock(URI)
-        .put(PRE_LIVE_ROUTE)
+        .put(APP_PREVIEW_SETTINGS_ROUTE)
         .reply(200, {});
 
       const updateGeneralSettingsResult = appModule.updateGeneralSettings();
@@ -40,7 +40,7 @@ describe('updateGeneralSettings function', () => {
     });
     it('should return promise - GUEST SPACE', () => {
       nock(URI)
-        .put(GUEST_PRE_LIVE_ROUTE)
+        .put(GUEST_APP_PREVIEW_SETTINGS_ROUTE)
         .reply(200, {});
 
       const updateGeneralSettingsResult = appModuleGuestSpace.updateGeneralSettings();
@@ -79,7 +79,7 @@ describe('updateGeneralSettings function', () => {
             'revision': '2'
           };
           nock(URI)
-            .put(PRE_LIVE_ROUTE, (rqBody) => {
+            .put(APP_PREVIEW_SETTINGS_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -110,7 +110,7 @@ describe('updateGeneralSettings function', () => {
             'revision': '2'
           };
           nock(URI)
-            .put(PRE_LIVE_ROUTE, (rqBody) => {
+            .put(APP_PREVIEW_SETTINGS_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -141,7 +141,7 @@ describe('updateGeneralSettings function', () => {
             'revision': '2'
           };
           nock(URI)
-            .put(PRE_LIVE_ROUTE, (rqBody) => {
+            .put(APP_PREVIEW_SETTINGS_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -178,7 +178,7 @@ describe('updateGeneralSettings function', () => {
             'revision': '2'
           };
           nock(URI)
-            .put(PRE_LIVE_ROUTE, (rqBody) => {
+            .put(APP_PREVIEW_SETTINGS_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -209,7 +209,7 @@ describe('updateGeneralSettings function', () => {
             'revision': '2'
           };
           nock(URI)
-            .put(PRE_LIVE_ROUTE, (rqBody) => {
+            .put(APP_PREVIEW_SETTINGS_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -240,7 +240,7 @@ describe('updateGeneralSettings function', () => {
             'revision': '2'
           };
           nock(URI)
-            .put(PRE_LIVE_ROUTE, (rqBody) => {
+            .put(APP_PREVIEW_SETTINGS_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -271,7 +271,7 @@ describe('updateGeneralSettings function', () => {
             'revision': '2'
           };
           nock(URI)
-            .put(PRE_LIVE_ROUTE, (rqBody) => {
+            .put(APP_PREVIEW_SETTINGS_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -302,7 +302,7 @@ describe('updateGeneralSettings function', () => {
             'revision': '2'
           };
           nock(URI)
-            .put(PRE_LIVE_ROUTE, (rqBody) => {
+            .put(APP_PREVIEW_SETTINGS_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -333,7 +333,7 @@ describe('updateGeneralSettings function', () => {
             'revision': '2'
           };
           nock(URI)
-            .put(PRE_LIVE_ROUTE, (rqBody) => {
+            .put(APP_PREVIEW_SETTINGS_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -364,7 +364,7 @@ describe('updateGeneralSettings function', () => {
             'revision': '2'
           };
           nock(URI)
-            .put(PRE_LIVE_ROUTE, (rqBody) => {
+            .put(APP_PREVIEW_SETTINGS_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -407,7 +407,7 @@ describe('updateGeneralSettings function', () => {
             'revision': '2'
           };
           nock(URI)
-            .put(PRE_LIVE_ROUTE, (rqBody) => {
+            .put(APP_PREVIEW_SETTINGS_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -452,7 +452,7 @@ describe('updateGeneralSettings function', () => {
             'revision': '2'
           };
           nock(URI)
-            .put(PRE_LIVE_ROUTE, (rqBody) => {
+            .put(APP_PREVIEW_SETTINGS_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -481,7 +481,7 @@ describe('updateGeneralSettings function', () => {
             'revision': '3'
           };
           nock(URI)
-            .put(PRE_LIVE_ROUTE, (rqBody) => {
+            .put(APP_PREVIEW_SETTINGS_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -528,7 +528,7 @@ describe('updateGeneralSettings function', () => {
           'revision': '2'
         };
         nock(URI)
-          .put(GUEST_PRE_LIVE_ROUTE, (rqBody) => {
+          .put(GUEST_APP_PREVIEW_SETTINGS_ROUTE, (rqBody) => {
             expect(rqBody).toEqual(expectBody);
             return true;
           })
@@ -559,7 +559,7 @@ describe('updateGeneralSettings function', () => {
           'revision': '2'
         };
         nock(URI)
-          .put(GUEST_PRE_LIVE_ROUTE, (rqBody) => {
+          .put(GUEST_APP_PREVIEW_SETTINGS_ROUTE, (rqBody) => {
             expect(rqBody).toEqual(expectBody);
             return true;
           })
@@ -590,7 +590,7 @@ describe('updateGeneralSettings function', () => {
           'revision': '2'
         };
         nock(URI)
-          .put(GUEST_PRE_LIVE_ROUTE, (rqBody) => {
+          .put(GUEST_APP_PREVIEW_SETTINGS_ROUTE, (rqBody) => {
             expect(rqBody).toEqual(expectBody);
             return true;
           })
@@ -627,7 +627,7 @@ describe('updateGeneralSettings function', () => {
           'revision': '2'
         };
         nock(URI)
-          .put(GUEST_PRE_LIVE_ROUTE, (rqBody) => {
+          .put(GUEST_APP_PREVIEW_SETTINGS_ROUTE, (rqBody) => {
             expect(rqBody).toEqual(expectBody);
             return true;
           })
@@ -658,7 +658,7 @@ describe('updateGeneralSettings function', () => {
           'revision': '2'
         };
         nock(URI)
-          .put(GUEST_PRE_LIVE_ROUTE, (rqBody) => {
+          .put(GUEST_APP_PREVIEW_SETTINGS_ROUTE, (rqBody) => {
             expect(rqBody).toEqual(expectBody);
             return true;
           })
@@ -689,7 +689,7 @@ describe('updateGeneralSettings function', () => {
           'revision': '2'
         };
         nock(URI)
-          .put(GUEST_PRE_LIVE_ROUTE, (rqBody) => {
+          .put(GUEST_APP_PREVIEW_SETTINGS_ROUTE, (rqBody) => {
             expect(rqBody).toEqual(expectBody);
             return true;
           })
@@ -720,7 +720,7 @@ describe('updateGeneralSettings function', () => {
           'revision': '2'
         };
         nock(URI)
-          .put(GUEST_PRE_LIVE_ROUTE, (rqBody) => {
+          .put(GUEST_APP_PREVIEW_SETTINGS_ROUTE, (rqBody) => {
             expect(rqBody).toEqual(expectBody);
             return true;
           })
@@ -751,7 +751,7 @@ describe('updateGeneralSettings function', () => {
           'revision': '2'
         };
         nock(URI)
-          .put(GUEST_PRE_LIVE_ROUTE, (rqBody) => {
+          .put(GUEST_APP_PREVIEW_SETTINGS_ROUTE, (rqBody) => {
             expect(rqBody).toEqual(expectBody);
             return true;
           })
@@ -782,7 +782,7 @@ describe('updateGeneralSettings function', () => {
           'revision': '2'
         };
         nock(URI)
-          .put(GUEST_PRE_LIVE_ROUTE, (rqBody) => {
+          .put(GUEST_APP_PREVIEW_SETTINGS_ROUTE, (rqBody) => {
             expect(rqBody).toEqual(expectBody);
             return true;
           })
@@ -813,7 +813,7 @@ describe('updateGeneralSettings function', () => {
           'revision': '2'
         };
         nock(URI)
-          .put(GUEST_PRE_LIVE_ROUTE, (rqBody) => {
+          .put(GUEST_APP_PREVIEW_SETTINGS_ROUTE, (rqBody) => {
             expect(rqBody).toEqual(expectBody);
             return true;
           })
@@ -856,7 +856,7 @@ describe('updateGeneralSettings function', () => {
           'revision': '2'
         };
         nock(URI)
-          .put(GUEST_PRE_LIVE_ROUTE, (rqBody) => {
+          .put(GUEST_APP_PREVIEW_SETTINGS_ROUTE, (rqBody) => {
             expect(rqBody).toEqual(expectBody);
             return true;
           })
@@ -901,7 +901,7 @@ describe('updateGeneralSettings function', () => {
           'revision': '2'
         };
         nock(URI)
-          .put(GUEST_PRE_LIVE_ROUTE, (rqBody) => {
+          .put(GUEST_APP_PREVIEW_SETTINGS_ROUTE, (rqBody) => {
             expect(rqBody).toEqual(expectBody);
             return true;
           })
@@ -930,7 +930,7 @@ describe('updateGeneralSettings function', () => {
           'revision': '2'
         };
         nock(URI)
-          .put(GUEST_PRE_LIVE_ROUTE, (rqBody) => {
+          .put(GUEST_APP_PREVIEW_SETTINGS_ROUTE, (rqBody) => {
             expect(rqBody).toEqual(expectBody);
             return true;
           })
@@ -966,7 +966,7 @@ describe('updateGeneralSettings function', () => {
             'errors': '{}'
           };
           nock(URI)
-            .put(PRE_LIVE_ROUTE, (rqBody) => {
+            .put(APP_PREVIEW_SETTINGS_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -1015,7 +1015,7 @@ describe('updateGeneralSettings function', () => {
             'errors': '{}'
           };
           nock(URI)
-            .put(PRE_LIVE_ROUTE, (rqBody) => {
+            .put(APP_PREVIEW_SETTINGS_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -1064,7 +1064,7 @@ describe('updateGeneralSettings function', () => {
             'errors': '{}'
           };
           nock(URI)
-            .put(PRE_LIVE_ROUTE, (rqBody) => {
+            .put(APP_PREVIEW_SETTINGS_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -1097,7 +1097,7 @@ describe('updateGeneralSettings function', () => {
             }
           };
           nock(URI)
-            .put(PRE_LIVE_ROUTE)
+            .put(APP_PREVIEW_SETTINGS_ROUTE)
             .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
               expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
               return true;
@@ -1123,7 +1123,7 @@ describe('updateGeneralSettings function', () => {
           };
 
           nock(URI)
-            .put(PRE_LIVE_ROUTE, (rqBody) => {
+            .put(APP_PREVIEW_SETTINGS_ROUTE, (rqBody) => {
               expect(rqBody.app).toEqual(appID);
               return true;
             })
@@ -1149,7 +1149,7 @@ describe('updateGeneralSettings function', () => {
             }
           };
           nock(URI)
-            .put(PRE_LIVE_ROUTE, (rqBody) => {
+            .put(APP_PREVIEW_SETTINGS_ROUTE, (rqBody) => {
               expect(rqBody.app).toEqual(appID);
               return true;
             })
@@ -1175,7 +1175,7 @@ describe('updateGeneralSettings function', () => {
             }
           };
           nock(URI)
-            .put(PRE_LIVE_ROUTE, (rqBody) => {
+            .put(APP_PREVIEW_SETTINGS_ROUTE, (rqBody) => {
               expect(rqBody.app).toEqual(appID);
               return true;
             })
@@ -1208,7 +1208,7 @@ describe('updateGeneralSettings function', () => {
             }
           };
           nock(URI)
-            .put(PRE_LIVE_ROUTE, (rqBody) => {
+            .put(APP_PREVIEW_SETTINGS_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -1253,7 +1253,7 @@ describe('updateGeneralSettings function', () => {
             }
           };
           nock(URI)
-            .put(PRE_LIVE_ROUTE, (rqBody) => {
+            .put(APP_PREVIEW_SETTINGS_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -1298,7 +1298,7 @@ describe('updateGeneralSettings function', () => {
             }
           };
           nock(URI)
-            .put(PRE_LIVE_ROUTE, (rqBody) => {
+            .put(APP_PREVIEW_SETTINGS_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -1347,7 +1347,7 @@ describe('updateGeneralSettings function', () => {
             'errors': '{}'
           };
           nock(URI)
-            .put(PRE_LIVE_ROUTE, (rqBody) => {
+            .put(APP_PREVIEW_SETTINGS_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -1380,7 +1380,7 @@ describe('updateGeneralSettings function', () => {
             'errors': '{}'
           };
           nock(URI)
-            .put(GUEST_PRE_LIVE_ROUTE, (rqBody) => {
+            .put(GUEST_APP_PREVIEW_SETTINGS_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -1429,7 +1429,7 @@ describe('updateGeneralSettings function', () => {
             'errors': '{}'
           };
           nock(URI)
-            .put(GUEST_PRE_LIVE_ROUTE, (rqBody) => {
+            .put(GUEST_APP_PREVIEW_SETTINGS_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -1478,7 +1478,7 @@ describe('updateGeneralSettings function', () => {
             'errors': '{}'
           };
           nock(URI)
-            .put(GUEST_PRE_LIVE_ROUTE, (rqBody) => {
+            .put(GUEST_APP_PREVIEW_SETTINGS_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -1511,7 +1511,7 @@ describe('updateGeneralSettings function', () => {
             }
           };
           nock(URI)
-            .put(GUEST_PRE_LIVE_ROUTE)
+            .put(GUEST_APP_PREVIEW_SETTINGS_ROUTE)
             .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
               expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
               return true;
@@ -1537,7 +1537,7 @@ describe('updateGeneralSettings function', () => {
           };
 
           nock(URI)
-            .put(GUEST_PRE_LIVE_ROUTE, (rqBody) => {
+            .put(GUEST_APP_PREVIEW_SETTINGS_ROUTE, (rqBody) => {
               expect(rqBody.app).toEqual(appID);
               return true;
             })
@@ -1563,7 +1563,7 @@ describe('updateGeneralSettings function', () => {
             }
           };
           nock(URI)
-            .put(GUEST_PRE_LIVE_ROUTE, (rqBody) => {
+            .put(GUEST_APP_PREVIEW_SETTINGS_ROUTE, (rqBody) => {
               expect(rqBody.app).toEqual(appID);
               return true;
             })
@@ -1589,7 +1589,7 @@ describe('updateGeneralSettings function', () => {
             }
           };
           nock(URI)
-            .put(GUEST_PRE_LIVE_ROUTE, (rqBody) => {
+            .put(GUEST_APP_PREVIEW_SETTINGS_ROUTE, (rqBody) => {
               expect(rqBody.app).toEqual(appID);
               return true;
             })
@@ -1622,7 +1622,7 @@ describe('updateGeneralSettings function', () => {
             }
           };
           nock(URI)
-            .put(GUEST_PRE_LIVE_ROUTE, (rqBody) => {
+            .put(GUEST_APP_PREVIEW_SETTINGS_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -1667,7 +1667,7 @@ describe('updateGeneralSettings function', () => {
             }
           };
           nock(URI)
-            .put(GUEST_PRE_LIVE_ROUTE, (rqBody) => {
+            .put(GUEST_APP_PREVIEW_SETTINGS_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -1712,7 +1712,7 @@ describe('updateGeneralSettings function', () => {
             }
           };
           nock(URI)
-            .put(GUEST_PRE_LIVE_ROUTE, (rqBody) => {
+            .put(GUEST_APP_PREVIEW_SETTINGS_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -1761,7 +1761,7 @@ describe('updateGeneralSettings function', () => {
             'errors': '{}'
           };
           nock(URI)
-            .put(GUEST_PRE_LIVE_ROUTE, (rqBody) => {
+            .put(GUEST_APP_PREVIEW_SETTINGS_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
