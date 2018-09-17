@@ -6,8 +6,14 @@ module.exports = {
   PASSWORD: 'your_password',
   PROXY_HOST: 'your_proxy',
   PROXY_PORT: '3128',
+<<<<<<<<< Temporary merge branch 1
+  GUEST_SPACEID: '1',
+  MAIN_PATH: '../../../src/main',
+=========
   GUEST_SPACEID: 1,
   MAIN_PATH: '../../../src/main',
+
+>>>>>>>>> Temporary merge branch 2
   getPasswordAuth: (userName, password) => {
     return Buffer.from(userName + ':' + password).toString('base64');
   },
@@ -19,4 +25,3 @@ module.exports = {
     return items;
   }
 };
-
