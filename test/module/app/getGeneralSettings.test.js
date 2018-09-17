@@ -7,10 +7,10 @@ const common = require('../utils/common');
 const {App, Auth, Connection, KintoneAPIException} = require(common.MAIN_PATH);
 
 const URI = 'https://' + common.DOMAIN;
-const PRE_LIVE_ROUTE = '/k/v1/preview/app/settings.json';
-const LIVE_ROUTE = '/k/v1/app/settings.json';
-const GUEST_PRE_LIVE_ROUTE = `/k/guest/${common.GUEST_SPACEID}/v1/preview/app/settings.json`;
-const GUEST_LIVE_ROUTE = `/k/guest/${common.GUEST_SPACEID}/v1/app/settings.json`;
+const APP_PREVIEW_SETTINGS_ROUTE = '/k/v1/preview/app/settings.json';
+const APP_SETTINGS_ROUTE = '/k/v1/app/settings.json';
+const GUEST_APP_PREVIEW_SETTINGS_ROUTE = `/k/guest/${common.GUEST_SPACEID}/v1/preview/app/settings.json`;
+const GUEST_APP_SETTINGS_ROUTE = `/k/guest/${common.GUEST_SPACEID}/v1/app/settings.json`;
 
 const auth = new Auth();
 auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
@@ -31,7 +31,7 @@ describe('getGeneralSettings function', () => {
   describe('common function', () => {
     it('should return promise', () => {
       nock(URI)
-        .get(LIVE_ROUTE)
+        .get(APP_SETTINGS_ROUTE)
         .reply(200, {});
       const getGeneralSettingsResult = appModule.getGeneralSettings();
       expect(getGeneralSettingsResult).toHaveProperty('then');
@@ -40,7 +40,7 @@ describe('getGeneralSettings function', () => {
     it('should return promise PRE-LIVE', () => {
       const isPreview = true;
       nock(URI)
-        .get(PRE_LIVE_ROUTE)
+        .get(APP_PREVIEW_SETTINGS_ROUTE)
         .reply(200, {});
       const getGeneralSettingsResult = appModule.getGeneralSettings(undefined, undefined, isPreview);
       expect(getGeneralSettingsResult).toHaveProperty('then');
@@ -49,7 +49,7 @@ describe('getGeneralSettings function', () => {
     it('should return promise GUEST SPACE', () => {
       const isPreview = true;
       nock(URI)
-        .get(GUEST_PRE_LIVE_ROUTE)
+        .get(GUEST_APP_PREVIEW_SETTINGS_ROUTE)
         .reply(200, {});
       const getGeneralSettingsResult = appModuleGuestSpace.getGeneralSettings(undefined, undefined, isPreview);
       expect(getGeneralSettingsResult).toHaveProperty('then');
@@ -78,7 +78,7 @@ describe('getGeneralSettings function', () => {
             'revision': '24'
           };
           nock(URI)
-            .get(`${PRE_LIVE_ROUTE}?app=${data.app}&lang=${data.lang}`)
+            .get(`${APP_PREVIEW_SETTINGS_ROUTE}?app=${data.app}&lang=${data.lang}`)
             .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
               expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
               return true;
@@ -106,7 +106,7 @@ describe('getGeneralSettings function', () => {
             'revision': '24'
           };
           nock(URI)
-            .get(`${GUEST_PRE_LIVE_ROUTE}?app=${data.app}&lang=${data.lang}`)
+            .get(`${GUEST_APP_PREVIEW_SETTINGS_ROUTE}?app=${data.app}&lang=${data.lang}`)
             .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
               expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
               return true;
@@ -137,7 +137,7 @@ describe('getGeneralSettings function', () => {
             'revision': '24'
           };
           nock(URI)
-            .get(`${LIVE_ROUTE}?app=${data.app}&lang=${data.lang}`)
+            .get(`${APP_SETTINGS_ROUTE}?app=${data.app}&lang=${data.lang}`)
             .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
               expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
               return true;
@@ -165,7 +165,7 @@ describe('getGeneralSettings function', () => {
             'revision': '24'
           };
           nock(URI)
-            .get(`${GUEST_LIVE_ROUTE}?app=${data.app}&lang=${data.lang}`)
+            .get(`${GUEST_APP_SETTINGS_ROUTE}?app=${data.app}&lang=${data.lang}`)
             .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
               expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
               return true;
@@ -192,7 +192,7 @@ describe('getGeneralSettings function', () => {
             'revision': '24'
           };
           nock(URI)
-            .get(`${LIVE_ROUTE}?app=${data.app}&lang=${data.lang}`)
+            .get(`${APP_SETTINGS_ROUTE}?app=${data.app}&lang=${data.lang}`)
             .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
               expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
               return true;
@@ -219,7 +219,7 @@ describe('getGeneralSettings function', () => {
             'revision': '24'
           };
           nock(URI)
-            .get(`${GUEST_LIVE_ROUTE}?app=${data.app}&lang=${data.lang}`)
+            .get(`${GUEST_APP_SETTINGS_ROUTE}?app=${data.app}&lang=${data.lang}`)
             .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
               expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
               return true;
@@ -251,7 +251,7 @@ describe('getGeneralSettings function', () => {
             'revision': '24'
           };
           nock(URI)
-            .get(`${PRE_LIVE_ROUTE}?app=${data.app}&lang=${data.lang}`)
+            .get(`${APP_PREVIEW_SETTINGS_ROUTE}?app=${data.app}&lang=${data.lang}`)
             .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
               expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
               return true;
@@ -279,7 +279,7 @@ describe('getGeneralSettings function', () => {
             'revision': '24'
           };
           nock(URI)
-            .get(`${PRE_LIVE_ROUTE}?app=${data.app}&lang=${data.lang}`)
+            .get(`${APP_PREVIEW_SETTINGS_ROUTE}?app=${data.app}&lang=${data.lang}`)
             .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
               expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
               return true;
@@ -307,7 +307,7 @@ describe('getGeneralSettings function', () => {
             'revision': '24'
           };
           nock(URI)
-            .get(`${PRE_LIVE_ROUTE}?app=${data.app}&lang=${data.lang}`)
+            .get(`${APP_PREVIEW_SETTINGS_ROUTE}?app=${data.app}&lang=${data.lang}`)
             .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
               expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
               return true;
@@ -335,7 +335,7 @@ describe('getGeneralSettings function', () => {
             'revision': '24'
           };
           nock(URI)
-            .get(`${PRE_LIVE_ROUTE}?app=${data.app}&lang=${data.lang}`)
+            .get(`${APP_PREVIEW_SETTINGS_ROUTE}?app=${data.app}&lang=${data.lang}`)
             .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
               expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
               return true;
@@ -363,7 +363,7 @@ describe('getGeneralSettings function', () => {
             'revision': '24'
           };
           nock(URI)
-            .get(`${GUEST_PRE_LIVE_ROUTE}?app=${data.app}&lang=${data.lang}`)
+            .get(`${GUEST_APP_PREVIEW_SETTINGS_ROUTE}?app=${data.app}&lang=${data.lang}`)
             .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
               expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
               return true;
@@ -391,7 +391,7 @@ describe('getGeneralSettings function', () => {
             'revision': '24'
           };
           nock(URI)
-            .get(`${GUEST_PRE_LIVE_ROUTE}?app=${data.app}&lang=${data.lang}`)
+            .get(`${GUEST_APP_PREVIEW_SETTINGS_ROUTE}?app=${data.app}&lang=${data.lang}`)
             .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
               expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
               return true;
@@ -419,7 +419,7 @@ describe('getGeneralSettings function', () => {
             'revision': '24'
           };
           nock(URI)
-            .get(`${GUEST_PRE_LIVE_ROUTE}?app=${data.app}&lang=${data.lang}`)
+            .get(`${GUEST_APP_PREVIEW_SETTINGS_ROUTE}?app=${data.app}&lang=${data.lang}`)
             .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
               expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
               return true;
@@ -447,7 +447,7 @@ describe('getGeneralSettings function', () => {
             'revision': '24'
           };
           nock(URI)
-            .get(`${GUEST_PRE_LIVE_ROUTE}?app=${data.app}&lang=${data.lang}`)
+            .get(`${GUEST_APP_PREVIEW_SETTINGS_ROUTE}?app=${data.app}&lang=${data.lang}`)
             .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
               expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
               return true;
@@ -477,7 +477,7 @@ describe('getGeneralSettings function', () => {
             'revision': '24'
           };
           nock(URI)
-            .get(`${LIVE_ROUTE}?app=${data.app}&lang=${data.lang}`)
+            .get(`${APP_SETTINGS_ROUTE}?app=${data.app}&lang=${data.lang}`)
             .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
               expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
               return true;
@@ -505,7 +505,7 @@ describe('getGeneralSettings function', () => {
             'revision': '24'
           };
           nock(URI)
-            .get(`${LIVE_ROUTE}?app=${data.app}&lang=${data.lang}`)
+            .get(`${APP_SETTINGS_ROUTE}?app=${data.app}&lang=${data.lang}`)
             .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
               expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
               return true;
@@ -533,7 +533,7 @@ describe('getGeneralSettings function', () => {
             'revision': '24'
           };
           nock(URI)
-            .get(`${LIVE_ROUTE}?app=${data.app}&lang=${data.lang}`)
+            .get(`${APP_SETTINGS_ROUTE}?app=${data.app}&lang=${data.lang}`)
             .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
               expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
               return true;
@@ -561,7 +561,7 @@ describe('getGeneralSettings function', () => {
             'revision': '24'
           };
           nock(URI)
-            .get(`${LIVE_ROUTE}?app=${data.app}&lang=${data.lang}`)
+            .get(`${APP_SETTINGS_ROUTE}?app=${data.app}&lang=${data.lang}`)
             .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
               expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
               return true;
@@ -588,7 +588,7 @@ describe('getGeneralSettings function', () => {
             'revision': '24'
           };
           nock(URI)
-            .get(`${LIVE_ROUTE}?app=${data.app}&lang=${data.lang}`)
+            .get(`${APP_SETTINGS_ROUTE}?app=${data.app}&lang=${data.lang}`)
             .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
               expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
               return true;
@@ -616,7 +616,7 @@ describe('getGeneralSettings function', () => {
             'revision': '24'
           };
           nock(URI)
-            .get(`${GUEST_LIVE_ROUTE}?app=${data.app}&lang=${data.lang}`)
+            .get(`${GUEST_APP_SETTINGS_ROUTE}?app=${data.app}&lang=${data.lang}`)
             .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
               expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
               return true;
@@ -644,7 +644,7 @@ describe('getGeneralSettings function', () => {
             'revision': '24'
           };
           nock(URI)
-            .get(`${GUEST_LIVE_ROUTE}?app=${data.app}&lang=${data.lang}`)
+            .get(`${GUEST_APP_SETTINGS_ROUTE}?app=${data.app}&lang=${data.lang}`)
             .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
               expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
               return true;
@@ -672,7 +672,7 @@ describe('getGeneralSettings function', () => {
             'revision': '24'
           };
           nock(URI)
-            .get(`${GUEST_LIVE_ROUTE}?app=${data.app}&lang=${data.lang}`)
+            .get(`${GUEST_APP_SETTINGS_ROUTE}?app=${data.app}&lang=${data.lang}`)
             .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
               expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
               return true;
@@ -700,7 +700,7 @@ describe('getGeneralSettings function', () => {
             'revision': '24'
           };
           nock(URI)
-            .get(`${GUEST_LIVE_ROUTE}?app=${data.app}&lang=${data.lang}`)
+            .get(`${GUEST_APP_SETTINGS_ROUTE}?app=${data.app}&lang=${data.lang}`)
             .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
               expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
               return true;
@@ -728,7 +728,7 @@ describe('getGeneralSettings function', () => {
             'revision': '24'
           };
           nock(URI)
-            .get(`${GUEST_LIVE_ROUTE}?app=${data.app}&lang=${data.lang}`)
+            .get(`${GUEST_APP_SETTINGS_ROUTE}?app=${data.app}&lang=${data.lang}`)
             .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
               expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
               return true;
@@ -759,7 +759,7 @@ describe('getGeneralSettings function', () => {
             'errors': '{}'
           };
           nock(URI)
-            .get(`${PRE_LIVE_ROUTE}?app=${data.app}&lang=${data.lang}`)
+            .get(`${APP_PREVIEW_SETTINGS_ROUTE}?app=${data.app}&lang=${data.lang}`)
             .matchHeader(common.API_TOKEN, (authHeader) => {
               expect(authHeader).toBe(authAPI.getApiToken());
               return true;
@@ -786,7 +786,7 @@ describe('getGeneralSettings function', () => {
             }
           };
           nock(URI)
-            .get(`${PRE_LIVE_ROUTE}`)
+            .get(`${APP_PREVIEW_SETTINGS_ROUTE}`)
             .reply(400, expectResult);
           const getGeneralSettingsResult = appModule.getGeneralSettings(undefined, undefined, isPreview);
           return getGeneralSettingsResult.catch((err) => {
@@ -805,7 +805,7 @@ describe('getGeneralSettings function', () => {
           };
 
           nock(URI)
-            .get(`${PRE_LIVE_ROUTE}?app=${appID}`)
+            .get(`${APP_PREVIEW_SETTINGS_ROUTE}?app=${appID}`)
             .reply(404, expectResult);
           const getGeneralSettingsResult = appModule.getGeneralSettings(appID, undefined, isPreview);
 
@@ -830,7 +830,7 @@ describe('getGeneralSettings function', () => {
             }
           };
           nock(URI)
-            .get(`${PRE_LIVE_ROUTE}?app=${appID}`)
+            .get(`${APP_PREVIEW_SETTINGS_ROUTE}?app=${appID}`)
             .reply(400, expectResult);
           const getGeneralSettingsResult = appModule.getGeneralSettings(appID, undefined, isPreview);
 
@@ -855,7 +855,7 @@ describe('getGeneralSettings function', () => {
             }
           };
           nock(URI)
-            .get(`${PRE_LIVE_ROUTE}?app=${appID}`)
+            .get(`${APP_PREVIEW_SETTINGS_ROUTE}?app=${appID}`)
             .reply(404, expectResult);
           const getGeneralSettingsResult = appModule.getGeneralSettings(appID, undefined, isPreview);
 
@@ -883,7 +883,7 @@ describe('getGeneralSettings function', () => {
             }
           };
           nock(URI)
-            .get(`${PRE_LIVE_ROUTE}?app=${data.app}&lang=${data.lang}`)
+            .get(`${APP_PREVIEW_SETTINGS_ROUTE}?app=${data.app}&lang=${data.lang}`)
             .reply(400, expectResult);
           const getGeneralSettingsResult = appModule.getGeneralSettings(data.app, data.lang, isPreview);
 
@@ -905,7 +905,7 @@ describe('getGeneralSettings function', () => {
             'errors': '{}'
           };
           nock(URI)
-            .get(`${GUEST_PRE_LIVE_ROUTE}?app=${data.app}&lang=${data.lang}`)
+            .get(`${GUEST_APP_PREVIEW_SETTINGS_ROUTE}?app=${data.app}&lang=${data.lang}`)
             .matchHeader(common.API_TOKEN, (authHeader) => {
               expect(authHeader).toBe(authAPI.getApiToken());
               return true;
@@ -933,7 +933,7 @@ describe('getGeneralSettings function', () => {
             }
           };
           nock(URI)
-            .get(`${GUEST_PRE_LIVE_ROUTE}`)
+            .get(`${GUEST_APP_PREVIEW_SETTINGS_ROUTE}`)
             .reply(400, expectResult);
           const getGeneralSettingsResult = appModuleGuestSpace.getGeneralSettings(undefined, undefined, isPreview);
 
@@ -952,7 +952,7 @@ describe('getGeneralSettings function', () => {
             'errors': '{}'
           };
           nock(URI)
-            .get(`${GUEST_PRE_LIVE_ROUTE}?app=${appID}`)
+            .get(`${GUEST_APP_PREVIEW_SETTINGS_ROUTE}?app=${appID}`)
             .reply(404, expectResult);
           const getGeneralSettingsResult = appModuleGuestSpace.getGeneralSettings(appID, undefined, isPreview);
 
@@ -977,7 +977,7 @@ describe('getGeneralSettings function', () => {
             }
           };
           nock(URI)
-            .get(`${GUEST_PRE_LIVE_ROUTE}?app=${appID}`)
+            .get(`${GUEST_APP_PREVIEW_SETTINGS_ROUTE}?app=${appID}`)
             .reply(400, expectResult);
           const getGeneralSettingsResult = appModuleGuestSpace.getGeneralSettings(appID, undefined, isPreview);
 
@@ -1002,7 +1002,7 @@ describe('getGeneralSettings function', () => {
             }
           };
           nock(URI)
-            .get(`${GUEST_PRE_LIVE_ROUTE}?app=${appID}`)
+            .get(`${GUEST_APP_PREVIEW_SETTINGS_ROUTE}?app=${appID}`)
             .reply(404, expectResult);
           const getGeneralSettingsResult = appModuleGuestSpace.getGeneralSettings(appID, undefined, isPreview);
 
@@ -1030,7 +1030,7 @@ describe('getGeneralSettings function', () => {
             }
           };
           nock(URI)
-            .get(`${GUEST_PRE_LIVE_ROUTE}?app=${data.app}&lang=${data.lang}`)
+            .get(`${GUEST_APP_PREVIEW_SETTINGS_ROUTE}?app=${data.app}&lang=${data.lang}`)
             .reply(400, expectResult);
           const getGeneralSettingsResult = appModuleGuestSpace.getGeneralSettings(data.app, data.lang, isPreview);
 
@@ -1053,7 +1053,7 @@ describe('getGeneralSettings function', () => {
             'errors': '{}'
           };
           nock(URI)
-            .get(`${GUEST_PRE_LIVE_ROUTE}?app=${data.app}&lang=${data.lang}`)
+            .get(`${GUEST_APP_PREVIEW_SETTINGS_ROUTE}?app=${data.app}&lang=${data.lang}`)
             .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
               expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
               return true;
@@ -1080,7 +1080,7 @@ describe('getGeneralSettings function', () => {
             'errors': '{}'
           };
           nock(URI)
-            .get(`${LIVE_ROUTE}?app=${data.app}&lang=${data.lang}`)
+            .get(`${APP_SETTINGS_ROUTE}?app=${data.app}&lang=${data.lang}`)
             .matchHeader(common.API_TOKEN, (authHeader) => {
               expect(authHeader).toBe(authAPI.getApiToken());
               return true;
@@ -1107,7 +1107,7 @@ describe('getGeneralSettings function', () => {
             }
           };
           nock(URI)
-            .get(`${LIVE_ROUTE}`)
+            .get(`${APP_SETTINGS_ROUTE}`)
             .reply(400, expectResult);
           const getGeneralSettingsResult = appModule.getGeneralSettings(undefined);
 
@@ -1132,7 +1132,7 @@ describe('getGeneralSettings function', () => {
             }
           };
           nock(URI)
-            .get(`${LIVE_ROUTE}?app=${appID}`)
+            .get(`${APP_SETTINGS_ROUTE}?app=${appID}`)
             .reply(404, expectResult);
           const getGeneralSettingsResult = appModule.getGeneralSettings(appID, undefined, isPreview);
 
@@ -1157,7 +1157,7 @@ describe('getGeneralSettings function', () => {
             }
           };
           nock(URI)
-            .get(`${LIVE_ROUTE}?app=${appID}`)
+            .get(`${APP_SETTINGS_ROUTE}?app=${appID}`)
             .reply(400, expectResult);
           const getGeneralSettingsResult = appModule.getGeneralSettings(appID, undefined, isPreview);
 
@@ -1182,7 +1182,7 @@ describe('getGeneralSettings function', () => {
             }
           };
           nock(URI)
-            .get(`${LIVE_ROUTE}?app=${appID}`)
+            .get(`${APP_SETTINGS_ROUTE}?app=${appID}`)
             .reply(400, expectResult);
           const getGeneralSettingsResult = appModule.getGeneralSettings(appID, undefined, isPreview);
 
@@ -1210,7 +1210,7 @@ describe('getGeneralSettings function', () => {
             }
           };
           nock(URI)
-            .get(`${LIVE_ROUTE}?app=${data.app}&lang=${data.lang}`)
+            .get(`${APP_SETTINGS_ROUTE}?app=${data.app}&lang=${data.lang}`)
             .reply(400, expectResult);
           const getGeneralSettingsResult = appModule.getGeneralSettings(data.app, data.lang, isPreview);
           return getGeneralSettingsResult.catch((err) => {
@@ -1230,7 +1230,7 @@ describe('getGeneralSettings function', () => {
             'errors': '{}'
           };
           nock(URI)
-            .get(`${LIVE_ROUTE}?app=${data.app}&lang=${data.lang}`)
+            .get(`${APP_SETTINGS_ROUTE}?app=${data.app}&lang=${data.lang}`)
             .matchHeader(common.API_TOKEN, (authHeader) => {
               expect(authHeader).toBe(authAPI.getApiToken());
               return true;
@@ -1256,7 +1256,7 @@ describe('getGeneralSettings function', () => {
             'errors': '{}'
           };
           nock(URI)
-            .get(`${GUEST_LIVE_ROUTE}?app=${data.app}&lang=${data.lang}`)
+            .get(`${GUEST_APP_SETTINGS_ROUTE}?app=${data.app}&lang=${data.lang}`)
             .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
               expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
               return true;
