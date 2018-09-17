@@ -1,22 +1,15 @@
 /**
- * kintone api - nodejs client
- */
-
-const code = new WeakMap();
-const type = new WeakMap();
-
-/**
  * CommentMention model
  */
 class CommentMention {
   /**
      * constructor
-     * @param {String} codeInput
-     * @param {String} typeInput
+     * @param {String} code
+     * @param {String} type
      */
-  constructor(codeInput, typeInput) {
-    code.set(this, codeInput);
-    type.set(this, typeInput);
+  constructor(code, type) {
+    this.code = code;
+    this.type = type;
   }
   /**
      * Get JSON struct of this model
@@ -24,8 +17,8 @@ class CommentMention {
      */
   toJSON() {
     return {
-      code: code.get(this),
-      type: type.get(this),
+      code: this.code,
+      type: this.type,
     };
   }
   /**

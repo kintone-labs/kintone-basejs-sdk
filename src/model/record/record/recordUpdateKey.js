@@ -1,23 +1,15 @@
 /**
- * kintone api - nodejs client
- */
-
-
-const field = new WeakMap();
-const value = new WeakMap();
-
-/**
  * RecordUpdateKey model
  */
 class RecordUpdateKey {
   /**
      * constructor
-     * @param {String} fieldInput
-     * @param {String} valueInput
+     * @param {String} field
+     * @param {String} value
      */
-  constructor(fieldInput, valueInput) {
-    field.set(this, fieldInput);
-    value.set(this, valueInput);
+  constructor(field, value) {
+    this.field = field;
+    this.value = value;
   }
   /**
      * Get JSON struct of this model
@@ -25,8 +17,8 @@ class RecordUpdateKey {
      */
   toJSON() {
     return {
-      field: field.get(this),
-      value: value.get(this),
+      field: this.field,
+      value: this.value
     };
   }
   /**

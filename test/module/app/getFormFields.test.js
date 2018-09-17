@@ -10,6 +10,7 @@ const common = require('../../../test/utils/common');
 const {Connection, Auth, App, KintoneAPIException} = require(common.MAIN_PATH);
 
 
+
 const auth = new Auth();
 auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
 

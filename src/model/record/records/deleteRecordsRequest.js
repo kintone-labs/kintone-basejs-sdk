@@ -1,38 +1,29 @@
 /**
- * kintone api - nodejs client
- */
-
-const app = new WeakMap();
-const ids = new WeakMap();
-const idsWithRevision = new WeakMap();
-
-/**
  * DeleteRecordsRequest model
  */
 class DeleteRecordsRequest {
   /**
-     * @param {String} appIDInput
-     * @param {String} idsInput
+     * @param {String} appID
      */
-  constructor(appIDInput) {
-    app.set(this, appIDInput);
+  constructor(appID) {
+    this.app = appID;
   }
   /**
      * set the ids to be deleted
      * @param {Array<Integer>} idsInput
      * @return {this}
      */
-  setIDs(idsInput) {
-    ids.set(this, idsInput);
+  setIDs(ids) {
+    this.ids = ids;
     return this;
   }
   /**
      * set ids with revision
-     * @param {HashTable<id, revision>} idsWithRevisionInput
+     * @param {HashTable<id, revision>} idsWithRevision
      * @return {this}
      */
-  setIDsWithRevision(idsWithRevisionInput) {
-    idsWithRevision.set(this, idsWithRevisionInput);
+  setIDsWithRevision(idsWithRevision) {
+    this.idsWithRevision = idsWithRevision;
     return this;
   }
   /**
@@ -41,14 +32,14 @@ class DeleteRecordsRequest {
      */
   toJSON() {
     const data = {
-      app: app.get(this),
+      app: this.app,
     };
-    if (ids.get(this)) {
-      data.ids = ids.get(this);
+    if (this.ids) {
+      data.ids = this.ids;
     } else {
       const idsRequest = [];
       const revisions = [];
-      const idsWithRevisionInput = idsWithRevision.get(this);
+      const idsWithRevisionInput = this.idsWithRevision;
       for (const id in idsWithRevisionInput) {
         if (!idsWithRevisionInput.hasOwnProperty(id)) {
           continue;

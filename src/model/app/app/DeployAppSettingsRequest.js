@@ -1,11 +1,4 @@
 /**
- * kintone api - nodejs client
- * DeployAppSettingsRequest model
- */
-
-const kintonePreviewApps = new WeakMap();
-const kintoneRevert = new WeakMap();
-/**
  * DeployAppSettingsRequest model
  */
 class DeployAppSettingsRequest {
@@ -15,36 +8,38 @@ class DeployAppSettingsRequest {
      * @param {HashTable<String, FieldValue>} recordHashTableData
      */
   constructor(apps, revert) {
-    kintonePreviewApps.set(this, apps);
-    kintoneRevert.set(this, revert);
+    this.apps = apps;
+    this.revert = revert;
   }
   /**
      * Get apps
      * @return {Array}
      */
   getApps() {
-    return kintonePreviewApps.get(this);
+    return this.apps;
   }
   /**
-     * @param {Array<AddPreviewAppResponse>} apps
-     * @return {this} AddRecoDeployAppSettingsRequestrdsRequest
+     * @param {Array} apps
+     * @return {this} DeployAppSettingsRequestrdsRequest
      */
   setApps(apps) {
-    return kintonePreviewApps.set(this, apps);
+    this.apps = apps;
+    return this;
   }
   /**
      * Get reviert
      * @return {Boolean}
      */
   getRevert() {
-    return kintoneRevert.get(this);
+    return this.revert;
   }
   /**
      * @param {Boolean>} revert
-     * @return {this} AddRecoDeployAppSettingsRequestrdsRequest
+     * @return {this} DeployAppSettingsRequestrdsRequest
      */
   setRevert(revert) {
-    return kintoneRevert.set(this, revert);
+    this.revert = revert;
+    return this;
   }
   /**
      * Get JSON struct of this model

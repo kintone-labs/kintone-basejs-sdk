@@ -7,6 +7,7 @@ const nock = require('nock');
 
 const common = require('../../../test/utils/common');
 
+
 const {Connection, Auth, App, KintoneAPIException} = require(common.MAIN_PATH);
 
 const URI = 'https://' + common.DOMAIN;

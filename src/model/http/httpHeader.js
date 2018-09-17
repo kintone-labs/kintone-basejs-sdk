@@ -1,11 +1,4 @@
 /**
- * kintone api - nodejs client
- */
-
-
-const key = new WeakMap();
-const value = new WeakMap();
-/**
  * HTTPHeader model
  */
 class HTTPHeader {
@@ -14,22 +7,22 @@ class HTTPHeader {
      * @param {String} valueInput
      */
   constructor(keyInput, valueInput) {
-    key.set(this, keyInput);
-    value.set(this, valueInput);
+    this.key = keyInput;
+    this.value = valueInput;
   }
   /**
      * get header key
      * @return {this}
      */
   getKey() {
-    return key.get(this);
+    return this.key;
   }
   /**
      * get header value
      * @return {this}
      */
   getValue() {
-    return value.get(this);
+    return this.value;
   }
 }
 module.exports = HTTPHeader;

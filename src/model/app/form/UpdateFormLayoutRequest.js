@@ -1,14 +1,5 @@
 /**
- * kintone api - nodejs client
- */
-
-const kintoneApp = new WeakMap();
-const kintoneLayout = new WeakMap();
-const kintoneRevision = new WeakMap();
-
-/**
  * UpdateFormLayoutRequest model
- * TODO: Unit testing
  */
 class UpdateFormLayoutRequest {
   /**
@@ -17,9 +8,9 @@ class UpdateFormLayoutRequest {
      * @param {Integer} revision
      */
   constructor(app, fields, revision) {
-    kintoneApp.set(this, app);
-    kintoneLayout.set(this, fields);
-    kintoneRevision.set(this, revision);
+    this.app = app;
+    this.fields = fields;
+    this.revision = revision;
   }
   /**
      * Get JSON struct of this model
@@ -27,9 +18,9 @@ class UpdateFormLayoutRequest {
      */
   toJSON() {
     const data = {
-      app: kintoneApp.get(this),
-      layout: kintoneLayout.get(this),
-      revision: kintoneRevision.get(this)
+      app: this.app,
+      layout: this.fields,
+      revision: this.revision
     };
     return data;
   }

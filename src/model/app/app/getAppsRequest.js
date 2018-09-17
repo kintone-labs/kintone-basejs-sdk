@@ -1,61 +1,49 @@
 /**
- * kintone api - nodejs client
- */
-
-const appIDs = new WeakMap();
-const appCodes = new WeakMap();
-const appName = new WeakMap();
-const appSpaceIDs = new WeakMap();
-const limit = new WeakMap();
-const offset = new WeakMap();
-
-/**
  * GetAppsRequest model
- * TODO: Unit testing
  */
 class GetAppsRequest {
   /**
-     * @param {String} offsetInput
-     * @param {String} limitInput
+     * @param {String} offset
+     * @param {String} limit
      */
-  constructor(offsetInput, limitInput) {
-    limit.set(this, limitInput);
-    offset.set(this, offsetInput);
+  constructor(offset, limit) {
+    this.offset = offset;
+    this.limit = limit;
   }
   /**
      * Set app ids
-     * @param {Array<Integer>} appIDsInput
+     * @param {Array} appIDs
      * @return {this}
      */
-  setAppIDs(appIDsInput) {
-    appIDs.set(this, appIDsInput);
+  setAppIDs(appIDs) {
+    this.appIDs = appIDs;
     return this;
   }
   /**
      * Set app codes
-     * @param {Array<Integer>} appCodesInput
+     * @param {Array} appCodes
      * @return {this}
      */
-  setAppCodes(appCodesInput) {
-    appCodes.set(this, appCodesInput);
+  setAppCodes(appCodes) {
+    this.appCodes = appCodes;
     return this;
   }
   /**
      * Set app name
-     * @param {Array<Integer>} appNameInput
+     * @param {Array} appName
      * @return {this}
      */
-  setAppName(appNameInput) {
-    appName.set(this, appNameInput);
+  setAppName(appName) {
+    this.appName = appName;
     return this;
   }
   /**
      * Set app space ids
-     * @param {Array<Integer>} appSpaceIDsInput
+     * @param {Array} appSpaceIDs
      * @return {this}
      */
-  setAppSpaceIDs(appSpaceIDsInput) {
-    appSpaceIDs.set(this, appSpaceIDsInput);
+  setAppSpaceIDs(appSpaceIDs) {
+    this.appSpaceIDs = appSpaceIDs;
     return this;
   }
   /**
@@ -64,20 +52,20 @@ class GetAppsRequest {
      */
   toJSON() {
     const data = {
-      offset: offset.get(this),
-      limit: limit.get(this),
+      offset: this.offset,
+      limit: this.limit,
     };
-    if (appIDs.get(this)) {
-      data.ids = appIDs.get(this);
+    if (this.appIDs) {
+      data.ids = this.appIDs;
     }
-    if (appCodes.get(this)) {
-      data.codes = appCodes.get(this);
+    if (this.appCodes) {
+      data.codes = this.appCodes;
     }
-    if (appName.get(this)) {
-      data.name = appName.get(this);
+    if (this.appName) {
+      data.name = this.appName;
     }
-    if (appSpaceIDs.get(this)) {
-      data.spaceIds = appSpaceIDs.get(this);
+    if (this.appSpaceIDs) {
+      data.spaceIds = this.appSpaceIDs;
     }
     return data;
   }

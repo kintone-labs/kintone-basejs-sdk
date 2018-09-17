@@ -5,7 +5,7 @@
  */
 const nock = require('nock');
 
-const common = require('../../common');
+const common = require('../../utils/common');
 
 const KintoneExeption = require('../../../src/exception/KintoneAPIException');
 const Connection = require('../../../src/connection/Connection');
@@ -103,7 +103,7 @@ describe('addRecords function', () => {
           'id': 'PmcT6fVjQMsl4BhMw9Uo',
           'message': 'Missing or invalid input.',
           'errors': {'app': {'messages': ['must be greater than or equal to 1']}}
-        }
+        };
         nock('https://' + common.DOMAIN)
           .post('/k/v1/records.json', (rqBody) => {
             expect(rqBody.app).toEqual(data.negativeAppID);

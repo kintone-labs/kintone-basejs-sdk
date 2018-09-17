@@ -11,12 +11,4 @@ module.exports = {
   getPasswordAuth: (userName, password) => {
     return Buffer.from(userName + ':' + password).toString('base64');
   },
-  generateRecord: (number, inputRecord) => {
-    const items = [];
-    for (let i = 0; i < number; i++) {
-      items.push(inputRecord);
-    }
-    return items;
-  }
-};
-
+}
