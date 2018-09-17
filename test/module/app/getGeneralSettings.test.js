@@ -1039,6 +1039,32 @@ describe('getGeneralSettings function', () => {
             expect(err.get()).toEqual(expectResult);
           });
         });
+        it('[GeneralSetting-15]should return error permission deny PRE-LIVE in GUEST SPACE', () => {
+          const data = {
+            'app': 1,
+            'lang': 'en'
+          };
+          const isPreview = true;
+
+          const expectResult = {
+            'code': 'CB_NO02',
+            'id': 'FHQHE7Q3MtXFOIe2QslJ',
+            'message': 'No privilege to proceed.',
+            'errors': '{}'
+          };
+          nock(URI)
+            .get(`${GUEST_PRE_LIVE_ROUTE}?app=${data.app}&lang=${data.lang}`)
+            .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+              expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+              return true;
+            })
+            .reply(403, expectResult);
+          const getGeneralSettingsResult = appModuleGuestSpace.getGeneralSettings(data.app, data.lang, isPreview);
+          return getGeneralSettingsResult.catch((err) => {
+            expect(err).toBeInstanceOf(KintoneAPIException);
+            expect(err.get()).toEqual(expectResult);
+          });
+        });
       });
       describe('Live app', () => {
         it('[GeneralSetting-2]should return error when use API token', () => {
@@ -1212,6 +1238,31 @@ describe('getGeneralSettings function', () => {
             .reply(403, expectResult);
           const getGeneralSettingsResult = appModuleAPI.getGeneralSettings(data.app, data.lang);
 
+          return getGeneralSettingsResult.catch((err) => {
+            expect(err).toBeInstanceOf(KintoneAPIException);
+            expect(err.get()).toEqual(expectResult);
+          });
+        });
+        it('[GeneralSetting-14]should return error permission deny in GUEST SPACE', () => {
+          const data = {
+            'app': 1,
+            'lang': 'en'
+          };
+          const isPreview = false;
+          const expectResult = {
+            'code': 'CB_NO02',
+            'id': 'FHQHE7Q3MtXFOIe2QslJ',
+            'message': 'No privilege to proceed.',
+            'errors': '{}'
+          };
+          nock(URI)
+            .get(`${GUEST_LIVE_ROUTE}?app=${data.app}&lang=${data.lang}`)
+            .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+              expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+              return true;
+            })
+            .reply(403, expectResult);
+          const getGeneralSettingsResult = appModuleGuestSpace.getGeneralSettings(data.app, data.lang, isPreview);
           return getGeneralSettingsResult.catch((err) => {
             expect(err).toBeInstanceOf(KintoneAPIException);
             expect(err.get()).toEqual(expectResult);
