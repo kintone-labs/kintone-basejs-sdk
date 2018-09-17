@@ -6,7 +6,7 @@
 const nock = require('nock');
 
 const common = require('../../common');
-const {KintoneException, Connection, Auth, Record} = require(common.MAIN_PATH);
+const {KintoneAPIException, Connection, Auth, Record} = require(common.MAIN_PATH);
 
 const auth = new Auth();
 auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
@@ -49,7 +49,7 @@ describe('addRecords function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(200, {
@@ -113,14 +113,6 @@ describe('addRecords function', () => {
             expect(rqBody.records).toEqual(expect.arrayContaining(data.records));
             return rqBody.app === data.app;
           })
-          .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-            expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
-            return true;
-          })
-          .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
-            return true;
-          })
           .reply(200, {
             'ids': ['1', '2'],
             'revisions': ['1', '1']
@@ -146,14 +138,6 @@ describe('addRecords function', () => {
             expect(rqBody.records).toEqual(expect.arrayContaining(data.records));
             return rqBody.app === data.app;
           })
-          .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-            expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
-            return true;
-          })
-          .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
-            return true;
-          })
           .reply(200, {
             'ids': ['1', '2'],
             'revisions': ['1', '1']
@@ -161,6 +145,82 @@ describe('addRecords function', () => {
         const conn1 = new Connection(common.DOMAIN, auth, common.GUEST_SPACEID);
         const recordsModule = new Record(conn1);
         const addRecordsResult = recordsModule.addRecords(data.app, data.records);
+        return addRecordsResult.then((rsp) => {
+          expect(rsp).toHaveProperty('ids');
+          expect(rsp.revisions).toEqual(expect.arrayContaining(['1', '1']));
+        });
+      });
+    });
+
+    describe('limitation', () => {
+      it('[Record-60] number of records that can be created at once is 100', () => {
+        const number = 100;
+        const data = {
+          app: 1,
+          records: {Text_0: {value: 'test'}}
+        };
+
+        nock('https://' + common.DOMAIN)
+          .post('/k/v1/records.json', (rqBody) => {
+            expect(rqBody.records).toMatchObject(common.generateRecord(number, data.records));
+            return true;
+          })
+          .reply(200, {
+            'ids': ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59', '60', '61', '62', '63', '64', '65', '66', '67', '68', '69', '70', '71', '72', '73', '74', '75', '76', '77', '78', '79', '80', '81', '82', '83', '84', '85', '86', '87', '88', '89', '90', '91', '92', '93', '94', '95', '96', '97', '98', '99', '100'],
+            'revisions': ['1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1']
+          });
+        const recordsModule = new Record(conn);
+        return recordsModule.addRecords(data.app, common.generateRecord(number, data.records))
+          .then((rsp) => {
+            expect(rsp.ids.length).toEqual(100);
+            expect(rsp.revisions.length).toEqual(100);
+          });
+      });
+    });
+
+    describe('Invalid input type', () => {
+      it('[Record-62] record is added when executing with interger as string type (input string for interger and vice versa) ', () => {
+        const data = {
+          app: '1',
+          records: [{Text_0: {value: 1}}, {Text_0: {value: 2}}]
+        };
+
+        nock('https://' + common.DOMAIN)
+          .post('/k/v1/records.json', (rqBody) => {
+            expect(rqBody.records).toEqual(expect.arrayContaining(data.records));
+            return rqBody.app === data.app;
+          })
+          .reply(200, {
+            'ids': ['1', '2'],
+            'revisions': ['1', '1']
+          });
+
+        const addRecordsResult = recordModule.addRecords(data.app, data.records);
+        return addRecordsResult.then((rsp) => {
+          expect(rsp).toHaveProperty('ids');
+          expect(rsp.revisions).toEqual(expect.arrayContaining(['1', '1']));
+        });
+      });
+    });
+
+    describe('System field', () => {
+      it('[Record-64] Data is added when having admin permission with Created by, Updated by, Created datetime, Updated datetime', () => {
+        const data = {
+          app: '1',
+          records: [{Created_By: {value: {code: 'william-sayama', 'name': 'William Sayama'}}}, {Updated_By: {value: {code: 'william-sayama', 'name': 'William Sayama'}}}, {Created_Datetime: {value: '2015-04-01T06:51:00Z'}}, {Updated_Datetime: {value: '2015-04-01T06:51:00Z'}}]
+        };
+
+        nock('https://' + common.DOMAIN)
+          .post('/k/v1/records.json', (rqBody) => {
+            expect(rqBody.records).toEqual(expect.arrayContaining(data.records));
+            return rqBody.app === data.app;
+          })
+          .reply(200, {
+            'ids': ['1', '2'],
+            'revisions': ['1', '1']
+          });
+
+        const addRecordsResult = recordModule.addRecords(data.app, data.records);
         return addRecordsResult.then((rsp) => {
           expect(rsp).toHaveProperty('ids');
           expect(rsp.revisions).toEqual(expect.arrayContaining(['1', '1']));
@@ -185,7 +245,7 @@ describe('addRecords function', () => {
 
         const addRecordsResult = recordModule.addRecords(data.unexistedAppID, data.records);
         return addRecordsResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
         });
       });
 
@@ -209,7 +269,7 @@ describe('addRecords function', () => {
 
         const addRecordsResult = recordModule.addRecords(data.negativeAppID, data.records);
         return addRecordsResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -234,7 +294,7 @@ describe('addRecords function', () => {
 
         const addRecordsResult = recordModule.addRecords(data.appID, data.records);
         return addRecordsResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneException);
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -270,14 +330,14 @@ describe('addRecords function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(400, expectResult);
         const recordsModule = new Record(conn);
         return recordsModule.addRecords(data.app, data.records)
           .catch(err => {
-            expect(err).toBeInstanceOf(KintoneException);
+            expect(err).toBeInstanceOf(KintoneAPIException);
             expect(err.get()).toMatchObject(expectResult);
           });
       });
@@ -305,19 +365,11 @@ describe('addRecords function', () => {
             expect(rqBody.records).toEqual(expect.arrayContaining(data.records));
             return true;
           })
-          .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-            expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
-            return true;
-          })
-          .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
-            return true;
-          })
           .reply(400, expectResult);
         const recordsModule = new Record(conn);
         return recordsModule.addRecords(data.app, data.records)
           .catch(err => {
-            expect(err).toBeInstanceOf(KintoneException);
+            expect(err).toBeInstanceOf(KintoneAPIException);
             expect(err.get()).toMatchObject(expectResult);
           });
       });
@@ -345,19 +397,11 @@ describe('addRecords function', () => {
             expect(rqBody.records).toEqual(expect.arrayContaining(data.records));
             return true;
           })
-          .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-            expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
-            return true;
-          })
-          .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
-            return true;
-          })
           .reply(400, expectResult);
         const recordsModule = new Record(conn);
         return recordsModule.addRecords(data.app, data.records)
           .catch(err => {
-            expect(err).toBeInstanceOf(KintoneException);
+            expect(err).toBeInstanceOf(KintoneAPIException);
             expect(err.get()).toMatchObject(expectResult);
           });
       });
@@ -388,15 +432,12 @@ describe('addRecords function', () => {
         const recordsModule = new Record(conn);
         return recordsModule.addRecords(undefined, data.records)
           .catch(err => {
-            expect(err).toBeInstanceOf(KintoneException);
+            expect(err).toBeInstanceOf(KintoneAPIException);
             expect(err.get()).toMatchObject(expectResult);
           });
       });
 
       it('[Record-53] should return error when using method without data for required field', () => {
-        const body = {
-          app: 1,
-        };
         const expectResult = {
           'code': 'GAIA_AP01',
           'id': '0',
@@ -417,7 +458,7 @@ describe('addRecords function', () => {
         const recordsModule = new Record(conn);
         return recordsModule.addRecords(1, undefined)
           .catch(err => {
-            expect(err).toBeInstanceOf(KintoneException);
+            expect(err).toBeInstanceOf(KintoneAPIException);
             expect(err.get()).toMatchObject(expectResult);
           });
       });
@@ -451,12 +492,102 @@ describe('addRecords function', () => {
         const recordsModule = new Record(conn);
         return recordsModule.addRecords(data.app, data.records)
           .catch(err => {
-            expect(err).toBeInstanceOf(KintoneException);
+            expect(err).toBeInstanceOf(KintoneAPIException);
             expect(err.get()).toMatchObject(expectResult);
           });
       });
     });
 
+    describe('permission', () => {
+      it('[Record-59] error will be displayed when user does not have Add records permission for app', () => {
+        const data = {
+          app: 1,
+          records: [{Text_0: {value: 'test'}}, {Text_0: {value: 2}}]
+        };
+        const expectResult = {
+          'code': 'CB_NO02',
+          'id': '0',
+          'message': 'No privilege to proceed.'
+        };
 
+        nock('https://' + common.DOMAIN)
+          .post('/k/v1/records.json', (rqBody) => {
+            expect(rqBody.records).toMatchObject(data.records);
+            return true;
+          })
+          .reply(400, expectResult);
+        const recordsModule = new Record(conn);
+        return recordsModule.addRecords(data.app, data.records)
+          .catch(err => {
+            expect(err).toBeInstanceOf(KintoneAPIException);
+            expect(err.get()).toMatchObject(expectResult);
+          });
+      });
+    });
+
+    describe('limitation', () => {
+      it('[Record-61] error displays when number of records is > 100', () => {
+        const number = 101;
+        const data = {
+          app: 1,
+          records: {Text_0: {value: 'test'}}
+        };
+
+        const expectResult = {
+          'id': '0',
+          'code': 'CB_VA01',
+          'message': 'Missing or invalid input.',
+          'errors': {
+            'records': {
+              'messages': [
+                'A maximum of 100 records can be added at one time.'
+              ]
+            }
+          }
+        };
+
+        nock('https://' + common.DOMAIN)
+          .post('/k/v1/records.json', (rqBody) => {
+            expect(rqBody.records).toMatchObject(common.generateRecord(number, data.records));
+            return true;
+          })
+          .reply(400, expectResult);
+        const recordsModule = new Record(conn);
+        return recordsModule.addRecords(data.app, common.generateRecord(number, data.records))
+          .catch(err => {
+            expect(err).toBeInstanceOf(KintoneAPIException);
+            expect(err.get()).toMatchObject(expectResult);
+          });
+      });
+    });
+
+    describe('System field', () => {
+      it('[Record-63] Error is displayed when no having admin permission with Created by, Updated by, Created datetime, Updated datetime', () => {
+        const data = {
+          app: '1',
+          records: [{Created_By: {value: {code: 'william-sayama', 'name': 'William Sayama'}}}, {Updated_By: {value: {code: 'william-sayama', 'name': 'William Sayama'}}}, {Created_Datetime: {value: '2015-04-01T06:51:00Z'}}, {Updated_Datetime: {value: '2015-04-01T06:51:00Z'}}]
+        };
+
+        const expectResult = {
+          'code': 'CB_IJ01',
+          'id': 'KySHqaEs9dbE8o6gbZG6',
+          'message': 'Invalid JSON string.'
+        };
+
+        nock('https://' + common.DOMAIN)
+          .post('/k/v1/records.json', (rqBody) => {
+            expect(rqBody.records).toEqual(expect.arrayContaining(data.records));
+            return rqBody.app === data.app;
+          })
+          .reply(400, expectResult);
+
+        const recordsModule = new Record(conn);
+        return recordsModule.addRecords(data.app, data.records)
+          .catch(err => {
+            expect(err).toBeInstanceOf(KintoneAPIException);
+            expect(err.get()).toMatchObject(expectResult);
+          });
+      });
+    });
   });
 });

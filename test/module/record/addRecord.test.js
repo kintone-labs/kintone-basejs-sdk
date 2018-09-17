@@ -6,7 +6,7 @@
 const nock = require('nock');
 
 const common = require('../../common');
-const { KintoneException, Connection, Auth, Record } = require(common.MAIN_PATH);
+const {KintoneAPIException, Connection, Auth, Record} = require(common.MAIN_PATH);
 
 const auth = new Auth();
 auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
@@ -14,11 +14,14 @@ auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
 const conn = new Connection(common.DOMAIN, auth);
 
 describe('addRecord function', () => {
+  const URI = 'https://' + common.DOMAIN;
+  const URL = '/k/v1/record.json';
+  
   describe('common case', () => {
     it('should return a promise', () => {
-      nock('https://' + common.DOMAIN)
-        .post('/k/v1/record.json')
-        .reply(200, { 'id': '100', 'revision': '1' });
+      nock(URI)
+        .post(URL)
+        .reply(200, {'id': '100', 'revision': '1'});
       const recordModule = new Record(conn);
       const addRecordResult = recordModule.addRecord();
       expect(addRecordResult).toHaveProperty('then');
@@ -31,9 +34,9 @@ describe('addRecord function', () => {
       const body = {
         app: 1,
         record: {
-          Dropdown: { value: 1 },
-          Text: { value: 'test' },
-          Number: { value: 1 },
+          Dropdown: {value: 1},
+          Text: {value: 'test'},
+          Number: {value: 1},
           Table: {
             value: [
               {
@@ -49,8 +52,8 @@ describe('addRecord function', () => {
       };
 
       it('[Record-27] should add successfully with full data', () => {
-        nock('https://' + common.DOMAIN)
-          .post('/k/v1/record.json', (rqBody) => {
+        nock(URI)
+          .post(URL, (rqBody) => {
             expect(rqBody.record).toMatchObject(body.record);
             return rqBody.app === body.app;
           })
@@ -59,10 +62,10 @@ describe('addRecord function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
-          .reply(200, { 'id': '100', 'revision': '1' });
+          .reply(200, {'id': '100', 'revision': '1'});
         const recordModule = new Record(conn);
         return recordModule.addRecord(body.app, body.record)
           .then(rsp => {
@@ -72,21 +75,13 @@ describe('addRecord function', () => {
       });
 
       it('[Record-38] the data for record with table is added successfully', () => {
-        nock('https://' + common.DOMAIN)
-          .post('/k/v1/record.json', (rqBody) => {
+        nock(URI)
+          .post(URL, (rqBody) => {
             expect(rqBody.record).toMatchObject(body.record);
             expect(rqBody.record.Table).toMatchObject(body.record.Table);
             return rqBody.app === body.app;
           })
-          .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-            expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
-            return true;
-          })
-          .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
-            return true;
-          })
-          .reply(200, { 'id': '100', 'revision': '1' });
+          .reply(200, {'id': '100', 'revision': '1'});
         const recordModule = new Record(conn);
         return recordModule.addRecord(body.app, body.record)
           .then(rsp => {
@@ -96,20 +91,12 @@ describe('addRecord function', () => {
       });
 
       it('[Record-39] the record is added successfully for app in guest space', () => {
-        nock('https://' + common.DOMAIN)
+        nock(URI)
           .post('/k/guest/1/v1/record.json', (rqBody) => {
             expect(rqBody.record).toMatchObject(body.record);
             return rqBody.app === body.app;
           })
-          .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-            expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
-            return true;
-          })
-          .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
-            return true;
-          })
-          .reply(200, { 'id': '100', 'revision': '1' });
+          .reply(200, {'id': '100', 'revision': '1'});
         const conn1 = new Connection(common.DOMAIN, auth, common.GUEST_SPACEID);
         const recordModule = new Record(conn1);
         return recordModule.addRecord(body.app, body.record)
@@ -126,20 +113,12 @@ describe('addRecord function', () => {
           }
         };
 
-        nock('https://' + common.DOMAIN)
-          .post('/k/v1/record.json', (rqBody) => {
+        nock(URI)
+          .post(URL, (rqBody) => {
             expect(rqBody.record).toMatchObject(bodyWithoutFields.record);
             return rqBody.app === bodyWithoutFields.app;
           })
-          .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-            expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
-            return true;
-          })
-          .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
-            return true;
-          })
-          .reply(200, { 'id': '100', 'revision': '1' });
+          .reply(200, {'id': '100', 'revision': '1'});
         const recordModule = new Record(conn);
         return recordModule.addRecord(bodyWithoutFields.app, bodyWithoutFields.record)
           .then(rsp => {
@@ -152,24 +131,16 @@ describe('addRecord function', () => {
         const bodyStringID = {
           app: '1',
           record: {
-            Dropdown: { value: 1 },
-            Text: { value: 'test' },
+            Dropdown: {value: 1},
+            Text: {value: 'test'},
           }
         };
-        nock('https://' + common.DOMAIN)
-          .post('/k/v1/record.json', (rqBody) => {
+        nock(URI)
+          .post(URL, (rqBody) => {
             expect(rqBody.record).toMatchObject(bodyStringID.record);
             return rqBody.app === bodyStringID.app;
           })
-          .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-            expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
-            return true;
-          })
-          .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
-            return true;
-          })
-          .reply(200, { 'id': '100', 'revision': '1' });
+          .reply(200, {'id': '100', 'revision': '1'});
         const recordModule = new Record(conn);
         return recordModule.addRecord(bodyStringID.app, bodyStringID.record)
           .then(rsp => {
@@ -185,20 +156,12 @@ describe('addRecord function', () => {
           app: 1,
           record: {}
         };
-        nock('https://' + common.DOMAIN)
-          .post('/k/v1/record.json', (rqBody) => {
+        nock(URI)
+          .post(URL, (rqBody) => {
             expect(rqBody.record).toMatchObject(body.record);
             return rqBody.app === body.app;
           })
-          .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-            expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
-            return true;
-          })
-          .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
-            return true;
-          })
-          .reply(200, { 'id': '100', 'revision': '1' });
+          .reply(200, {'id': '100', 'revision': '1'});
         const recordModule = new Record(conn);
         return recordModule.addRecord(body.app, body.record)
           .then(rsp => {
@@ -218,11 +181,11 @@ describe('addRecord function', () => {
           'id': 'id when request to invalid app',
           'message': 'The app (ID: 999) not found. The app may have been deleted.'
         };
-        nock('https://' + common.DOMAIN, (rqBody) => {
+        nock(URI, (rqBody) => {
           expect(rqBody.app).toEqual(unexistedapp);
           return true;
         })
-          .post('/k/v1/record.json')
+          .post(URL)
           .reply(404, expectResult);
 
         const recordModule = new Record(conn);
@@ -246,14 +209,14 @@ describe('addRecord function', () => {
             }
           }
         };
-        nock('https://' + common.DOMAIN)
-          .post('/k/v1/record.json')
+        nock(URI)
+          .post(URL)
           .reply(400, expectResult);
 
         const recordModule = new Record(conn);
         return recordModule.addRecord(negativeapp)
           .catch(err => {
-            expect(err).toBeInstanceOf(KintoneException);
+            expect(err).toBeInstanceOf(KintoneAPIException);
             expect(err.get()).toMatchObject(expectResult);
           });
       });
@@ -270,14 +233,14 @@ describe('addRecord function', () => {
             }
           }
         };
-        nock('https://' + common.DOMAIN)
-          .post('/k/v1/record.json')
+        nock(URI)
+          .post(URL)
           .reply(400, expectResult);
 
         const recordModule = new Record(conn);
         return recordModule.addRecord(app)
           .catch(err => {
-            expect(err).toBeInstanceOf(KintoneException);
+            expect(err).toBeInstanceOf(KintoneAPIException);
             expect(err.get()).toMatchObject(expectResult);
           });
       });
@@ -288,7 +251,7 @@ describe('addRecord function', () => {
         const body = {
           app: 1,
           record: {
-            Number: { value: 'test' }
+            Number: {value: 'test'}
           }
         };
         const expectResult = {
@@ -304,8 +267,8 @@ describe('addRecord function', () => {
           }
         };
 
-        nock('https://' + common.DOMAIN)
-          .post('/k/v1/record.json', (rqBody) => {
+        nock(URI)
+          .post(URL, (rqBody) => {
             expect(rqBody.record).toMatchObject(body.record);
             return true;
           })
@@ -314,14 +277,14 @@ describe('addRecord function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(400, expectResult);
         const recordModule = new Record(conn);
         return recordModule.addRecord(body.app, body.record)
           .catch(err => {
-            expect(err).toBeInstanceOf(KintoneException);
+            expect(err).toBeInstanceOf(KintoneAPIException);
             expect(err.get()).toMatchObject(expectResult);
           });
       });
@@ -330,7 +293,7 @@ describe('addRecord function', () => {
         const body = {
           app: 1,
           record: {
-            Number: { value: 1 }
+            Number: {value: 1}
           }
         };
         const expectResult = {
@@ -346,24 +309,16 @@ describe('addRecord function', () => {
           }
         };
 
-        nock('https://' + common.DOMAIN)
-          .post('/k/v1/record.json', (rqBody) => {
+        nock(URI)
+          .post(URL, (rqBody) => {
             expect(rqBody.record).toMatchObject(body.record);
-            return true;
-          })
-          .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-            expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
-            return true;
-          })
-          .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
             return true;
           })
           .reply(400, expectResult);
         const recordModule = new Record(conn);
         return recordModule.addRecord(body.app, body.record)
           .catch(err => {
-            expect(err).toBeInstanceOf(KintoneException);
+            expect(err).toBeInstanceOf(KintoneAPIException);
             expect(err.get()).toMatchObject(expectResult);
           });
       });
@@ -372,7 +327,7 @@ describe('addRecord function', () => {
         const body = {
           app: 1,
           record: {
-            Number: { value: 1000 }
+            Number: {value: 1000}
           }
         };
         const expectResult = {
@@ -388,24 +343,16 @@ describe('addRecord function', () => {
           }
         };
 
-        nock('https://' + common.DOMAIN)
-          .post('/k/v1/record.json', (rqBody) => {
+        nock(URI)
+          .post(URL, (rqBody) => {
             expect(rqBody.record).toMatchObject(body.record);
-            return true;
-          })
-          .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-            expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
-            return true;
-          })
-          .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
             return true;
           })
           .reply(400, expectResult);
         const recordModule = new Record(conn);
         return recordModule.addRecord(body.app, body.record)
           .catch(err => {
-            expect(err).toBeInstanceOf(KintoneException);
+            expect(err).toBeInstanceOf(KintoneAPIException);
             expect(err.get()).toMatchObject(expectResult);
           });
       });
@@ -414,7 +361,7 @@ describe('addRecord function', () => {
         const body = {
           app: 1,
           record: {
-            Calculated: { value: 1000 }
+            Calculated: {value: 1000}
           }
         };
         const expectResult = {
@@ -423,24 +370,16 @@ describe('addRecord function', () => {
           'message': 'Invalid JSON string.'
         };
 
-        nock('https://' + common.DOMAIN)
-          .post('/k/v1/record.json', (rqBody) => {
+        nock(URI)
+          .post(URL, (rqBody) => {
             expect(rqBody.record).toMatchObject(body.record);
-            return true;
-          })
-          .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-            expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
-            return true;
-          })
-          .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
             return true;
           })
           .reply(400, expectResult);
         const recordModule = new Record(conn);
         return recordModule.addRecord(body.app, body.record)
           .catch(err => {
-            expect(err).toBeInstanceOf(KintoneException);
+            expect(err).toBeInstanceOf(KintoneAPIException);
             expect(err.get()).toMatchObject(expectResult);
           });
       });
@@ -451,7 +390,7 @@ describe('addRecord function', () => {
         const body = {
           app: 1,
           record: {
-            Text: { value: 'test' }
+            Text: {value: 'test'}
           }
         };
         const expectResult = {
@@ -466,17 +405,17 @@ describe('addRecord function', () => {
             }
           }
         };
-        nock('https://' + common.DOMAIN, (rqBody) => {
+        nock(URI, (rqBody) => {
           expect(rqBody).not.toHaveProperty('app');
           return true;
         })
-          .post('/k/v1/record.json')
+          .post(URL)
           .reply(400, expectResult);
 
         const recordModule = new Record(conn);
         return recordModule.addRecord(undefined, body.record)
           .catch(err => {
-            expect(err).toBeInstanceOf(KintoneException);
+            expect(err).toBeInstanceOf(KintoneAPIException);
             expect(err.get()).toMatchObject(expectResult);
           });
       });
@@ -496,17 +435,17 @@ describe('addRecord function', () => {
             ]
           }
         };
-        nock('https://' + common.DOMAIN, (rqBody) => {
+        nock(URI, (rqBody) => {
           expect(rqBody.record).toMatchObject(body.record);
           return true;
         })
-          .post('/k/v1/record.json')
+          .post(URL)
           .reply(400, expectResult);
 
         const recordModule = new Record(conn);
         return recordModule.addRecord(body.app, undefined)
           .catch(err => {
-            expect(err).toBeInstanceOf(KintoneException);
+            expect(err).toBeInstanceOf(KintoneAPIException);
             expect(err.get()).toMatchObject(expectResult);
           });
       });
@@ -517,7 +456,7 @@ describe('addRecord function', () => {
         const body = {
           app: 1,
           record: {
-            Text: { value: 'test' }
+            Text: {value: 'test'}
           }
         };
         const expectResult = {
@@ -532,17 +471,17 @@ describe('addRecord function', () => {
             }
           }
         };
-        nock('https://' + common.DOMAIN, (rqBody) => {
+        nock(URI, (rqBody) => {
           expect(rqBody.record).toMatchObject(body.record);
           return true;
         })
-          .post('/k/v1/record.json')
+          .post(URL)
           .reply(400, expectResult);
 
         const recordModule = new Record(conn);
         return recordModule.addRecord(body.app, body.record)
           .catch(err => {
-            expect(err).toBeInstanceOf(KintoneException);
+            expect(err).toBeInstanceOf(KintoneAPIException);
             expect(err.get()).toMatchObject(expectResult);
           });
       });
@@ -553,7 +492,7 @@ describe('addRecord function', () => {
         const body = {
           app: 1,
           record: {
-            Number: { value: 'test' }
+            Number: {value: 'test'}
           }
         };
         const expectResult = {
@@ -562,24 +501,16 @@ describe('addRecord function', () => {
           'message': 'No privilege to proceed.'
         };
 
-        nock('https://' + common.DOMAIN)
-          .post('/k/v1/record.json', (rqBody) => {
+        nock(URI)
+          .post(URL, (rqBody) => {
             expect(rqBody.record).toMatchObject(body.record);
-            return true;
-          })
-          .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-            expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
-            return true;
-          })
-          .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
             return true;
           })
           .reply(400, expectResult);
         const recordModule = new Record(conn);
         return recordModule.addRecord(body.app, body.record)
           .catch(err => {
-            expect(err).toBeInstanceOf(KintoneException);
+            expect(err).toBeInstanceOf(KintoneAPIException);
             expect(err.get()).toMatchObject(expectResult);
           });
       });

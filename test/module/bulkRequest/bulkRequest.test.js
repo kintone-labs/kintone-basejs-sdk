@@ -120,7 +120,6 @@ describe('BulkRequest module', () => {
 
   describe('Success Case', () => {
     describe('Valid request', () => {
-
       const addRecordData = {app: 1, record: {Text: {value: 'add'}}};
       const addRecordsData = {app: 2, records: [addRecordData.record]};
       const updateRecordByIdData = {app: 1, id: 1, record: {Text: {value: 'add'}}};
@@ -129,17 +128,13 @@ describe('BulkRequest module', () => {
         updateKey: {field: 'key_field', value: 1},
         record: {Text: {value: 'update key'}}
       };
-
       const updateRecordsData = {
         app: 1,
         records: [{id: 5, record: {Text: {value: 'update records'}}}]
       };
-
       const deleteRecordsData = {app: 3, ids: [1, 2]};
-
       const deleteRecordsWithRevisionData = {app: 3, idsWithRevision: {3: 1, 4: 2}};
       const updateRecordAssigneesData = {'app': 1, 'id': 1, 'assignees': ['user2']};
-
       const expectBody = {
         'requests': [
           {
@@ -208,7 +203,6 @@ describe('BulkRequest module', () => {
       };
       nock('https://' + common.DOMAIN)
         .post(`/k/v1/bulkRequest.json`, (rqBody) => {
-          console.log(rqBody.requests[1].payload);
           expect(rqBody).toMatchObject(expectBody);
           return true;
         })
@@ -217,7 +211,7 @@ describe('BulkRequest module', () => {
           return true;
         })
         .matchHeader('Content-Type', (type) => {
-          expect(type).toBe('application/json');
+          expect(type).toEqual(expect.stringContaining('application/json'));
           return true;
         })
         .reply(200, {
