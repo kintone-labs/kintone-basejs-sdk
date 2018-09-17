@@ -1,7 +1,7 @@
 
 const nock = require('nock');
 
-const common = require('../../common');
+const common = require('../../utils/common');
 
 const Connection = require('../../../src/connection/Connection');
 const CONNECTION_CONST = require('../../../src/connection/constant');

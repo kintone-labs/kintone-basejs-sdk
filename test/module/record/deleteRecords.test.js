@@ -6,8 +6,8 @@
 const nock = require('nock');
 const common = require('../../../test/utils/common');
 const {KintoneAPIException, Connection, Auth, Record} = require(common.MAIN_PATH);
-
 const auth = new Auth().setPasswordAuth(common.USERNAME, common.PASSWORD);
+
 const conn = new Connection(common.DOMAIN, auth);
 const recordModule = new Record(conn);
 
