@@ -6,11 +6,11 @@ const nock = require('nock');
 
 const common = require('../utils/common');
 
-const {App, Auth, Connection, KintoneAPIException} = require('../../../src/main.js');
+const {App, Auth, Connection, KintoneAPIException} = require(common.MAIN_PATH);
 
 const URI = 'https://' + common.DOMAIN;
-const preLiveRoute = '/k/v1/preview/app/settings.json';
-const guest_PreLiveRoute = `/k/guest/${common.GUEST_SPACEID}/v1/preview/app/settings.json`;
+const PRE_LIVE_ROUTE = '/k/v1/preview/app/settings.json';
+const GUEST_PRE_LIVE_ROUTE = `/k/guest/${common.GUEST_SPACEID}/v1/preview/app/settings.json`;
 
 const auth = new Auth();
 auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
@@ -20,18 +20,18 @@ const appModule = new App(conn);
 const authAPI = new Auth();
 authAPI.setApiToken('testAPIToken');
 const connAPI = new Connection(common.DOMAIN, authAPI);
-const appModule_API = new App(connAPI);
-const conn_API_Guest_Space = new Connection(common.DOMAIN, authAPI, common.GUEST_SPACEID);
-const appModule_API_Guest_Space = new App(conn_API_Guest_Space);
+const appModuleAPI = new App(connAPI);
+const connAPIGuestSpace = new Connection(common.DOMAIN, authAPI, common.GUEST_SPACEID);
+const appModuleAPIGuestSpace = new App(connAPIGuestSpace);
 
-const conn_Guest_Space = new Connection(common.DOMAIN, auth, common.GUEST_SPACEID);
-const appModule_Guest_Space = new App(conn_Guest_Space);
+const connGuestSpace = new Connection(common.DOMAIN, auth, common.GUEST_SPACEID);
+const appModuleGuestSpace = new App(connGuestSpace);
 
 describe('updateGeneralSettings function', () => {
   describe('common function', () => {
     it('should return promise', () => {
       nock(URI)
-        .put(preLiveRoute)
+        .put(PRE_LIVE_ROUTE)
         .reply(200, {});
 
       const updateGeneralSettingsResult = appModule.updateGeneralSettings();
@@ -40,10 +40,10 @@ describe('updateGeneralSettings function', () => {
     });
     it('should return promise - GUEST SPACE', () => {
       nock(URI)
-        .put(guest_PreLiveRoute)
+        .put(GUEST_PRE_LIVE_ROUTE)
         .reply(200, {});
 
-      const updateGeneralSettingsResult = appModule_Guest_Space.updateGeneralSettings();
+      const updateGeneralSettingsResult = appModuleGuestSpace.updateGeneralSettings();
       expect(updateGeneralSettingsResult).toHaveProperty('then');
       expect(updateGeneralSettingsResult).toHaveProperty('catch');
     });
@@ -79,7 +79,7 @@ describe('updateGeneralSettings function', () => {
             'revision': '2'
           };
           nock(URI)
-            .put(preLiveRoute, (rqBody) => {
+            .put(PRE_LIVE_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -110,7 +110,7 @@ describe('updateGeneralSettings function', () => {
             'revision': '2'
           };
           nock(URI)
-            .put(preLiveRoute, (rqBody) => {
+            .put(PRE_LIVE_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -141,7 +141,7 @@ describe('updateGeneralSettings function', () => {
             'revision': '2'
           };
           nock(URI)
-            .put(preLiveRoute, (rqBody) => {
+            .put(PRE_LIVE_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -178,7 +178,7 @@ describe('updateGeneralSettings function', () => {
             'revision': '2'
           };
           nock(URI)
-            .put(preLiveRoute, (rqBody) => {
+            .put(PRE_LIVE_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -209,7 +209,7 @@ describe('updateGeneralSettings function', () => {
             'revision': '2'
           };
           nock(URI)
-            .put(preLiveRoute, (rqBody) => {
+            .put(PRE_LIVE_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -240,7 +240,7 @@ describe('updateGeneralSettings function', () => {
             'revision': '2'
           };
           nock(URI)
-            .put(preLiveRoute, (rqBody) => {
+            .put(PRE_LIVE_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -271,7 +271,7 @@ describe('updateGeneralSettings function', () => {
             'revision': '2'
           };
           nock(URI)
-            .put(preLiveRoute, (rqBody) => {
+            .put(PRE_LIVE_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -302,7 +302,7 @@ describe('updateGeneralSettings function', () => {
             'revision': '2'
           };
           nock(URI)
-            .put(preLiveRoute, (rqBody) => {
+            .put(PRE_LIVE_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -333,7 +333,7 @@ describe('updateGeneralSettings function', () => {
             'revision': '2'
           };
           nock(URI)
-            .put(preLiveRoute, (rqBody) => {
+            .put(PRE_LIVE_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -364,7 +364,7 @@ describe('updateGeneralSettings function', () => {
             'revision': '2'
           };
           nock(URI)
-            .put(preLiveRoute, (rqBody) => {
+            .put(PRE_LIVE_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -407,7 +407,7 @@ describe('updateGeneralSettings function', () => {
             'revision': '2'
           };
           nock(URI)
-            .put(preLiveRoute, (rqBody) => {
+            .put(PRE_LIVE_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -452,7 +452,7 @@ describe('updateGeneralSettings function', () => {
             'revision': '2'
           };
           nock(URI)
-            .put(preLiveRoute, (rqBody) => {
+            .put(PRE_LIVE_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -481,7 +481,7 @@ describe('updateGeneralSettings function', () => {
             'revision': '3'
           };
           nock(URI)
-            .put(preLiveRoute, (rqBody) => {
+            .put(PRE_LIVE_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -528,7 +528,7 @@ describe('updateGeneralSettings function', () => {
           'revision': '2'
         };
         nock(URI)
-          .put(guest_PreLiveRoute, (rqBody) => {
+          .put(GUEST_PRE_LIVE_ROUTE, (rqBody) => {
             expect(rqBody).toEqual(expectBody);
             return true;
           })
@@ -541,7 +541,7 @@ describe('updateGeneralSettings function', () => {
             return true;
           })
           .reply(200, expectResult);
-        const updateGeneralSettingsResult = appModule_Guest_Space.updateGeneralSettings(appId, generalSettings, revision);
+        const updateGeneralSettingsResult = appModuleGuestSpace.updateGeneralSettings(appId, generalSettings, revision);
         return updateGeneralSettingsResult.then((rsp) => {
           expect(rsp).toEqual(expectResult);
         });
@@ -559,7 +559,7 @@ describe('updateGeneralSettings function', () => {
           'revision': '2'
         };
         nock(URI)
-          .put(guest_PreLiveRoute, (rqBody) => {
+          .put(GUEST_PRE_LIVE_ROUTE, (rqBody) => {
             expect(rqBody).toEqual(expectBody);
             return true;
           })
@@ -572,7 +572,7 @@ describe('updateGeneralSettings function', () => {
             return true;
           })
           .reply(200, expectResult);
-        const updateGeneralSettingsResult = appModule_Guest_Space.updateGeneralSettings(appId, generalSetings);
+        const updateGeneralSettingsResult = appModuleGuestSpace.updateGeneralSettings(appId, generalSetings);
         return updateGeneralSettingsResult.then((rsp) => {
           expect(rsp).toEqual(expectResult);
         });
@@ -590,7 +590,7 @@ describe('updateGeneralSettings function', () => {
           'revision': '2'
         };
         nock(URI)
-          .put(guest_PreLiveRoute, (rqBody) => {
+          .put(GUEST_PRE_LIVE_ROUTE, (rqBody) => {
             expect(rqBody).toEqual(expectBody);
             return true;
           })
@@ -603,7 +603,7 @@ describe('updateGeneralSettings function', () => {
             return true;
           })
           .reply(200, expectResult);
-        const updateGeneralSettingsResult = appModule_Guest_Space.updateGeneralSettings(appId, generalSetings);
+        const updateGeneralSettingsResult = appModuleGuestSpace.updateGeneralSettings(appId, generalSetings);
         return updateGeneralSettingsResult.then((rsp) => {
           expect(rsp).toEqual(expectResult);
         });
@@ -627,7 +627,7 @@ describe('updateGeneralSettings function', () => {
           'revision': '2'
         };
         nock(URI)
-          .put(guest_PreLiveRoute, (rqBody) => {
+          .put(GUEST_PRE_LIVE_ROUTE, (rqBody) => {
             expect(rqBody).toEqual(expectBody);
             return true;
           })
@@ -640,7 +640,7 @@ describe('updateGeneralSettings function', () => {
             return true;
           })
           .reply(200, expectResult);
-        const updateGeneralSettingsResult = appModule_Guest_Space.updateGeneralSettings(appId, generalSetings);
+        const updateGeneralSettingsResult = appModuleGuestSpace.updateGeneralSettings(appId, generalSetings);
         return updateGeneralSettingsResult.then((rsp) => {
           expect(rsp).toEqual(expectResult);
         });
@@ -658,7 +658,7 @@ describe('updateGeneralSettings function', () => {
           'revision': '2'
         };
         nock(URI)
-          .put(guest_PreLiveRoute, (rqBody) => {
+          .put(GUEST_PRE_LIVE_ROUTE, (rqBody) => {
             expect(rqBody).toEqual(expectBody);
             return true;
           })
@@ -671,7 +671,7 @@ describe('updateGeneralSettings function', () => {
             return true;
           })
           .reply(200, expectResult);
-        const updateGeneralSettingsResult = appModule_Guest_Space.updateGeneralSettings(appId, generalSetings);
+        const updateGeneralSettingsResult = appModuleGuestSpace.updateGeneralSettings(appId, generalSetings);
         return updateGeneralSettingsResult.then((rsp) => {
           expect(rsp).toEqual(expectResult);
         });
@@ -689,7 +689,7 @@ describe('updateGeneralSettings function', () => {
           'revision': '2'
         };
         nock(URI)
-          .put(guest_PreLiveRoute, (rqBody) => {
+          .put(GUEST_PRE_LIVE_ROUTE, (rqBody) => {
             expect(rqBody).toEqual(expectBody);
             return true;
           })
@@ -702,7 +702,7 @@ describe('updateGeneralSettings function', () => {
             return true;
           })
           .reply(200, expectResult);
-        const updateGeneralSettingsResult = appModule_Guest_Space.updateGeneralSettings(appId, generalSetings);
+        const updateGeneralSettingsResult = appModuleGuestSpace.updateGeneralSettings(appId, generalSetings);
         return updateGeneralSettingsResult.then((rsp) => {
           expect(rsp).toEqual(expectResult);
         });
@@ -720,7 +720,7 @@ describe('updateGeneralSettings function', () => {
           'revision': '2'
         };
         nock(URI)
-          .put(guest_PreLiveRoute, (rqBody) => {
+          .put(GUEST_PRE_LIVE_ROUTE, (rqBody) => {
             expect(rqBody).toEqual(expectBody);
             return true;
           })
@@ -733,7 +733,7 @@ describe('updateGeneralSettings function', () => {
             return true;
           })
           .reply(200, expectResult);
-        const updateGeneralSettingsResult = appModule_Guest_Space.updateGeneralSettings(appId, generalSetings);
+        const updateGeneralSettingsResult = appModuleGuestSpace.updateGeneralSettings(appId, generalSetings);
         return updateGeneralSettingsResult.then((rsp) => {
           expect(rsp).toEqual(expectResult);
         });
@@ -751,7 +751,7 @@ describe('updateGeneralSettings function', () => {
           'revision': '2'
         };
         nock(URI)
-          .put(guest_PreLiveRoute, (rqBody) => {
+          .put(GUEST_PRE_LIVE_ROUTE, (rqBody) => {
             expect(rqBody).toEqual(expectBody);
             return true;
           })
@@ -764,7 +764,7 @@ describe('updateGeneralSettings function', () => {
             return true;
           })
           .reply(200, expectResult);
-        const updateGeneralSettingsResult = appModule_Guest_Space.updateGeneralSettings(appId, generalSetings);
+        const updateGeneralSettingsResult = appModuleGuestSpace.updateGeneralSettings(appId, generalSetings);
         return updateGeneralSettingsResult.then((rsp) => {
           expect(rsp).toEqual(expectResult);
         });
@@ -782,7 +782,7 @@ describe('updateGeneralSettings function', () => {
           'revision': '2'
         };
         nock(URI)
-          .put(guest_PreLiveRoute, (rqBody) => {
+          .put(GUEST_PRE_LIVE_ROUTE, (rqBody) => {
             expect(rqBody).toEqual(expectBody);
             return true;
           })
@@ -795,7 +795,7 @@ describe('updateGeneralSettings function', () => {
             return true;
           })
           .reply(200, expectResult);
-        const updateGeneralSettingsResult = appModule_Guest_Space.updateGeneralSettings(appId, generalSetings);
+        const updateGeneralSettingsResult = appModuleGuestSpace.updateGeneralSettings(appId, generalSetings);
         return updateGeneralSettingsResult.then((rsp) => {
           expect(rsp).toEqual(expectResult);
         });
@@ -813,7 +813,7 @@ describe('updateGeneralSettings function', () => {
           'revision': '2'
         };
         nock(URI)
-          .put(guest_PreLiveRoute, (rqBody) => {
+          .put(GUEST_PRE_LIVE_ROUTE, (rqBody) => {
             expect(rqBody).toEqual(expectBody);
             return true;
           })
@@ -826,7 +826,7 @@ describe('updateGeneralSettings function', () => {
             return true;
           })
           .reply(200, expectResult);
-        const updateGeneralSettingsResult = appModule_Guest_Space.updateGeneralSettings(appId, generalSetings);
+        const updateGeneralSettingsResult = appModuleGuestSpace.updateGeneralSettings(appId, generalSetings);
         return updateGeneralSettingsResult.then((rsp) => {
           expect(rsp).toEqual(expectResult);
         });
@@ -856,7 +856,7 @@ describe('updateGeneralSettings function', () => {
           'revision': '2'
         };
         nock(URI)
-          .put(guest_PreLiveRoute, (rqBody) => {
+          .put(GUEST_PRE_LIVE_ROUTE, (rqBody) => {
             expect(rqBody).toEqual(expectBody);
             return true;
           })
@@ -869,7 +869,7 @@ describe('updateGeneralSettings function', () => {
             return true;
           })
           .reply(200, expectResult);
-        const updateGeneralSettingsResult = appModule_Guest_Space.updateGeneralSettings(appId, generalSetings, undefined);
+        const updateGeneralSettingsResult = appModuleGuestSpace.updateGeneralSettings(appId, generalSetings, undefined);
         return updateGeneralSettingsResult.then((rsp) => {
           expect(rsp).toEqual(expectResult);
         });
@@ -901,7 +901,7 @@ describe('updateGeneralSettings function', () => {
           'revision': '2'
         };
         nock(URI)
-          .put(guest_PreLiveRoute, (rqBody) => {
+          .put(GUEST_PRE_LIVE_ROUTE, (rqBody) => {
             expect(rqBody).toEqual(expectBody);
             return true;
           })
@@ -914,7 +914,7 @@ describe('updateGeneralSettings function', () => {
             return true;
           })
           .reply(200, expectResult);
-        const updateGeneralSettingsResult = appModule_Guest_Space.updateGeneralSettings(appId, generalSetings, revision);
+        const updateGeneralSettingsResult = appModuleGuestSpace.updateGeneralSettings(appId, generalSetings, revision);
         return updateGeneralSettingsResult.then((rsp) => {
           expect(rsp).toEqual(expectResult);
         });
@@ -930,7 +930,7 @@ describe('updateGeneralSettings function', () => {
           'revision': '2'
         };
         nock(URI)
-          .put(guest_PreLiveRoute, (rqBody) => {
+          .put(GUEST_PRE_LIVE_ROUTE, (rqBody) => {
             expect(rqBody).toEqual(expectBody);
             return true;
           })
@@ -943,7 +943,7 @@ describe('updateGeneralSettings function', () => {
             return true;
           })
           .reply(200, expectResult);
-        const updateGeneralSettingsResult = appModule_Guest_Space.updateGeneralSettings(appId, undefined, revision);
+        const updateGeneralSettingsResult = appModuleGuestSpace.updateGeneralSettings(appId, undefined, revision);
         return updateGeneralSettingsResult.then((rsp) => {
           expect(rsp).toEqual(expectResult);
         });
@@ -966,7 +966,7 @@ describe('updateGeneralSettings function', () => {
             'errors': '{}'
           };
           nock(URI)
-            .put(preLiveRoute, (rqBody) => {
+            .put(PRE_LIVE_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -979,7 +979,7 @@ describe('updateGeneralSettings function', () => {
               return true;
             })
             .reply(403, expectResult);
-          const updateGeneralSettingsResult = appModule_API.updateGeneralSettings(appId);
+          const updateGeneralSettingsResult = appModuleAPI.updateGeneralSettings(appId);
           return updateGeneralSettingsResult.catch((err) => {
             expect(err).toBeInstanceOf(KintoneAPIException);
             expect(err.get()).toEqual(expectResult);
@@ -1015,7 +1015,7 @@ describe('updateGeneralSettings function', () => {
             'errors': '{}'
           };
           nock(URI)
-            .put(preLiveRoute, (rqBody) => {
+            .put(PRE_LIVE_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -1064,7 +1064,7 @@ describe('updateGeneralSettings function', () => {
             'errors': '{}'
           };
           nock(URI)
-            .put(preLiveRoute, (rqBody) => {
+            .put(PRE_LIVE_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -1097,7 +1097,7 @@ describe('updateGeneralSettings function', () => {
             }
           };
           nock(URI)
-            .put(preLiveRoute)
+            .put(PRE_LIVE_ROUTE)
             .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
               expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
               return true;
@@ -1123,7 +1123,7 @@ describe('updateGeneralSettings function', () => {
           };
 
           nock(URI)
-            .put(preLiveRoute, (rqBody) => {
+            .put(PRE_LIVE_ROUTE, (rqBody) => {
               expect(rqBody.app).toEqual(appID);
               return true;
             })
@@ -1149,7 +1149,7 @@ describe('updateGeneralSettings function', () => {
             }
           };
           nock(URI)
-            .put(preLiveRoute, (rqBody) => {
+            .put(PRE_LIVE_ROUTE, (rqBody) => {
               expect(rqBody.app).toEqual(appID);
               return true;
             })
@@ -1175,7 +1175,7 @@ describe('updateGeneralSettings function', () => {
             }
           };
           nock(URI)
-            .put(preLiveRoute, (rqBody) => {
+            .put(PRE_LIVE_ROUTE, (rqBody) => {
               expect(rqBody.app).toEqual(appID);
               return true;
             })
@@ -1208,7 +1208,7 @@ describe('updateGeneralSettings function', () => {
             }
           };
           nock(URI)
-            .put(preLiveRoute, (rqBody) => {
+            .put(PRE_LIVE_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -1253,7 +1253,7 @@ describe('updateGeneralSettings function', () => {
             }
           };
           nock(URI)
-            .put(preLiveRoute, (rqBody) => {
+            .put(PRE_LIVE_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -1298,7 +1298,7 @@ describe('updateGeneralSettings function', () => {
             }
           };
           nock(URI)
-            .put(preLiveRoute, (rqBody) => {
+            .put(PRE_LIVE_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -1331,7 +1331,7 @@ describe('updateGeneralSettings function', () => {
             'errors': '{}'
           };
           nock(URI)
-            .put(guest_PreLiveRoute, (rqBody) => {
+            .put(GUEST_PRE_LIVE_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -1344,7 +1344,7 @@ describe('updateGeneralSettings function', () => {
               return true;
             })
             .reply(403, expectResult);
-          const updateGeneralSettingsResult = appModule_API_Guest_Space.updateGeneralSettings(appId);
+          const updateGeneralSettingsResult = appModuleAPIGuestSpace.updateGeneralSettings(appId);
           return updateGeneralSettingsResult.catch((err) => {
             expect(err).toBeInstanceOf(KintoneAPIException);
             expect(err.get()).toEqual(expectResult);
@@ -1380,7 +1380,7 @@ describe('updateGeneralSettings function', () => {
             'errors': '{}'
           };
           nock(URI)
-            .put(guest_PreLiveRoute, (rqBody) => {
+            .put(GUEST_PRE_LIVE_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -1393,7 +1393,7 @@ describe('updateGeneralSettings function', () => {
               return true;
             })
             .reply(409, expectResult);
-          const updateGeneralSettingsResult = appModule_Guest_Space.updateGeneralSettings(appId, generalSettings, revision);
+          const updateGeneralSettingsResult = appModuleGuestSpace.updateGeneralSettings(appId, generalSettings, revision);
           return updateGeneralSettingsResult.catch((err) => {
             expect(err).toBeInstanceOf(KintoneAPIException);
             expect(err.get()).toEqual(expectResult);
@@ -1429,7 +1429,7 @@ describe('updateGeneralSettings function', () => {
             'errors': '{}'
           };
           nock(URI)
-            .put(guest_PreLiveRoute, (rqBody) => {
+            .put(GUEST_PRE_LIVE_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -1442,7 +1442,7 @@ describe('updateGeneralSettings function', () => {
               return true;
             })
             .reply(400, expectResult);
-          const updateGeneralSettingsResult = appModule_Guest_Space.updateGeneralSettings(appId, generalSettings, revision);
+          const updateGeneralSettingsResult = appModuleGuestSpace.updateGeneralSettings(appId, generalSettings, revision);
           return updateGeneralSettingsResult.catch((err) => {
             expect(err).toBeInstanceOf(KintoneAPIException);
             expect(err.get()).toEqual(expectResult);
@@ -1462,7 +1462,7 @@ describe('updateGeneralSettings function', () => {
             }
           };
           nock(URI)
-            .put(guest_PreLiveRoute)
+            .put(GUEST_PRE_LIVE_ROUTE)
             .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
               expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
               return true;
@@ -1472,7 +1472,7 @@ describe('updateGeneralSettings function', () => {
               return true;
             })
             .reply(404, expectResult);
-          const updateGeneralSettingsResult = appModule_Guest_Space.updateGeneralSettings();
+          const updateGeneralSettingsResult = appModuleGuestSpace.updateGeneralSettings();
           return updateGeneralSettingsResult.catch((err) => {
             expect(err).toBeInstanceOf(KintoneAPIException);
             expect(err.get()).toEqual(expectResult);
@@ -1488,12 +1488,12 @@ describe('updateGeneralSettings function', () => {
           };
 
           nock(URI)
-            .put(guest_PreLiveRoute, (rqBody) => {
+            .put(GUEST_PRE_LIVE_ROUTE, (rqBody) => {
               expect(rqBody.app).toEqual(appID);
               return true;
             })
             .reply(404, expectResult);
-          const updateGeneralSettingsResult = appModule_Guest_Space.updateGeneralSettings(appID);
+          const updateGeneralSettingsResult = appModuleGuestSpace.updateGeneralSettings(appID);
           return updateGeneralSettingsResult.catch((err) => {
             expect(err).toBeInstanceOf(KintoneAPIException);
             expect(err.get()).toEqual(expectResult);
@@ -1514,12 +1514,12 @@ describe('updateGeneralSettings function', () => {
             }
           };
           nock(URI)
-            .put(guest_PreLiveRoute, (rqBody) => {
+            .put(GUEST_PRE_LIVE_ROUTE, (rqBody) => {
               expect(rqBody.app).toEqual(appID);
               return true;
             })
             .reply(400, expectResult);
-          const updateGeneralSettingsResult = appModule_Guest_Space.updateGeneralSettings(appID);
+          const updateGeneralSettingsResult = appModuleGuestSpace.updateGeneralSettings(appID);
           return updateGeneralSettingsResult.catch((err) => {
             expect(err).toBeInstanceOf(KintoneAPIException);
             expect(err.get()).toEqual(expectResult);
@@ -1540,12 +1540,12 @@ describe('updateGeneralSettings function', () => {
             }
           };
           nock(URI)
-            .put(guest_PreLiveRoute, (rqBody) => {
+            .put(GUEST_PRE_LIVE_ROUTE, (rqBody) => {
               expect(rqBody.app).toEqual(appID);
               return true;
             })
             .reply(400, expectResult);
-          const updateGeneralSettingsResult = appModule_Guest_Space.updateGeneralSettings(appID);
+          const updateGeneralSettingsResult = appModuleGuestSpace.updateGeneralSettings(appID);
           return updateGeneralSettingsResult.catch((err) => {
             expect(err).toBeInstanceOf(KintoneAPIException);
             expect(err.get()).toEqual(expectResult);
@@ -1573,7 +1573,7 @@ describe('updateGeneralSettings function', () => {
             }
           };
           nock(URI)
-            .put(guest_PreLiveRoute, (rqBody) => {
+            .put(GUEST_PRE_LIVE_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -1586,7 +1586,7 @@ describe('updateGeneralSettings function', () => {
               return true;
             })
             .reply(400, expectResult);
-          const updateGeneralSettingsResult = appModule_Guest_Space.updateGeneralSettings(appId, generalSetings);
+          const updateGeneralSettingsResult = appModuleGuestSpace.updateGeneralSettings(appId, generalSetings);
           return updateGeneralSettingsResult.catch((err) => {
             expect(err).toBeInstanceOf(KintoneAPIException);
             expect(err.get()).toEqual(expectResult);
@@ -1618,7 +1618,7 @@ describe('updateGeneralSettings function', () => {
             }
           };
           nock(URI)
-            .put(guest_PreLiveRoute, (rqBody) => {
+            .put(GUEST_PRE_LIVE_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -1631,7 +1631,7 @@ describe('updateGeneralSettings function', () => {
               return true;
             })
             .reply(400, expectResult);
-          const updateGeneralSettingsResult = appModule_Guest_Space.updateGeneralSettings(appId, generalSetings);
+          const updateGeneralSettingsResult = appModuleGuestSpace.updateGeneralSettings(appId, generalSetings);
           return updateGeneralSettingsResult.catch((err) => {
             expect(err).toBeInstanceOf(KintoneAPIException);
             expect(err.get()).toEqual(expectResult);
@@ -1663,7 +1663,7 @@ describe('updateGeneralSettings function', () => {
             }
           };
           nock(URI)
-            .put(guest_PreLiveRoute, (rqBody) => {
+            .put(GUEST_PRE_LIVE_ROUTE, (rqBody) => {
               expect(rqBody).toEqual(expectBody);
               return true;
             })
@@ -1676,7 +1676,7 @@ describe('updateGeneralSettings function', () => {
               return true;
             })
             .reply(400, expectResult);
-          const updateGeneralSettingsResult = appModule_Guest_Space.updateGeneralSettings(appId, generalSetings);
+          const updateGeneralSettingsResult = appModuleGuestSpace.updateGeneralSettings(appId, generalSetings);
           return updateGeneralSettingsResult.catch((err) => {
             expect(err).toBeInstanceOf(KintoneAPIException);
             expect(err.get()).toEqual(expectResult);
