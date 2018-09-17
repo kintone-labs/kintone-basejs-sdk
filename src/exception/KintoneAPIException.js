@@ -10,7 +10,6 @@ class KintoneAPIException {
      * @param {Error} errors
      */
   constructor(errors) {
-    console.log(errors);
     let errorResponse;
     this.errorRaw = errors;
     if (!errors.hasOwnProperty('response') || !errors.response) {
@@ -21,11 +20,11 @@ class KintoneAPIException {
 
       if (Buffer.isBuffer(dataResponse)) {
         const stringError = errors.response.data.toString();
-        errorResponse = this.getErrorResponse(JSON.parse(stringError));
+        errorResponse = this.getErrorResponse(stringError);
 
       } else if (dataResponse instanceof ArrayBuffer) {
         const stringError = String.fromCharCode(...new Uint8Array(dataResponse));
-        errorResponse = this.getErrorResponse(JSON.parse(stringError));
+        errorResponse = this.getErrorResponse(stringError);
       }
     }
     if (!(errorResponse instanceof KintoneErrorResponseModel)) {
