@@ -1,18 +1,12 @@
 /**
- * kintone api - nodejs client
- */
-
-const requests = new WeakMap();
-/**
  * BulkRequest model
- * TODO: Unit testing
  */
 class BulkRequest {
   /**
      * Constructor BulkRequest
      */
   constructor() {
-    requests.set(this, []);
+    this.requests = [];
   }
   /**
      * Get username of BulkRequest model
@@ -20,9 +14,8 @@ class BulkRequest {
      * @return {this}
      */
   addRequest(bulkRequestItem) {
-    const dataRequest = bulkRequestItem.toJSON ?
-      bulkRequestItem.toJSON() : bulkRequestItem;
-    requests.get(this).push(dataRequest);
+    const dataRequest = bulkRequestItem.toJSON ? bulkRequestItem.toJSON() : bulkRequestItem;
+    this.requests.push(dataRequest);
     return this;
   }
   /**
@@ -31,7 +24,7 @@ class BulkRequest {
      */
   toJSON() {
     return {
-      requests: requests.get(this),
+      requests: this.requests,
     };
   }
   /**

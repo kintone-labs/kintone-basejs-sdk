@@ -11,5 +11,5 @@ module.exports = {
   Connection: require('./connection/Connection'),
   Auth: require('./authentication/Auth'),
   File: require('./module/file/File'),
-  KintoneException: require('./exception/KintoneAPIException'),
+  KintoneAPIException: require('./exception/KintoneAPIException'),
 };

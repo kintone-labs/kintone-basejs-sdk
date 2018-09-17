@@ -1,19 +1,12 @@
 /**
- * kintone api - nodejs client
- */
-
-const appID = new WeakMap();
-
-/**
  * GetFormLayoutRequest model
- * TODO: Unit testing
  */
 class GetFormLayoutRequest {
   /**
-     * @param {String} appIDInput
+     * @param {String} appID
      */
-  constructor(appIDInput) {
-    appID.set(this, appIDInput);
+  constructor(appID) {
+    this.appID = appID;
   }
   /**
      * Get JSON struct of this model
@@ -21,7 +14,7 @@ class GetFormLayoutRequest {
      */
   toJSON() {
     return {
-      app: appID.get(this),
+      app: this.appID,
     };
   }
   /**

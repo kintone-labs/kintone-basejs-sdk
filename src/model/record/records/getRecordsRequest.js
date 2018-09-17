@@ -1,27 +1,18 @@
 /**
- * kintone api - nodejs client
- */
-
-const app = new WeakMap();
-const query = new WeakMap();
-const fields = new WeakMap();
-const totalCount = new WeakMap();
-
-/**
  * GetRecordsRequest model
  */
 class GetRecordsRequest {
   /**
      * @param {Integer} appID
-     * @param {String} queryInput
-     * @param {Array<String>} fieldsInput
-     * @param {Boolean} totalCountInput
+     * @param {String} query
+     * @param {Array<String>} fields
+     * @param {Boolean} totalCount
      */
-  constructor(appID, queryInput, fieldsInput, totalCountInput) {
-    app.set(this, appID);
-    query.set(this, queryInput);
-    fields.set(this, fieldsInput);
-    totalCount.set(this, totalCountInput);
+  constructor(appID, query, fields, totalCount) {
+    this.app = appID;
+    this.query = query;
+    this.fields = fields;
+    this.totalCount = totalCount;
   }
   /**
      * Get JSON struct of this model
@@ -29,10 +20,10 @@ class GetRecordsRequest {
      */
   toJSON() {
     return {
-      app: app.get(this),
-      query: query.get(this),
-      fields: fields.get(this),
-      totalCount: totalCount.get(this),
+      app: this.app,
+      query: this.query,
+      fields: this.fields,
+      totalCount: this.totalCount
     };
   }
   /**
