@@ -1317,6 +1317,55 @@ describe('updateGeneralSettings function', () => {
             expect(err.get()).toEqual(expectResult);
           });
         });
+        it('should return error permission deny', () => {
+          const appId = 1;
+          const generalSetings = {
+            'name': 'APP_NAME',
+            'description': 'Here is app description.',
+            'icon': {
+              'type': 'PRESET',
+              'key': 'APP72'
+            },
+            'theme': 'WHITE'
+          };
+          const revision = 1;
+          const expectBody = {
+            'app': 1,
+            'name': 'APP_NAME',
+            'description': 'Here is app description.',
+            'icon': {
+              'type': 'PRESET',
+              'key': 'APP72'
+            },
+            'theme': 'WHITE',
+            'revision': 1
+          };
+          const expectResult = {
+            'code': 'CB_NO02',
+            'id': 's1BFY1N96w0EGndRGLkF',
+            'message': 'No privilege to proceed.',
+            'errors': '{}'
+          };
+          nock(URI)
+            .put(PRE_LIVE_ROUTE, (rqBody) => {
+              expect(rqBody).toEqual(expectBody);
+              return true;
+            })
+            .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+              expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+              return true;
+            })
+            .matchHeader('Content-Type', (type) => {
+              expect(type).toBe('application/json;charset=utf-8');
+              return true;
+            })
+            .reply(403, expectResult);
+          const updateGeneralSettingsResult = appModule.updateGeneralSettings(appId, generalSetings, revision);
+          return updateGeneralSettingsResult.catch((err) => {
+            expect(err).toBeInstanceOf(KintoneAPIException);
+            expect(err.get()).toEqual(expectResult);
+          });
+        });
       });
       describe('app in GUEST SPACE', () => {
         it('should return error when use API token in GUEST SPACE', () => {
@@ -1677,6 +1726,55 @@ describe('updateGeneralSettings function', () => {
             })
             .reply(400, expectResult);
           const updateGeneralSettingsResult = appModuleGuestSpace.updateGeneralSettings(appId, generalSetings);
+          return updateGeneralSettingsResult.catch((err) => {
+            expect(err).toBeInstanceOf(KintoneAPIException);
+            expect(err.get()).toEqual(expectResult);
+          });
+        });
+        it('should return error permission deny in GUEST SPACE', () => {
+          const appId = 1;
+          const generalSetings = {
+            'name': 'APP_NAME',
+            'description': 'Here is app description.',
+            'icon': {
+              'type': 'PRESET',
+              'key': 'APP72'
+            },
+            'theme': 'WHITE'
+          };
+          const revision = 1;
+          const expectBody = {
+            'app': 1,
+            'name': 'APP_NAME',
+            'description': 'Here is app description.',
+            'icon': {
+              'type': 'PRESET',
+              'key': 'APP72'
+            },
+            'theme': 'WHITE',
+            'revision': 1
+          };
+          const expectResult = {
+            'code': 'CB_NO02',
+            'id': 's1BFY1N96w0EGndRGLkF',
+            'message': 'No privilege to proceed.',
+            'errors': '{}'
+          };
+          nock(URI)
+            .put(GUEST_PRE_LIVE_ROUTE, (rqBody) => {
+              expect(rqBody).toEqual(expectBody);
+              return true;
+            })
+            .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+              expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+              return true;
+            })
+            .matchHeader('Content-Type', (type) => {
+              expect(type).toBe('application/json;charset=utf-8');
+              return true;
+            })
+            .reply(403, expectResult);
+          const updateGeneralSettingsResult = appModuleGuestSpace.updateGeneralSettings(appId, generalSetings, revision);
           return updateGeneralSettingsResult.catch((err) => {
             expect(err).toBeInstanceOf(KintoneAPIException);
             expect(err.get()).toEqual(expectResult);
