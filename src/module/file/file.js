@@ -1,4 +1,8 @@
 const Connection = require('../../connection/Connection');
+const FileModel = require('../../model/file/FileModels');
+
+const RESPONSE_TYPE_KEY = 'responseType';
+const RESPONSE_TYPE_VALUE = 'arraybuffer';
 
 /**
  * File module
@@ -20,15 +24,19 @@ class File {
      * @return {Promise}
      */
   download(fileKey) {
-    return this.connection.download(fileKey);
+
+    const dataRequest =
+              new FileModel.GetFileRequest(fileKey);
+    this.connection.addRequestOption(RESPONSE_TYPE_KEY, RESPONSE_TYPE_VALUE);
+    return this.connection.download(dataRequest.toJSON());
   }
   /**
      * upload file to kintone
      * @param {JSONObjectg} formData
      * @return {Promise}
      */
-  upload(formData) {
-    return this.connection.upload(formData);
+  upload(fileName, fileContent) {
+    return this.connection.upload(fileName, fileContent);
   }
 }
 module.exports = File;

@@ -1,16 +1,14 @@
 const axios = require('axios');
 const tunnel = require('tunnel');
+const FormData = require('form-data');
 
 const Auth = require('../authentication/Auth');
 const HTTPHeader = require('../model/http/HTTPHeader');
-const FileModel = require('../../src/model/file/FileModels');
-const KintoneExeption = require('../exception/KintoneAPIException');
+const KintoneAPIException = require('../exception/KintoneAPIException');
 
 const CONNECTION_CONST = require('./constant');
 const DEFAULT_PORT = '443';
-const RESPONSE_TYPE_KEY = 'responseType';
-const RESPONSE_TYPE_VALUE = 'arraybuffer';
-
+const CONTENT_TYPE_KEY = 'Content-Type';
 /**
  * Connection module
  */
@@ -109,7 +107,7 @@ class Connection {
     return axios(requestOptions).then(response => {
       return response.data;
     }).catch(err => {
-      throw new KintoneExeption(err);
+      throw new KintoneAPIException(err);
     });
   }
 
@@ -118,18 +116,19 @@ class Connection {
      * @param {String} fileKey
      * @return {Promise}
      */
-  download(fileKey) {
-    const dataRequest =
-              new FileModel.GetFileRequest(fileKey);
-    this.addRequestOption(RESPONSE_TYPE_KEY, RESPONSE_TYPE_VALUE);
-    return this.requestFile('GET', 'FILE', dataRequest.toJSON());
+  download(body) {
+    return this.requestFile('GET', 'FILE', body);
   }
   /**
        * upload file to kintone
        * @param {JSONObjectg} formData
        * @return {Promise}
        */
-  upload(formData) {
+  upload(fileName, fileContent) {
+    const formData = new FormData();
+    formData.append('file', fileContent, fileName);
+
+    this.setHeader(CONTENT_TYPE_KEY, formData.getHeaders()['content-type']);
     return this.requestFile('POST', 'FILE', formData);
   }
 
