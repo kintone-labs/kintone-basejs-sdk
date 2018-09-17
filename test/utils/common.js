@@ -17,6 +17,7 @@ module.exports = {
     for (let i = 0; i < number; i++) {
       items.push(inputRecord);
     }
+
     return items;
   }
 };
