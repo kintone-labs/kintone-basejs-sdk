@@ -7,9 +7,9 @@ const common = require('../../utils/Common');
  */
 class Record {
   /**
-     * The constructor for Record module
-     * @param {Connection} connection
-     */
+   * The constructor for Record module
+   * @param {Connection} connection
+   */
   constructor(connection) {
     if (!(connection instanceof Connection)) {
       throw new Error(`${connection} not an instance of Connection`);
@@ -18,55 +18,55 @@ class Record {
   }
 
   /**
-     * @param {String} method
-     * @param {String} url
-     * @param {RecordModel} model
-     * @return {Promise} Promise
-     */
+   * @param {String} method
+   * @param {String} url
+   * @param {RecordModel} model
+   * @return {Promise} Promise
+   */
   sendRequest(method, url, model) {
     return common.sendRequest(method, url, model, this.connection);
   }
   /**
-     * Get record by specific ID
-     * TODO: Parse to response model
-     * @param {Number} app
-     * @param {Number} id
-     * @return {Promise} Promise
-     */
+   * Get record by specific ID
+   * TODO: Parse to response model
+   * @param {Number} app
+   * @param {Number} id
+   * @return {Promise} Promise
+   */
   getRecord(app, id) {
     const getRecordRequest = new RecordModel.GetRecordRequest(app, id);
     return this.sendRequest('GET', 'record', getRecordRequest);
   }
   /**
-     * Get multi record with options
-     * TODO: Parse to response model
-     * @param {Number} app
-     * @param {String} query
-     * @param {Array<String>} fields
-     * @param {Boolean} totalCount
-     * @return {Promise} Promise
-     */
+   * Get multi record with options
+   * TODO: Parse to response model
+   * @param {Number} app
+   * @param {String} query
+   * @param {Array<String>} fields
+   * @param {Boolean} totalCount
+   * @return {Promise} Promise
+   */
   getRecords(app, query, fields, totalCount) {
     const getRecordsRequest = new RecordModel.GetRecordsRequest(app, query, fields, totalCount);
     return this.sendRequest('GET', 'records', getRecordsRequest);
   }
   /**
-     * Add the record
-     * @param {Number} app
-     * @param {Record} record
-     * @return {Promise} Promise
-     */
+   * Add the record
+   * @param {Number} app
+   * @param {Record} record
+   * @return {Promise} Promise
+   */
   addRecord(app, record) {
     const addRecordRequest = new RecordModel.AddRecordRequest(app, record);
     return this.sendRequest('POST', 'record', addRecordRequest);
   }
 
   /**
-     * Add multi records
-     * @param {Number} app
-     * @param {Array<record>} records
-     * @return {Promise} Promise
-     */
+   * Add multi records
+   * @param {Number} app
+   * @param {Array<record>} records
+   * @return {Promise} Promise
+   */
   addRecords(app, records) {
     const addRecordsRequest = new RecordModel.AddRecordsRequest(app);
     addRecordsRequest.setRecords(records);
@@ -74,13 +74,13 @@ class Record {
   }
 
   /**
-     * Update the specific record by ID
-     * @param {Number} app
-     * @param {Number} id
-     * @param {Record} record
-     * @param {Number} revision
-     * @return {Promise} Promise
-     */
+   * Update the specific record by ID
+   * @param {Number} app
+   * @param {Number} id
+   * @param {Record} record
+   * @param {Number} revision
+   * @return {Promise} Promise
+   */
   updateRecordByID(app, id, record, revision) {
     const updateRecordRequest = new RecordModel.UpdateRecordRequest(app);
 
@@ -94,13 +94,13 @@ class Record {
 
 
   /**
-     * Update the specific record by updateKey
-     * @param {Number} app
-     * @param {RecordUpdateKey} updateKey
-     * @param {Record} record
-     * @param {Number} revision
-     * @return {Promise} Promise
-     */
+   * Update the specific record by updateKey
+   * @param {Number} app
+   * @param {RecordUpdateKey} updateKey
+   * @param {Record} record
+   * @param {Number} revision
+   * @return {Promise} Promise
+   */
   updateRecordByUpdateKey(app, updateKey, record, revision) {
     const updateRecordRequest = new RecordModel.UpdateRecordRequest(app);
 
@@ -112,12 +112,12 @@ class Record {
     return this.sendRequest('PUT', 'record', updateRecordRequest);
   }
   /**
-     * create record Item With id, use to update multi Record
-     * @param {*} id
-     * @param {*} recordData
-     * @param {*} revision
-     * @return {RecordsUpdateItem}
-     */
+   * create record Item With id, use to update multi Record
+   * @param {*} id
+   * @param {*} recordData
+   * @param {*} revision
+   * @return {RecordsUpdateItem}
+   */
   createRecordItemWithID(id, recordData, revision) {
     return new RecordModel.RecordsUpdateItem()
       .setID(id)
@@ -125,12 +125,12 @@ class Record {
       .setRevision(revision || 0);
   }
   /**
-     * create record Item With UpdateKey, use to update multi Record
-     * @param {*} updateKey
-     * @param {*} recordData
-     * @param {*} revision
-     * @return {RecordsUpdateItem}
-     */
+   * create record Item With UpdateKey, use to update multi Record
+   * @param {*} updateKey
+   * @param {*} recordData
+   * @param {*} revision
+   * @return {RecordsUpdateItem}
+   */
   createRecordItemWithUpdateKey(updateKey, recordData, revision) {
     return new RecordModel.RecordsUpdateItem()
       .setUpdateKey(updateKey.field, updateKey.value)
@@ -138,11 +138,11 @@ class Record {
       .setRevision(revision || 0);
   }
   /**
-     * Update multi records
-     * @param {Number} app
-     * @param {Array<RecordUpdateItem>} records
-     * @return {Promise} Promise
-     */
+   * Update multi records
+   * @param {Number} app
+   * @param {Array<RecordUpdateItem>} records
+   * @return {Promise} Promise
+   */
   updateRecords(app, records) {
     const updateRecordsRequest = new RecordModel.UpdateRecordsRequest(app, records);
 
@@ -150,11 +150,11 @@ class Record {
   }
 
   /**
-     * Delete multi records
-     * @param {Number} app
-     * @param {Array<Integer>} ids
-     * @return {Promise} Promise
-     */
+   * Delete multi records
+   * @param {Number} app
+   * @param {Array<Number>} ids
+   * @return {Promise} Promise
+   */
   deleteRecords(app, ids) {
     const deleteRecordsRequest = new RecordModel.DeleteRecordsRequest(app);
     deleteRecordsRequest.setIDs(ids);
@@ -164,7 +164,7 @@ class Record {
   /**
      * Delete records at the specific revision
      * @param {Number} app
-     * @param {HashTable <Integer, Integer>} idsWithRevision
+     * @param {Object} idsWithRevision
      * @return {this}
      */
   deleteRecordsWithRevision(app, idsWithRevision) {
@@ -176,8 +176,8 @@ class Record {
 
   /**
      * Update assignees of the specific record
-     * @param {*} app
-     * @param {*} id
+     * @param {Number} app
+     * @param {Number} id
      * @param {Array<String>} assignees
      * @param {Number} revision
      * @return {Promise}
@@ -206,7 +206,7 @@ class Record {
   /**
      * Update status of the multi records
      * @param {Number} app
-     * @param {Array <RecordStatusUpdate>} records
+     * @param {Array <{RecordStatusUpdate}>} records
      * @return {Promise}
      */
   updateRecordsStatus(app, records) {

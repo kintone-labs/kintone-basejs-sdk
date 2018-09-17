@@ -9,9 +9,9 @@ const RecordModel = require('../../model/record/RecordModels');
  */
 class BulkRequest {
   /**
-     * Constructor function of BulkRequest
-     * @param {Connection} connection
-     */
+   * Constructor function of BulkRequest
+   * @param {Connection} connection
+   */
   constructor(connection) {
     if (!(connection instanceof Connection)) {
       throw new Error(`${connection} not an instance of Connection`);
@@ -21,11 +21,11 @@ class BulkRequest {
   }
 
   /**
-     * Add the record
-     * @param {Number} app
-     * @param {Record} record
-     * @return {this}
-     */
+   * Add the record
+   * @param {Number} app
+   * @param {Record} record
+   * @return {this}
+   */
   addRecord(app, record) {
     const addRecordRequest = new RecordModel.AddRecordRequest(app, record);
     const bulkRequestItem = new BulkRequestItemModel('POST', this.connection.getPathURI('RECORD'), addRecordRequest);
@@ -34,11 +34,11 @@ class BulkRequest {
   }
 
   /**
-     * Add multi records
-     * @param {Number} app
-     * @param {Array<record>} records
-     * @return {this}
-     */
+   * Add multi records
+   * @param {Number} app
+   * @param {Array<record>} records
+   * @return {this}
+   */
   addRecords(app, records) {
     const addRecordsRequest = new RecordModel.AddRecordsRequest(app);
     addRecordsRequest.setRecords(records);
@@ -49,13 +49,13 @@ class BulkRequest {
   }
 
   /**
-     * Update the specific record by ID
-     * @param {Number} app
-     * @param {Number} id
-     * @param {Record} record
-     * @param {Number} revision
-     * @return {this}
-     */
+   * Update the specific record by ID
+   * @param {Number} app
+   * @param {Number} id
+   * @param {Record} record
+   * @param {Number} revision
+   * @return {this}
+   */
   updateRecordByID(app, id, record, revision) {
     const updateRecordRequest = new RecordModel.UpdateRecordRequest(app);
     updateRecordRequest.setID(id).setRecord(record).setRevision(revision || 0);
@@ -66,13 +66,13 @@ class BulkRequest {
   }
 
   /**
-     * Update the specific record by updateKey
-     * @param {Number} app
-     * @param {RecordUpdateKey} updateKey
-     * @param {Record} record
-     * @param {Number} revision
-     * @return {this}
-     */
+   * Update the specific record by updateKey
+   * @param {Number} app
+   * @param {RecordUpdateKey} updateKey
+   * @param {Record} record
+   * @param {Number} revision
+   * @return {this}
+   */
   updateRecordByUpdateKey(app, updateKey, record, revision) {
     const updateRecordRequest = new RecordModel.UpdateRecordRequest(app);
     updateRecordRequest.setUpdateKey(updateKey.field, updateKey.value).setRecord(record).setRevision(revision || 0);
@@ -83,11 +83,11 @@ class BulkRequest {
   }
 
   /**
-     * Update multi records
-     * @param {Number} app
-     * @param {Array<RecordUpdateItem>} records
-     * @return {this}
-     */
+   * Update multi records
+   * @param {Number} app
+   * @param {Array<RecordUpdateItem>} records
+   * @return {this}
+   */
   updateRecords(app, records) {
     const updateRecordsRequest = new RecordModel.UpdateRecordsRequest(app, records);
     const bulkRequestItem = new BulkRequestItemModel('PUT', this.connection.getPathURI('RECORDS'), updateRecordsRequest);
@@ -96,11 +96,11 @@ class BulkRequest {
   }
 
   /**
-     * Delete multi records
-     * @param {Number} app
-     * @param {Array<Number>} ids
-     * @return {this}
-     */
+   * Delete multi records
+   * @param {Number} app
+   * @param {Array<Number>} ids
+   * @return {this}
+   */
   deleteRecords(app, ids) {
     const deleteRecordsRequest = new RecordModel.DeleteRecordsRequest(app);
     deleteRecordsRequest.setIDs(ids);
@@ -111,11 +111,11 @@ class BulkRequest {
   }
 
   /**
-     * Delete records at the specific revision
-     * @param {Number} app
-     * @param {Object} idsWithRevision
-     * @return {this}
-     */
+   * Delete records at the specific revision
+   * @param {Number} app
+   * @param {Object} idsWithRevision
+   * @return {this}
+   */
   deleteRecordsWithRevision(app, idsWithRevision) {
     const deleteRecordsRequest = new RecordModel.DeleteRecordsRequest(app);
     deleteRecordsRequest.setIDsWithRevision(idsWithRevision);
@@ -126,13 +126,13 @@ class BulkRequest {
   }
 
   /**
-     * Update assignees of the specific record
-     * @param {Number} app
-     * @param {Number} record
-     * @param {Array<String>} assignees
-     * @param {Number} revision
-     * @return {this}
-     */
+   * Update assignees of the specific record
+   * @param {Number} app
+   * @param {Number} record
+   * @param {Array<String>} assignees
+   * @param {Number} revision
+   * @return {this}
+   */
   updateRecordAssignees(app, record, assignees, revision) {
     const updateRecordRequest = new RecordModel.UpdateRecordAssigneesRequest(app, record, assignees, revision);
     const bulkRequestItem = new BulkRequestItemModel('PUT', this.connection.getPathURI('RECORD_ASSIGNEES'), updateRecordRequest);
@@ -141,14 +141,14 @@ class BulkRequest {
   }
 
   /**
-     * Update status of the specific record
-     * @param {Number} app
-     * @param {Number} id
-     * @param {String} action
-     * @param {String} assignee
-     * @param {Number} revision
-     * @return {this}
-     */
+   * Update status of the specific record
+   * @param {Number} app
+   * @param {Number} id
+   * @param {String} action
+   * @param {String} assignee
+   * @param {Number} revision
+   * @return {this}
+   */
   updateRecordStatus(app, id, action, assignee, revision) {
     const updateRecordRequest = new RecordModel.UpdateRecordStatusRequest(app, id, action, assignee, revision);
     const bulkRequestItem = new BulkRequestItemModel('PUT', this.connection.getPathURI('RECORD_STATUS'), updateRecordRequest);
@@ -157,11 +157,11 @@ class BulkRequest {
   }
 
   /**
-     * Update status of the multi records
-     * @param {Number} app
-     * @param {Array<{RecordStatusUpdate}>} records
-     * @return {this}
-     */
+   * Update status of the multi records
+   * @param {Number} app
+   * @param {Array<{RecordStatusUpdate}>} records
+   * @return {this}
+   */
   updateRecordsStatus(app, records) {
     const updateRecordsRequest = new RecordModel.UpdateRecordsRequest(app, records);
     const bulkRequestItem = new BulkRequestItemModel('PUT', this.connection.getPathURI('RECORDS_STATUS'), updateRecordsRequest);
@@ -170,9 +170,9 @@ class BulkRequest {
   }
 
   /**
-     * Execute the BulkRequest and get data which is returned from kintone.
-     * @return {promise}
-     */
+   * Execute the BulkRequest and get data which is returned from kintone.
+   * @return {promise}
+   */
   execute() {
     return this.connection.addRequestOption('json', true)
       .request('POST', 'BULK_REQUEST', this.bulkRequests.toJSON())
