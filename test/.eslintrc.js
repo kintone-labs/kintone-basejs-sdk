@@ -1,6 +1,9 @@
 module.exports = {
-    "env": {
-        "jest": true
-    }
+  "env": {
+    "jest": true
+  },
+  "rules": {
+    "object-property-newline": 0
+  }
  };
  
