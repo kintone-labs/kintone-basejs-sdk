@@ -60,7 +60,7 @@ class Connection {
     // set data to param if using GET method
     if (requestOptions.method === 'GET') {
       requestOptions.params = body;
-      requestOptions.paramsSerializer = this.getParamQuery.bind(this);
+      requestOptions.paramsSerializer = this.paramsSerializing;
     } else {
       requestOptions.data = body;
     }
@@ -132,25 +132,29 @@ class Connection {
     return this.requestFile('POST', 'FILE', formData);
   }
 
-  getParamQuery(object, prefix) {
-    const queryArray = [];
-    for (const key in object) {
-      if (object.hasOwnProperty(key)) {
-        let subPrefix = '';
-        if (Array.isArray(object)) {
-          subPrefix = prefix ? prefix + '[' + key + ']' : key;
-        } else {
-          subPrefix = prefix ? prefix + '.' + key : key;
-        }
-        const value = object[key];
-        if (value !== undefined) {
-          queryArray.push(
-            (value !== null && typeof value === 'object') ? this.getParamQuery(value, subPrefix) : subPrefix + '=' + encodeURIComponent(value)
-          );
+  paramsSerializing(object) {
+    const pasreParams = (obj, prefix) => {
+      const queryArray = [];
+      for (const key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          let subPrefix = '';
+          if (Array.isArray(obj)) {
+            subPrefix = prefix ? prefix + '[' + key + ']' : key;
+          } else {
+            subPrefix = prefix ? prefix + '.' + key : key;
+          }
+          const value = obj[key];
+          if (value !== undefined) {
+            queryArray.push(
+              (value !== null && typeof value === 'object') ? pasreParams(value, subPrefix) : subPrefix + '=' + encodeURIComponent(value)
+            );
+          }
         }
       }
-    }
-    return queryArray.join('&');
+      return queryArray.join('&');
+    };
+
+    return pasreParams(object);
   }
 
   /**
