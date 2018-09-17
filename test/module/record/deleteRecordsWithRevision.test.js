@@ -1,6 +1,4 @@
-
 /**
- * kintone api - nodejs client
  * test record module
  */
 const nock = require('nock');
@@ -40,8 +38,7 @@ describe('deleteRecordsWithRevision function', () => {
           }
         };
 
-        const expectBody =
-        {
+        const expectBody = {
           'app': 1,
           'ids': ['1'],
           'revisions': [1]
@@ -80,8 +77,7 @@ describe('deleteRecordsWithRevision function', () => {
           }
         };
 
-        const expectBody =
-        {
+        const expectBody = {
           'app': 1,
           'ids': ['1', '2'],
           'revisions': [1, 4]
@@ -109,9 +105,6 @@ describe('deleteRecordsWithRevision function', () => {
         });
       });
     });
-    /**
-    * Todo: implement another success case
-    */
   });
 
   describe('error case', () => {
@@ -125,8 +118,7 @@ describe('deleteRecordsWithRevision function', () => {
           }
         };
 
-        const expectBody =
-        {
+        const expectBody = {
           'app': 1,
           'ids': ['2', '4444'],
           'revisions': [4, 1]
@@ -147,9 +139,7 @@ describe('deleteRecordsWithRevision function', () => {
         });
       });
     });
-    /**
-    * Todo: implement another error case
-    */
+
     describe('Invalid revision', () => {
       it('[Record-143] error is displayed when the revision is not correct', () => {
         const data = {
@@ -159,12 +149,11 @@ describe('deleteRecordsWithRevision function', () => {
           }
         };
 
-        const expectBody =
-      {
-        'app': 1,
-        'ids': ['2'],
-        'revisions': [11]
-      };
+        const expectBody = {
+          'app': 1,
+          'ids': ['2'],
+          'revisions': [11]
+        };
         const expectResult = {
           'code': 'GAIA_CO02',
           'id': 'oFadhvfaE1j88wNHmhn2',
@@ -195,12 +184,11 @@ describe('deleteRecordsWithRevision function', () => {
           }
         };
 
-        const expectBody =
-      {
-        'app': 1,
-        'ids': ['2'],
-        'revisions': [-1]
-      };
+        const expectBody = {
+          'app': 1,
+          'ids': ['2'],
+          'revisions': [-1]
+        };
         const expectResult = {
           'code': 'GAIA_CO02',
           'id': 'oFadhvfaE1j88wNHmhn2',
@@ -231,12 +219,11 @@ describe('deleteRecordsWithRevision function', () => {
           }
         };
 
-        const expectBody =
-      {
-        'app': 1,
-        'ids': ['2'],
-        'revisions': [11]
-      };
+        const expectBody = {
+          'app': 1,
+          'ids': ['2'],
+          'revisions': [11]
+        };
         const expectResult = {'code': 'CB_NO02', 'id': 'oKRIYVazSkB4H2CC7txn', 'message': 'No privilege to proceed.'};
 
         nock('https://' + common.DOMAIN)
@@ -263,12 +250,11 @@ describe('deleteRecordsWithRevision function', () => {
           }
         };
 
-        const expectBody =
-      {
-        'app': 1,
-        'ids': ['2'],
-        'revisions': [11]
-      };
+        const expectBody = {
+          'app': 1,
+          'ids': ['2'],
+          'revisions': [11]
+        };
         const expectResult = {'code': 'CB_NO02', 'id': 'WBOTx9jU4RpBh5RKYfyv', 'message': 'No privilege to proceed.'};
 
         nock('https://' + common.DOMAIN)
@@ -295,12 +281,11 @@ describe('deleteRecordsWithRevision function', () => {
           }
         };
 
-        const expectBody =
-      {
-        'app': 99999,
-        'ids': ['2'],
-        'revisions': [11]
-      };
+        const expectBody = {
+          'app': 99999,
+          'ids': ['2'],
+          'revisions': [11]
+        };
         const expectResult = {
           'code': 'GAIA_AP01',
           'id': 'WBOTx9jU4RpBh5RKYfyv',
@@ -331,8 +316,7 @@ describe('deleteRecordsWithRevision function', () => {
           }
         };
 
-        const expectBody =
-        {
+        const expectBody = {
           'ids': ['2'],
           'revisions': [11]
         };
@@ -362,10 +346,9 @@ describe('deleteRecordsWithRevision function', () => {
           }
         };
 
-        const expectBody =
-      {
-        'app': 1
-      };
+        const expectBody = {
+          'app': 1
+        };
         const expectResult = {'code': 'CB_IJ01', 'id': 'WBOTx9jU4RpBh5RKYfyv', 'message': 'Missing or invalid input.'};
 
         nock('https://' + common.DOMAIN)
@@ -393,12 +376,11 @@ describe('deleteRecordsWithRevision function', () => {
           }
         };
 
-        const expectBody =
-    {
-      'app': 1,
-      'ids': ['1', '2'],
-      'revisions': [1, 4]
-    };
+        const expectBody = {
+          'app': 1,
+          'ids': ['1', '2'],
+          'revisions': [1, 4]
+        };
 
         const conn_Guest_Space = new Connection(common.DOMAIN, auth, common.GUEST_SPACEID);
         const recordModule_Guest_Space = new Record(conn_Guest_Space);
@@ -441,8 +423,7 @@ describe('deleteRecordsWithRevision function', () => {
           }
         };
 
-        const expectBody =
-        {
+        const expectBody = {
           'app': 1,
           'ids': [
             '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24',
@@ -498,8 +479,7 @@ describe('deleteRecordsWithRevision function', () => {
           }
         };
 
-        const expectBody =
-        {
+        const expectBody = {
           'app': 1,
           'ids': [
             '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24',

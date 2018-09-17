@@ -1,5 +1,4 @@
 /**
- *  kintone api - nodejs client
  * test record module
  */
 const nock = require('nock');
@@ -53,9 +52,7 @@ describe('deleteRecords function', () => {
         expect(rsp).toEqual({});
       });
     });
-    // /**
-    // * Todo: implement more case
-    // */
+
     describe('multiple delete', () => {
       it('[Record-128] delete when specifying array of multiple ids', () => {
         const data = {
@@ -108,9 +105,7 @@ describe('deleteRecords function', () => {
         expect(err.get()).toMatchObject(exepectRsp);
       });
     });
-    /**
-    * Todo: implement another error case
-    */
+
     describe('does not have Delete permission', () => {
       it('[Record-130] error happens when user does not have Delete permission for app ', () => {
         const data = {
