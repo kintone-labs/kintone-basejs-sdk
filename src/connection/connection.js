@@ -1,26 +1,23 @@
 const axios = require('axios');
 const tunnel = require('tunnel');
+const FormData = require('form-data');
 
 const Auth = require('../authentication/Auth');
 const HTTPHeader = require('../model/http/HTTPHeader');
-const FileModel = require('../../src/model/file/FileModels');
-const KintoneExeption = require('../exception/KintoneAPIException');
+const KintoneAPIException = require('../exception/KintoneAPIException');
 
 const CONNECTION_CONST = require('./constant');
 const DEFAULT_PORT = '443';
 const CONTENT_TYPE_KEY = 'Content-Type';
-const RESPONSE_TYPE_KEY = 'responseType';
-const RESPONSE_TYPE_VALUE = 'arraybuffer';
-
 /**
  * Connection module
  */
 class Connection {
   /**
-     * @param {String} domain
-     * @param {Auth} auth
-     * @param {Integer} guestSpaceID
-     */
+   * @param {String} domain
+   * @param {Auth} auth
+   * @param {Number} guestSpaceID
+   */
   constructor(domain, auth, guestSpaceID) {
     this.domain = domain;
     this.guestSpaceID = parseInt(guestSpaceID, 10);
@@ -33,12 +30,12 @@ class Connection {
   }
 
   /**
-     * request to URL
-     * @param {String} method
-     * @param {String} restAPIName
-     * @param {String} body
-     * @return {Promise}
-     */
+   * request to URL
+   * @param {String} methodName
+   * @param {String} restAPIName
+   * @param {String} body
+   * @return {Promise}
+   */
   request(methodName, restAPIName, body) {
     // Set Header
     const headersRequet = {};
@@ -63,7 +60,7 @@ class Connection {
     // set data to param if using GET method
     if (requestOptions.method === 'GET') {
       requestOptions.params = body;
-      requestOptions.paramsSerializer = this.getParamQuery.bind(this);
+      requestOptions.paramsSerializer = this.serializeParams;
     } else {
       requestOptions.data = body;
     }
@@ -73,12 +70,12 @@ class Connection {
     });
   }
   /**
-     * request to URL
-     * @param {String} method
-     * @param {String} restAPIName
-     * @param {String} body
-     * @return {Promise}
-     */
+   * request to URL
+   * @param {String} methodName
+   * @param {String} restAPIName
+   * @param {String} body
+   * @return {Promise}
+   */
   requestFile(methodName, restAPIName, body) {
     // Set Header
     const headersRequet = {};
@@ -110,57 +107,62 @@ class Connection {
     return axios(requestOptions).then(response => {
       return response.data;
     }).catch(err => {
-      throw new KintoneExeption(err);
+      throw new KintoneAPIException(err);
     });
   }
 
   /**
-     * Download file from kintone
-     * @param {String} fileKey
-     * @return {Promise}
-     */
-  download(fileKey) {
-    const dataRequest =
-              new FileModel.GetFileRequest(fileKey);
-    this.addRequestOption(RESPONSE_TYPE_KEY, RESPONSE_TYPE_VALUE);
-    return this.requestFile('GET', 'FILE', dataRequest.toJSON());
+   * Download file from kintone
+   * @param {String} body
+   * @return {Promise}
+   */
+  download(body) {
+    return this.requestFile('GET', 'FILE', body);
   }
   /**
-       * upload file to kintone
-       * @param {JSONObjectg} formData
-       * @return {Promise}
-       */
-  upload(formData) {
+   * upload file to kintone
+   * @param {String} fileName
+   * @param {String} fileContent
+   * @return {Promise}
+   */
+  upload(fileName, fileContent) {
+    const formData = new FormData();
+    formData.append('file', fileContent, fileName);
+
     this.setHeader(CONTENT_TYPE_KEY, formData.getHeaders()['content-type']);
     return this.requestFile('POST', 'FILE', formData);
   }
 
-  getParamQuery(object, prefix) {
-    const queryArray = [];
-    for (const key in object) {
-      if (object.hasOwnProperty(key)) {
-        let subPrefix = '';
-        if (Array.isArray(object)) {
-          subPrefix = prefix ? prefix + '[' + key + ']' : key;
-        } else {
-          subPrefix = prefix ? prefix + '.' + key : key;
-        }
-        const value = object[key];
-        if (value !== undefined) {
-          queryArray.push(
-            (value !== null && typeof value === 'object') ? this.getParamQuery(value, subPrefix) : subPrefix + '=' + encodeURIComponent(value)
-          );
+  serializeParams(object) {
+    const parseParams = (obj, prefix) => {
+      const queryArray = [];
+      for (const key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          let subPrefix = '';
+          if (Array.isArray(obj)) {
+            subPrefix = prefix ? prefix + '[' + key + ']' : key;
+          } else {
+            subPrefix = prefix ? prefix + '.' + key : key;
+          }
+          const value = obj[key];
+          if (value !== undefined) {
+            queryArray.push(
+              (value !== null && typeof value === 'object') ? parseParams(value, subPrefix) : subPrefix + '=' + encodeURIComponent(value)
+            );
+          }
         }
       }
-    }
-    return queryArray.join('&');
+      return queryArray.join('&');
+    };
+
+    return pasreParams(object);
   }
 
   /**
-     * auto get uri for request
-     * @param {String} url - api name or FQDN
-     * @return {String}
-     */
+   * auto get uri for request
+   * @param {String} url - api name or FQDN
+   * @return {String}
+   */
   getUri(url) {
     let urlFQDN = CONNECTION_CONST.BASE.SCHEMA + '://' + this.domain;
     const apiNameUpperCase = String(url).toUpperCase();
@@ -173,10 +175,10 @@ class Connection {
     return urlFQDN;
   }
   /**
-     * getPathURI
-     * @param {String} apiName
-     * @return {String}
-     */
+   * getPathURI
+   * @param {String} apiName
+   * @return {String}
+   */
   getPathURI(apiName) {
     let pathURI = '';
     if (this.guestSpaceID > 0) {
@@ -188,30 +190,30 @@ class Connection {
     return pathURI;
   }
   /**
-     * Add option for request
-     * @param {String} key
-     * @param {String} value
-     * @return {this}
-     */
+   * Add option for request
+   * @param {String} key
+   * @param {String} value
+   * @return {this}
+   */
   addRequestOption(key, value) {
     this.options[key] = value;
     return this;
   }
   /**
-     * set header for request
-     * @param {String} key
-     * @param {String} value
-     * @return {this}
-     */
+   * set header for request
+   * @param {String} key
+   * @param {String} value
+   * @return {this}
+   */
   setHeader(key, value) {
     this.headers.push(new HTTPHeader(key, value));
     return this;
   }
   /**
-     * set auth for connection
-     * @param {Auth} auth
-     * @return {this}
-     */
+   * set auth for connection
+   * @param {Auth} auth
+   * @return {this}
+   */
   setAuth(auth) {
     if (!(auth instanceof Auth)) {
       throw new Error(`${auth} not an instance of Auth`);
@@ -220,11 +222,11 @@ class Connection {
     return this;
   }
   /**
-     * Sett proxy for request
-     * @param {String} proxyHost
-     * @param {String} proxyPort
-     * @return {this}
-     */
+   * Sett proxy for request
+   * @param {String} proxyHost
+   * @param {String} proxyPort
+   * @return {this}
+   */
   setProxy(proxyHost, proxyPort) {
     const httpsAgent = tunnel.httpsOverHttp({
       proxy: {host: proxyHost, port: proxyPort}
