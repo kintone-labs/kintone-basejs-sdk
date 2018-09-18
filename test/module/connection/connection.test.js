@@ -1,12 +1,10 @@
 
 const nock = require('nock');
 
-const common = require('../../common');
+const common = require('../../utils/common');
+const {API_ROUTE} = require('../../utils/constant');
 
-const Connection = require('../../../src/connection/Connection');
-const CONNECTION_CONST = require('../../../src/connection/constant');
-
-const Auth = require('../../../src/authentication/Auth');
+const {Connection, Auth} = require(common.MAIN_PATH);
 
 const auth = new Auth();
 auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
@@ -35,15 +33,14 @@ describe('Connection module', () => {
       }).toThrow();
     });
 
-    const expectURI = `${CONNECTION_CONST.BASE.SCHEMA}://${common.DOMAIN}:443/k/v1/record.json`;
+    const expectURI = `https://${common.DOMAIN}:443/${API_ROUTE.RECORD}`;
     it(`should return "${expectURI}" when using "getUri('record')" from nomal space`, () => {
       expect(conn.getUri('record')).toEqual(expectURI);
     });
 
-    const guestSpaceID = 1;
-    const uri = `${CONNECTION_CONST.BASE.SCHEMA}://${common.DOMAIN}:443/k/guest/${guestSpaceID}/v1/record.json`;
+    const uri = `https://${common.DOMAIN}:443/${API_ROUTE.GUEST_RECORD}`;
 
-    const connWithSpace = new Connection(common.DOMAIN, auth, guestSpaceID);
+    const connWithSpace = new Connection(common.DOMAIN, auth, common.GUEST_SPACEID);
     it(`should return "${uri}" when using "getUri('record')" from guest space`, () => {
       expect(connWithSpace.getUri('record')).toEqual(uri);
     });
@@ -87,10 +84,6 @@ describe('Connection module', () => {
         })
         .matchHeader('test', (authHeader) => {
           expect(authHeader).toBe('test');
-          return true;
-        })
-        .matchHeader('Content-Type', (type) => {
-          expect(type).toBe('application/json');
           return true;
         })
         .reply(200, {

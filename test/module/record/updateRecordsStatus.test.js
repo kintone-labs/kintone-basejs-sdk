@@ -5,11 +5,10 @@
  */
 const nock = require('nock');
 
-const common = require('../../common');
+const common = require('../../../test/utils/common');
 
-const Connection = require('../../../src/connection/Connection');
-const Auth = require('../../../src/authentication/Auth');
-const Record = require('../../../src/module/record/Record');
+
+const {Connection, Auth, Record, KintoneAPIException} = require(common.MAIN_PATH);
 
 const auth = new Auth();
 auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
@@ -42,7 +41,7 @@ describe('updateRecordsStatus function', () => {
 
   describe('success case', () => {
     describe('Valid data', () => {
-      it('should changed successfully the status of the multiple record', () => {
+      it('[Record-200] should changed successfully the status of the multiple record', () => {
         const data = {
           app: 1,
           records: [{
@@ -80,7 +79,7 @@ describe('updateRecordsStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(200, expectResult);
@@ -94,7 +93,7 @@ describe('updateRecordsStatus function', () => {
     });
 
     describe('Verify the records are updated with new statuses and assignees', () => {
-      it('should changed successfully the status of the multiple record', () => {
+      it('[Record-201] should changed successfully the status of the multiple record', () => {
         const data = {
           app: 1,
           records: [{
@@ -132,7 +131,7 @@ describe('updateRecordsStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(200, expectResult);
@@ -146,9 +145,9 @@ describe('updateRecordsStatus function', () => {
     });
 
     describe('The record is added successfully for app in guest space', () => {
-      it('should return the error in the result', () => {
+      it('[Record-210] should return the error in the result', () => {
         const data = {
-          app: 20,
+          app: 1,
           records: [{
             id: 10,
             action: 'Submit',
@@ -175,7 +174,7 @@ describe('updateRecordsStatus function', () => {
         };
 
         nock('https://' + common.DOMAIN)
-          .put('/k/v1/records/status.json', (rqBody) => {
+          .put('/k/guest/1/v1/records/status.json', (rqBody) => {
             expect(rqBody).toMatchObject(data);
             return true;
           })
@@ -184,7 +183,7 @@ describe('updateRecordsStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(200, expectResult);
@@ -199,7 +198,7 @@ describe('updateRecordsStatus function', () => {
     });
 
     describe('The function still work correctly when executing with interger as string type', () => {
-      it('should return the error in the result', () => {
+      it('[Record-211] should return the error in the result', () => {
         const data = {
           app: '20',
           records: [{
@@ -237,7 +236,7 @@ describe('updateRecordsStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(200, expectResult);
@@ -251,7 +250,7 @@ describe('updateRecordsStatus function', () => {
     });
 
     describe('Verify the number of records that can be updated at once is 100', () => {
-      it('should changed successfully the status of the multiple record', () => {
+      it('[Record-213] should changed successfully the status of the multiple record', () => {
         const number = 100;
         const data = {
           app: '20',
@@ -273,7 +272,7 @@ describe('updateRecordsStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(200, {'records': {}});
@@ -288,7 +287,7 @@ describe('updateRecordsStatus function', () => {
 
   describe('error case', () => {
     describe('Error will be displayed when there is record with error in Assignee', () => {
-      it('should return the error in the result', () => {
+      it('[Record-203] should return the error in the result', () => {
         const data = {
           app: 1,
           records: [{
@@ -321,7 +320,7 @@ describe('updateRecordsStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(400, expectResult);
@@ -329,13 +328,14 @@ describe('updateRecordsStatus function', () => {
         const recordModule = new Record(conn);
         const updateRecordsStatusResult = recordModule.updateRecordsStatus(data.app, data.records);
         return updateRecordsStatusResult.catch((err) => {
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
     });
 
     describe('Error will be displayed when there is record with error in ID', () => {
-      it('should return the error in the result', () => {
+      it('[Record-204] should return the error in the result', () => {
         const data = {
           app: 1,
           records: [{
@@ -380,7 +380,7 @@ describe('updateRecordsStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(400, expectResult);
@@ -388,13 +388,14 @@ describe('updateRecordsStatus function', () => {
         const recordModule = new Record(conn);
         const updateRecordsStatusResult = recordModule.updateRecordsStatus(data.app, data.records);
         return updateRecordsStatusResult.catch((err) => {
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
     });
 
     describe('Error will be displayed when there is record with error in revision', () => {
-      it('should return the error in the result', () => {
+      it('[Record-205] should return the error in the result', () => {
         const data = {
           app: 1,
           records: [{
@@ -439,7 +440,7 @@ describe('updateRecordsStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(400, expectResult);
@@ -447,13 +448,14 @@ describe('updateRecordsStatus function', () => {
         const recordModule = new Record(conn);
         const updateRecordsStatusResult = recordModule.updateRecordsStatus(data.app, data.records);
         return updateRecordsStatusResult.catch((err) => {
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
     });
 
     describe('The error will be displayed when using invalid app ID', () => {
-      it('should return the error in the result', () => {
+      it('[Record-206] should return the error in the result', () => {
         const data = {
           app: 'abc',
           records: [{
@@ -493,7 +495,7 @@ describe('updateRecordsStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(400, expectResult);
@@ -501,13 +503,14 @@ describe('updateRecordsStatus function', () => {
         const recordModule = new Record(conn);
         const updateRecordsStatusResult = recordModule.updateRecordsStatus(data.app, data.records);
         return updateRecordsStatusResult.catch((err) => {
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
     });
 
     describe('The error will be displayed when using method without app ID', () => {
-      it('should return the error in the result', () => {
+      it('[Record-207] should return the error in the result', () => {
         const data = {
           records: [{
             id: 10,
@@ -546,7 +549,7 @@ describe('updateRecordsStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(400, expectResult);
@@ -554,13 +557,14 @@ describe('updateRecordsStatus function', () => {
         const recordModule = new Record(conn);
         const updateRecordsStatusResult = recordModule.updateRecordsStatus('', data.records);
         return updateRecordsStatusResult.catch((err) => {
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
     });
 
     describe('The error will be displayed when using method without record ID', () => {
-      it('should return the error in the result', () => {
+      it('[Record-208] should return the error in the result', () => {
         const data = {
           app: 20,
           records: [{
@@ -599,7 +603,7 @@ describe('updateRecordsStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(400, expectResult);
@@ -607,13 +611,14 @@ describe('updateRecordsStatus function', () => {
         const recordModule = new Record(conn);
         const updateRecordsStatusResult = recordModule.updateRecordsStatus(data.app, data.records);
         return updateRecordsStatusResult.catch((err) => {
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
     });
 
     describe('The error will be displayed when using method without assignee', () => {
-      it('should return the error in the result', () => {
+      it('[Record-209] should return the error in the result', () => {
         const data = {
           app: 20,
           records: [{
@@ -644,7 +649,7 @@ describe('updateRecordsStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(520, expectResult);
@@ -652,13 +657,14 @@ describe('updateRecordsStatus function', () => {
         const recordModule = new Record(conn);
         const updateRecordsStatusResult = recordModule.updateRecordsStatus(data.app, data.records);
         return updateRecordsStatusResult.catch((err) => {
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
     });
 
     describe('The error will be displayed when the process management featured is disabled', () => {
-      it('should return the error in the result', () => {
+      it('[Record-212] should return the error in the result', () => {
         const data = {
           app: 1,
           records: [{
@@ -691,7 +697,7 @@ describe('updateRecordsStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(520, expectResult);
@@ -699,13 +705,14 @@ describe('updateRecordsStatus function', () => {
         const recordModule = new Record(conn);
         const updateRecordsStatusResult = recordModule.updateRecordsStatus(data.app, data.records);
         return updateRecordsStatusResult.catch((err) => {
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
     });
 
     describe('Verify the error displays when number of records is > 100', () => {
-      it('should return the error in the result', () => {
+      it('[Record-214] should return the error in the result', () => {
         const number = 102;
         const data = {
           app: 1,
@@ -741,20 +748,21 @@ describe('updateRecordsStatus function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toEqual(expect.stringContaining('application/json'));
             return true;
           })
           .reply(400, expectResult);
         const recordModule = new Record(conn);
         const updateRecordsStatusResult = recordModule.updateRecordsStatus(data.app, common.generateRecord(number, data.record));
         return updateRecordsStatusResult.catch((err) => {
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
     });
 
     describe('Invalid data', () => {
-      it('should return error when the action name is blank', () => {
+      it('[Record-202] should return error when the action name is blank', () => {
         const data = {
           app: 1,
           records: [{
@@ -784,6 +792,7 @@ describe('updateRecordsStatus function', () => {
         const recordModule = new Record(conn);
         const updateRecordsStatusResult = recordModule.updateRecordsStatus(data.app, data.records);
         return updateRecordsStatusResult.catch((err) => {
+          expect(err).toBeInstanceOf(KintoneAPIException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });

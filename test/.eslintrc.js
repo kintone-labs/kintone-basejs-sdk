@@ -1,9 +1,9 @@
 module.exports = {
-    "env": {
-        "jest": true
-    },
-    "rules": {
-        "max-len": ["error", { "code": 150 }]
-    }
+  "env": {
+    "jest": true
+  },
+  "rules": {
+    "object-property-newline": 0
+  }
  };
  

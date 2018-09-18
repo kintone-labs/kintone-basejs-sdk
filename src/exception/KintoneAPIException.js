@@ -15,11 +15,16 @@ class KintoneAPIException {
     if (!errors.hasOwnProperty('response') || !errors.response) {
       errorResponse = new KintoneErrorResponseModel(0, null, errors.message, errors);
     } else {
-      errorResponse = this.getErrorResponse(errors.response.data);
+      const dataResponse = errors.response.data;
+      errorResponse = this.getErrorResponse(dataResponse);
 
-      if (Buffer.isBuffer(errors.response.data)) {
+      if (Buffer.isBuffer(dataResponse)) {
         const stringError = errors.response.data.toString();
-        errorResponse = this.getErrorResponse(JSON.parse(stringError));
+        errorResponse = this.getErrorResponse(stringError);
+
+      } else if (dataResponse instanceof ArrayBuffer) {
+        const stringError = String.fromCharCode(...new Uint8Array(dataResponse));
+        errorResponse = this.getErrorResponse(stringError);
       }
     }
     if (!(errorResponse instanceof KintoneErrorResponseModel)) {
