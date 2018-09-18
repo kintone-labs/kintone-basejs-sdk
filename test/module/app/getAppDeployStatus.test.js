@@ -5,7 +5,7 @@
  */
 const nock = require('nock');
 
-const common = require('../utils/common');
+const common = require('../../utils/common');
 
 const {App, Auth, Connection, KintoneAPIException} = require(common.MAIN_PATH);
 const URI = 'https://' + common.DOMAIN;
@@ -61,7 +61,7 @@ describe('getAppDeployStatus function', () => {
           const data = {
             'apps': [1, 2]
           };
-          const params = common.paramsSerializing(data);
+          const params = common.serializeParams(data);
           const expectedResult = {
             'apps': [
               {
@@ -91,7 +91,7 @@ describe('getAppDeployStatus function', () => {
             'apps': []
           };
           generateItemsInArray(data.apps, 300);
-          const params = common.paramsSerializing(data);
+          const params = common.serializeParams(data);
           const expectedResult = {
             'apps': []
           };
@@ -120,7 +120,7 @@ describe('getAppDeployStatus function', () => {
           const data = {
             'apps': [1, 2]
           };
-          const params = common.paramsSerializing(data);
+          const params = common.serializeParams(data);
           const expectedResult = {
             'apps': [
               {
@@ -150,7 +150,7 @@ describe('getAppDeployStatus function', () => {
             'apps': []
           };
           generateItemsInArray(data.apps, 300);
-          const params = common.paramsSerializing(data);
+          const params = common.serializeParams(data);
           const expectedResult = {
             'apps': []
           };
@@ -183,7 +183,7 @@ describe('getAppDeployStatus function', () => {
           const data = {
             'apps': [1, 2]
           };
-          const params = common.paramsSerializing(data);
+          const params = common.serializeParams(data);
           const expectedResult = {
             'code': 'GAIA_NO01',
             'id': 'TQlNrvAWQSBmQf7hTBHs',
@@ -252,7 +252,7 @@ describe('getAppDeployStatus function', () => {
           const data = {
             'apps': [1, 2]
           };
-          const params = common.paramsSerializing(data);
+          const params = common.serializeParams(data);
           const expectedResult = {
             'code': 'CB_VA01',
             'id': 'e8eqDlrkMad4YvuzOo9f',
@@ -282,7 +282,7 @@ describe('getAppDeployStatus function', () => {
           const data = {
             'apps': [-1, 2]
           };
-          const params = common.paramsSerializing(data);
+          const params = common.serializeParams(data);
           const expectedResult = {
             'code': 'CB_VA01',
             'id': '8p8p33oWqBXmk7Zo6TgS',
@@ -312,7 +312,7 @@ describe('getAppDeployStatus function', () => {
           const data = {
             'apps': [0, 2]
           };
-          const params = common.paramsSerializing(data);
+          const params = common.serializeParams(data);
           const expectedResult = {
             'code': 'CB_VA01',
             'id': '8p8p33oWqBXmk7Zo6TgS',
@@ -343,7 +343,7 @@ describe('getAppDeployStatus function', () => {
             'apps': []
           };
           generateItemsInArray(data.apps, 301);
-          const params = common.paramsSerializing(data);
+          const params = common.serializeParams(data);
           const expectedResult = {
             'id': 'S0S77sTXDD7ngqHZNW3i',
             'code': 'GAIA_TO03',
@@ -367,7 +367,7 @@ describe('getAppDeployStatus function', () => {
           const data = {
             'apps': [1, 2]
           };
-          const params = common.paramsSerializing(data);
+          const params = common.serializeParams(data);
           const expectedResult = {
             'code': 'CB_NO02',
             'id': 'QuohWmIy6j6L7IM0S6QP',
@@ -393,7 +393,7 @@ describe('getAppDeployStatus function', () => {
           const data = {
             'apps': [1, 2]
           };
-          const params = common.paramsSerializing(data);
+          const params = common.serializeParams(data);
           const expectedResult = {
             'code': 'GAIA_NO01',
             'id': 'TQlNrvAWQSBmQf7hTBHs',
@@ -462,7 +462,7 @@ describe('getAppDeployStatus function', () => {
           const data = {
             'apps': [1, 2]
           };
-          const params = common.paramsSerializing(data);
+          const params = common.serializeParams(data);
           const expectedResult = {
             'code': 'CB_VA01',
             'id': 'e8eqDlrkMad4YvuzOo9f',
@@ -492,7 +492,7 @@ describe('getAppDeployStatus function', () => {
           const data = {
             'apps': [-1, 2]
           };
-          const params = common.paramsSerializing(data);
+          const params = common.serializeParams(data);
           const expectedResult = {
             'code': 'CB_VA01',
             'id': '8p8p33oWqBXmk7Zo6TgS',
@@ -522,7 +522,7 @@ describe('getAppDeployStatus function', () => {
           const data = {
             'apps': [0, 2]
           };
-          const params = common.paramsSerializing(data);
+          const params = common.serializeParams(data);
           const expectedResult = {
             'code': 'CB_VA01',
             'id': '8p8p33oWqBXmk7Zo6TgS',
@@ -553,7 +553,7 @@ describe('getAppDeployStatus function', () => {
             'apps': []
           };
           generateItemsInArray(data.apps, 301);
-          const params = common.paramsSerializing(data);
+          const params = common.serializeParams(data);
           const expectedResult = {
             'id': 'S0S77sTXDD7ngqHZNW3i',
             'code': 'GAIA_TO03',
@@ -577,7 +577,7 @@ describe('getAppDeployStatus function', () => {
           const data = {
             'apps': [1, 2]
           };
-          const params = common.paramsSerializing(data);
+          const params = common.serializeParams(data);
           const expectedResult = {
             'code': 'CB_NO02',
             'id': 'QuohWmIy6j6L7IM0S6QP',
