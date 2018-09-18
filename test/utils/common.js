@@ -18,5 +18,29 @@ module.exports = {
     }
 
     return items;
+  },
+  serializeParams: (object) => {
+    const parseParams = (obj, prefix) => {
+      const queryArray = [];
+      for (const key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          let subPrefix = '';
+          if (Array.isArray(obj)) {
+            subPrefix = prefix ? prefix + '[' + key + ']' : key;
+          } else {
+            subPrefix = prefix ? prefix + '.' + key : key;
+          }
+          const value = obj[key];
+          if (value !== undefined) {
+            queryArray.push(
+              (value !== null && typeof value === 'object') ? parseParams(value, subPrefix) : subPrefix + '=' + encodeURIComponent(value)
+            );
+          }
+        }
+      }
+      return queryArray.join('&');
+    };
+
+    return parseParams(object);
   }
 };
