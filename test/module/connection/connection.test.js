@@ -21,11 +21,12 @@ describe('Connection module', () => {
 
     it('should return a connection when "setHeader" function is called', () => {
       expect(conn.setHeader('json', true)).toBeInstanceOf(Connection);
-    })
+    });
 
     it('should return a connection when "setAuth" function is called', () => {
       expect(conn.setAuth(auth)).toBeInstanceOf(Connection);
     });
+
     it('should throw a Error when "setAuth" function with input param that is\'nt Auth is called', () => {
       expect(() => {
         conn.setAuth();
