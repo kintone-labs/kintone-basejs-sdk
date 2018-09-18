@@ -1,23 +1,20 @@
-
 /**
  * kintone api - nodejs client
  * test record module
  */
 const nock = require('nock');
-const common = require('../../utils/common');
-const Connection = require('../../../src/connection/Connection');
-const Auth = require('../../../src/authentication/Auth');
-const Record = require('../../../src/module/record/Record');
 
-const auth = new Auth();
-auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
+const common = require('../../../test/utils/common');
+const {KintoneAPIException, Connection, Auth, Record} = require(common.MAIN_PATH);
+const auth = new Auth().setPasswordAuth(common.USERNAME, common.PASSWORD);
 
 const conn = new Connection(common.DOMAIN, auth);
+const recordModule = new Record(conn);
 
 describe('updateRecordById function', () => {
   describe('common case', () => {
 
-    it('[Record module-0-common] - should return a promise', () => {
+    it('[Record-0-common] - should return a promise', () => {
       const data = {
         app: 1,
         id: 1,
@@ -30,9 +27,8 @@ describe('updateRecordById function', () => {
       };
       nock('https://' + common.DOMAIN)
         .put('/k/v1/record.json')
-        .reply(200, { 'revisions': '1' });
+        .reply(200, {'revisions': '1'});
 
-      const recordModule = new Record(conn);
       const updateRecordByIdResult = recordModule.updateRecordByID(data.app, data.id, data.record, data.revision);
       expect(updateRecordByIdResult).toHaveProperty('then');
       expect(updateRecordByIdResult).toHaveProperty('catch');
@@ -41,7 +37,7 @@ describe('updateRecordById function', () => {
 
   describe('success case', () => {
     describe('valid data', () => {
-      it('[Record module-65] - should update successfully the record', () => {
+      it('[Record-65] - should update successfully the record', () => {
         const data = {
           app: 1,
           id: 1,
@@ -62,19 +58,18 @@ describe('updateRecordById function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toBe('application/json;charset=utf-8');
             return true;
           })
-          .reply(200, { 'revision': '3' });
+          .reply(200, {'revision': '3'});
 
-        const recordModule = new Record(conn);
         const updateRecordByIdResult = recordModule.updateRecordByID(data.app, data.id, data.record, data.revision);
         return updateRecordByIdResult.then((rsp) => {
           expect(rsp.revision).toEqual('3');
         });
       });
 
-      it('[Record module-66] - should update successfully when the revision is -1', () => {
+      it('[Record-66] - should update successfully when the revision is -1', () => {
         const data = {
           app: 1,
           id: 1,
@@ -90,9 +85,8 @@ describe('updateRecordById function', () => {
             expect(rqBody).toMatchObject(data);
             return true;
           })
-          .reply(200, { 'revision': '3' });
+          .reply(200, {'revision': '3'});
 
-        const recordModule = new Record(conn);
         const updateRecordByIdResult = recordModule.updateRecordByID(data.app, data.id, data.record, data.revision);
         return updateRecordByIdResult.then((rsp) => {
           expect(rsp).toHaveProperty('revision');
@@ -106,7 +100,7 @@ describe('updateRecordById function', () => {
        * Data table
        * Verify the data for record with table is added successfully
        */
-      it('[Record module-82] - should update the data successfully for record with table', () => {
+      it('[Record-82] - should update the data successfully for record with table', () => {
         const recordID = 1;
         const appID = 19;
         const recordDataUpdate = {
@@ -148,12 +142,11 @@ describe('updateRecordById function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toBe('application/json;charset=utf-8');
             return true;
           })
-          .reply(200, { 'revision': '2' });
+          .reply(200, {'revision': '2'});
 
-        const recordModule = new Record(conn);
         const updateRecordByIdResult = recordModule.updateRecordByID(appID, recordID, recordsData);
         return updateRecordByIdResult.then((rsp) => {
           expect(rsp.revision).toEqual('2');
@@ -164,7 +157,7 @@ describe('updateRecordById function', () => {
        * Guest space
        * The record is updated successfully for app in guest space
        */
-      it('[Record module-83] - should update record successfully for app in guest space', () => {
+      it('[Record-83] - should update record successfully for app in guest space', () => {
         const connGuestSpace = new Connection(common.DOMAIN, auth, common.GUEST_SPACEID);
         const recordID = 1;
         const appID = 19;
@@ -198,7 +191,7 @@ describe('updateRecordById function', () => {
         };
         const recordsData = [recordDataUpdate];
         nock('https://' + common.DOMAIN)
-          .put('/k/v1/record.json', (rqBody) => {
+          .put('/k/guest/1/v1/record.json', (rqBody) => {
             expect(rqBody.record).toMatchObject(recordsData);
             return true;
           })
@@ -207,13 +200,13 @@ describe('updateRecordById function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toBe('application/json;charset=utf-8');
             return true;
           })
-          .reply(200, { 'revision': '3' });
+          .reply(200, {'revision': '3'});
 
-        const recordModule = new Record(connGuestSpace);
-        const updateRecordByIdResult = recordModule.updateRecordByID(appID, recordID, recordsData);
+        const recordGuestModule = new Record(connGuestSpace);
+        const updateRecordByIdResult = recordGuestModule.updateRecordByID(appID, recordID, recordsData);
         return updateRecordByIdResult.then((rsp) => {
           expect(rsp.revision).toEqual('3');
         });
@@ -221,9 +214,9 @@ describe('updateRecordById function', () => {
 
       /**
        * Invalid input type
-       * The function still work correctly when executing with interger as string type (input string for interger and vice versa) 
+       * The function still work correctly when executing with interger as string type (input string for interger and vice versa)
        */
-      it('[Record module-84] - should update correctly when executing with interger as string type (input string for interger and vice versa) ', () => {
+      it('[Record-84] - should update correctly when executing with interger as string type (input string for interger and vice versa) ', () => {
         const recordID = '1';
         const appID = '19';
         const recordDataUpdate = {
@@ -265,12 +258,11 @@ describe('updateRecordById function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toBe('application/json;charset=utf-8');
             return true;
           })
-          .reply(200, { 'revision': '4' });
+          .reply(200, {'revision': '4'});
 
-        const recordModule = new Record(conn);
         const updateRecordByIdResult = recordModule.updateRecordByID(appID, recordID, recordsData);
         return updateRecordByIdResult.then((rsp) => {
           expect(rsp.revision).toEqual('4');
@@ -280,7 +272,7 @@ describe('updateRecordById function', () => {
 
     describe('error case', () => {
       describe('wrong revision', () => {
-        it('[Record module-67] - should return error when using wrong revison', () => {
+        it('[Record-67] - should return error when using wrong revison', () => {
           const data = {
             app: 1,
             id: 2,
@@ -302,7 +294,7 @@ describe('updateRecordById function', () => {
               return true;
             })
             .reply(409, expectResult);
-          const recordModule = new Record(conn);
+
           return recordModule.updateRecordByID(data.app, data.id, data.record, wrongRevison).catch((err) => {
             expect(err.get()).toMatchObject(expectResult);
           });
@@ -320,56 +312,56 @@ describe('updateRecordById function', () => {
        *  Created datetime
        *  Updated datetime
        */
-      it('[Record module-68] - should return the error in the result: Error is displayed when updating these fields:' +
+      it('[Record-68] - should return the error in the result: Error is displayed when updating these fields:' +
         'Created by' +
         'Updated by' +
         'Created datetime' +
         'Updated datetime', () => {
-          const recordID = 95;
-          const appID = 22;
-          const recordDataUpdate = {
-            'app': appID,
-            'id': recordID,
-            'revision': null,
-            'record': {
-              'Updated_by': {
-                'value': 'Updated'
-              }
+        const recordID = 95;
+        const appID = 22;
+        const recordDataUpdate = {
+          'app': appID,
+          'id': recordID,
+          'revision': null,
+          'record': {
+            'Updated_by': {
+              'value': 'Updated'
             }
-          };
-          const recordsData = [recordDataUpdate];
+          }
+        };
+        const recordsData = [recordDataUpdate];
 
-          const expectResult = {
-            'code': 'CB_IJ01',
-            'id': 'wcRfYn4IOTtdsHuExF5a',
-            'message': 'Invalid JSON string.'
-          };
-          nock('https://' + common.DOMAIN)
-            .put(`/k/v1/record.json`, (rqBody) => {
-              expect(rqBody.record).toMatchObject(recordsData);
-              return true;
-            })
-            .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-              expect(authHeader).toBe(Buffer.from(common.USERNAME + ':' + common.PASSWORD).toString('base64'));
-              return true;
-            })
-            .matchHeader('Content-Type', (type) => {
-              expect(type).toBe('application/json');
-              return true;
-            })
-            .reply(400, expectResult);
-          const recordModule = new Record(conn);
-          const getRecordResult = recordModule.updateRecordByID(appID, recordID, recordsData);
-          return getRecordResult.catch((err) => {
-            expect(err).toBeInstanceOf(KintoneAPIException);
-            expect(err.get()).toMatchObject(expectResult);
-          });
+        const expectResult = {
+          'code': 'CB_IJ01',
+          'id': 'wcRfYn4IOTtdsHuExF5a',
+          'message': 'Invalid JSON string.'
+        };
+        nock('https://' + common.DOMAIN)
+          .put(`/k/v1/record.json`, (rqBody) => {
+            expect(rqBody.record).toMatchObject(recordsData);
+            return true;
+          })
+          .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+            expect(authHeader).toBe(Buffer.from(common.USERNAME + ':' + common.PASSWORD).toString('base64'));
+            return true;
+          })
+          .matchHeader('Content-Type', (type) => {
+            expect(type).toBe('application/json;charset=utf-8');
+            return true;
+          })
+          .reply(400, expectResult);
+
+        const getRecordResult = recordModule.updateRecordByID(appID, recordID, recordsData);
+        return getRecordResult.catch((err) => {
+          expect(err).toBeInstanceOf(KintoneAPIException);
+          expect(err.get()).toMatchObject(expectResult);
         });
+      });
       /**
        * Permission
        * Error happens when user does not have Edit permission for app
        */
-      it('[Record module-69] - should return the error in the result: Error happens when user does not have Edit permission for app', () => {
+      it('[Record-69] - should return the error in the result: Error happens when user does not have Edit permission for app', () => {
         const recordID = 95;
         const appID = 22;
         const recordDataUpdate = {
@@ -399,11 +391,11 @@ describe('updateRecordById function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toBe('application/json;charset=utf-8');
             return true;
           })
           .reply(400, expectResult);
-        const recordModule = new Record(conn);
+
         const getRecordResult = recordModule.updateRecordByID(appID, recordID, recordsData);
         return getRecordResult.catch((err) => {
           expect(err).toBeInstanceOf(KintoneAPIException);
@@ -415,7 +407,7 @@ describe('updateRecordById function', () => {
        * Permission
        * Error happens when user does not have Edit permission for record
        */
-      it('[Record module-70] - should return the error in the result: Error happens when user does not have Edit permission for record', () => {
+      it('[Record-70] - should return the error in the result: Error happens when user does not have Edit permission for record', () => {
         const recordID = 95;
         const appID = 22;
         const recordDataUpdate = {
@@ -445,11 +437,11 @@ describe('updateRecordById function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toBe('application/json;charset=utf-8');
             return true;
           })
           .reply(400, expectResult);
-        const recordModule = new Record(conn);
+
         const getRecordResult = recordModule.updateRecordByID(appID, recordID, recordsData);
         return getRecordResult.catch((err) => {
           expect(err).toBeInstanceOf(KintoneAPIException);
@@ -461,7 +453,7 @@ describe('updateRecordById function', () => {
        * Permission
        * Error happens when user does not have Edit permission for field
        */
-      it('[Record module-71] - should return the error in the result: Error happens when user does not have Edit permission for field', () => {
+      it('[Record-71] - should return the error in the result: Error happens when user does not have Edit permission for field', () => {
         const recordID = 95;
         const appID = 22;
         const recordDataUpdate = {
@@ -490,11 +482,11 @@ describe('updateRecordById function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toBe('application/json;charset=utf-8');
             return true;
           })
           .reply(403, expectResult);
-        const recordModule = new Record(conn);
+
         const getRecordResult = recordModule.updateRecordByID(appID, recordID, recordsData);
         return getRecordResult.catch((err) => {
           expect(err).toBeInstanceOf(KintoneAPIException);
@@ -505,7 +497,7 @@ describe('updateRecordById function', () => {
        * Invalid app ID
        * The error will be displayed when using invalid app ID (unexisted, negative number, 0)
        */
-      it('[Record module-72] - should return the error in the result: The error will be displayed when using invalid app ID (unexisted, negative number, 0)', () => {
+      it('[Record-72] - should return the error in the result when using invalid app ID (unexisted, negative number, 0)', () => {
         const recordID = 95;
         const appID = 220;
         const recordDataUpdate = {
@@ -534,11 +526,11 @@ describe('updateRecordById function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toBe('application/json;charset=utf-8');
             return true;
           })
           .reply(403, expectResult);
-        const recordModule = new Record(conn);
+
         const getRecordResult = recordModule.updateRecordByID(appID, recordID, recordsData);
         return getRecordResult.catch((err) => {
           expect(err).toBeInstanceOf(KintoneAPIException);
@@ -549,7 +541,7 @@ describe('updateRecordById function', () => {
        * Invalid record ID
        * The error will be displayed when using invalid record ID (unexisted, negative number, 0)
        */
-      it('[Record module-73] - should return the error in the result: The error will be displayed when using invalid record ID (unexisted, negative number, 0)', () => {
+      it('[Record-73] - should return the error in the result when using invalid record ID (unexisted, negative number, 0)', () => {
         const recordID = -9500;
         const appID = 22;
         const recordDataUpdate = {
@@ -585,11 +577,11 @@ describe('updateRecordById function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toBe('application/json;charset=utf-8');
             return true;
           })
           .reply(403, expectResult);
-        const recordModule = new Record(conn);
+
         const getRecordResult = recordModule.updateRecordByID(appID, recordID, recordsData);
         return getRecordResult.catch((err) => {
           expect(err).toBeInstanceOf(KintoneAPIException);
@@ -600,7 +592,7 @@ describe('updateRecordById function', () => {
        * Missing required field
        * The error will be displayed when using method without app ID
        */
-      it('[Record module-74] - should return the error in the result: The error will be displayed when using invalid record ID (unexisted, negative number, 0)', () => {
+      it('[Record-74] - should return the error in the result when using invalid record ID (unexisted, negative number, 0)', () => {
         const recordID = -9500;
         const appID = null;
         const recordDataUpdate = {
@@ -629,11 +621,11 @@ describe('updateRecordById function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toBe('application/json;charset=utf-8');
             return true;
           })
           .reply(400, expectResult);
-        const recordModule = new Record(conn);
+
         const getRecordResult = recordModule.updateRecordByID(appID, recordID, recordsData);
         return getRecordResult.catch((err) => {
           expect(err).toBeInstanceOf(KintoneAPIException);
@@ -644,7 +636,7 @@ describe('updateRecordById function', () => {
        * Missing required field
        * Revision is increased by 1, no data is updated when using method without records data
        */
-      it('[Record module-75] - should return revision and increased by 1, no data updated', () => {
+      it('[Record-75] - should return revision and increased by 1, no data updated', () => {
         const recordID = 95;
         const appID = 22;
         const recordDataUpdate = {
@@ -665,12 +657,11 @@ describe('updateRecordById function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toBe('application/json;charset=utf-8');
             return true;
           })
-          .reply(200, { 'revision': '7' });
+          .reply(200, {'revision': '7'});
 
-        const recordModule = new Record(conn);
         const updateRecordByIdResult = recordModule.updateRecordByID(appID, recordID, recordsData);
         return updateRecordByIdResult.then((rsp) => {
           expect(rsp.revision).toEqual('7');
@@ -680,7 +671,7 @@ describe('updateRecordById function', () => {
        * Required data
        * Error will be displayed when there is record without data for required field in the records arrray
        */
-      it('[Record module-76] - should return the error in the result: Error will be displayed when there is record without data for required field in the records arrray', () => {
+      it('[Record-76] - should return the error when there is record without data for required field in the records arrray', () => {
         const recordID = 95;
         const appID = 22;
         const recordDataUpdate = {
@@ -716,11 +707,11 @@ describe('updateRecordById function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toBe('application/json;charset=utf-8');
             return true;
           })
           .reply(400, expectResult);
-        const recordModule = new Record(conn);
+
         const getRecordResult = recordModule.updateRecordByID(appID, recordID, recordsData);
         return getRecordResult.catch((err) => {
           expect(err).toBeInstanceOf(KintoneAPIException);
@@ -732,7 +723,7 @@ describe('updateRecordById function', () => {
        * Invalid field
        * The field will be skipped when there is record with invalid field in the records array
        */
-      it('[Record module-77] - should update record and skipped invalid field in the records array', () => {
+      it('[Record-77] - should update record and skipped invalid field in the records array', () => {
         const recordID = 95;
         const appID = 22;
         const recordDataUpdate = {
@@ -759,11 +750,11 @@ describe('updateRecordById function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toBe('application/json;charset=utf-8');
             return true;
           })
-          .reply(200, { 'revision': '9' });
-        const recordModule = new Record(conn);
+          .reply(200, {'revision': '9'});
+
         const updateRecordByIdResult = recordModule.updateRecordByID(appID, recordID, recordsData);
         return updateRecordByIdResult.then((rsp) => {
           expect(rsp.revision).toEqual('9');
@@ -773,7 +764,7 @@ describe('updateRecordById function', () => {
        * Invalid data
        * The error will be displayed when there is one record has invalid data (text for number field)
        */
-      it('[Record module-78] - should return the error in the result: The error will be displayed when there is one record has invalid data (text for number field)', () => {
+      it('[Record-78] - should return the error when there is one record has invalid data (text for number field)', () => {
         const recordID = 95;
         const appID = 22;
         const recordDataUpdate = {
@@ -812,11 +803,11 @@ describe('updateRecordById function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toBe('application/json;charset=utf-8');
             return true;
           })
           .reply(400, expectResult);
-        const recordModule = new Record(conn);
+
         const getRecordResult = recordModule.updateRecordByID(appID, recordID, recordsData);
         return getRecordResult.catch((err) => {
           expect(err).toBeInstanceOf(KintoneAPIException);
@@ -827,7 +818,7 @@ describe('updateRecordById function', () => {
        * Invalid data
        * The error will be displayed when there is one record has invalid data (duplicate data for "prohibit duplicate value" field)
        */
-      it('[Record module-79] - should return the error in the result: The error will be displayed when there is one record has invalid data (duplicate data for "prohibit duplicate value" field)', () => {
+      it('[Record-79] - should return the error when there is duplicate data for "prohibit duplicate value" field)', () => {
         const recordID = 95;
         const appID = 22;
         const recordDataUpdate = {
@@ -866,11 +857,11 @@ describe('updateRecordById function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toBe('application/json;charset=utf-8');
             return true;
           })
           .reply(400, expectResult);
-        const recordModule = new Record(conn);
+
         const getRecordResult = recordModule.updateRecordByID(appID, recordID, recordsData);
         return getRecordResult.catch((err) => {
           expect(err).toBeInstanceOf(KintoneAPIException);
@@ -882,7 +873,7 @@ describe('updateRecordById function', () => {
        * Invalid data
        * The error will be displayed when there is one record has invalid data (exceed maximum for number field)
        */
-      it('[Record module-80] - should return the error in the result: The error will be displayed when there is one record has invalid data (exceed maximum for number field)', () => {
+      it('[Record-80] - should return the error when there is one record exceed maximum for number field)', () => {
         const recordID = 95;
         const appID = 22;
         const recordDataUpdate = {
@@ -921,11 +912,11 @@ describe('updateRecordById function', () => {
             return true;
           })
           .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
+            expect(type).toBe('application/json;charset=utf-8');
             return true;
           })
           .reply(400, expectResult);
-        const recordModule = new Record(conn);
+
         const getRecordResult = recordModule.updateRecordByID(appID, recordID, recordsData);
         return getRecordResult.catch((err) => {
           expect(err).toBeInstanceOf(KintoneAPIException);

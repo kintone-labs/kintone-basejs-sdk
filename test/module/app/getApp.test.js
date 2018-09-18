@@ -5,25 +5,19 @@
  */
 const nock = require('nock');
 
-const common = require('../../utils/common');
-
-const KintoneAPIException = require('../../../src/exception/KintoneAPIException');
-const Connection = require('../../../src/connection/Connection');
-const Auth = require('../../../src/authentication/Auth');
-const Record = require('../../../src/module/app/App');
-
-const auth = new Auth();
-auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
+const common = require('../../../test/utils/common');
+const {KintoneAPIException, Connection, Auth, App} = require(common.MAIN_PATH);
+const auth = new Auth().setPasswordAuth(common.USERNAME, common.PASSWORD);
 
 const conn = new Connection(common.DOMAIN, auth);
-const appModule = new Record(conn);
+const appModule = new App(conn);
 
 describe('getApp function', () => {
   describe('common function', () => {
     it('should return promise', () => {
       const id = 1;
       nock('https://' + common.DOMAIN)
-        .get('/k/v1/app.json')
+        .get(`/k/v1/app.json?id=${id}`)
         .reply(200, {});
 
       const getAppResult = appModule.getApp(id);
@@ -55,16 +49,9 @@ describe('getApp function', () => {
           }
         };
         nock('https://' + common.DOMAIN)
-          .get('/k/v1/app.json', (rqBody) => {
-            expect(rqBody.id).toEqual(appID);
-            return true;
-          })
+          .get(`/k/v1/app.json?id=${appID}`)
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
-            return true;
-          })
-          .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json');
             return true;
           })
           .reply(200, expectResult);
@@ -83,7 +70,7 @@ describe('getApp function', () => {
     it('[App module-4] - should get successfully the app infomation in guest space', () => {
       const appID = 1;
       const connGuest = new Connection(common.DOMAIN, auth, common.GUEST_SPACEID);
-      const appModuleGuest = new Record(connGuest);
+      const appModuleGuest = new App(connGuest);
       const expectResult = {
         'appId': appID,
         'code': '',
@@ -103,16 +90,9 @@ describe('getApp function', () => {
         'threadId': '4'
       };
       nock('https://' + common.DOMAIN)
-        .get('/k/v1/app.json', (rqBody) => {
-          expect(rqBody.id).toEqual(appID);
-          return true;
-        })
+        .get(`/k/guest/1/v1/app.json?id=${appID}`)
         .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
           expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
-          return true;
-        })
-        .matchHeader('Content-Type', (type) => {
-          expect(type).toBe('application/json');
           return true;
         })
         .reply(200, expectResult);
@@ -131,14 +111,11 @@ describe('getApp function', () => {
           'code': 'CB_VA01',
           'id': 'MJHWAlCKzzhtnWrTCrSY',
           'message': 'Missing or invalid input.',
-          'errors': { 'id': { 'messages': ['must be greater than or equal to 1'] } }
+          'errors': {'id': {'messages': ['must be greater than or equal to 1']}}
         };
 
         nock('https://' + common.DOMAIN)
-          .get('/k/v1/app.json', (rqBody) => {
-            expect(rqBody.id).toEqual(appID);
-            return true;
-          })
+          .get(`/k/v1/app.json?id=${appID}`)
           .reply(400, expectResult);
         const getAppResult = appModule.getApp(appID);
         return getAppResult.catch((err) => {
@@ -156,10 +133,7 @@ describe('getApp function', () => {
         };
 
         nock('https://' + common.DOMAIN)
-          .get('/k/v1/app.json', (rqBody) => {
-            expect(rqBody.id).toEqual(unexistAppID);
-            return true;
-          })
+          .get(`/k/v1/app.json?id=${unexistAppID}`)
           .reply(404, expectResult);
         const getAppResult = appModule.getApp(unexistAppID);
         return getAppResult.catch((err) => {
@@ -182,10 +156,7 @@ describe('getApp function', () => {
           message: 'Using this API token, you cannot run the specified API.'
         };
         nock('https://' + common.DOMAIN)
-          .get('/k/v1/app.json', (rqBody) => {
-            expect(rqBody.id).toEqual(appID);
-            return true;
-          })
+          .get(`/k/v1/app.json?id=${appID}`)
           .reply(403, expectResult);
         const getAppResult = appModule.getApp(appID);
         return getAppResult.catch((err) => {
