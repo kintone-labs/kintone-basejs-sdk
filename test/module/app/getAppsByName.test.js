@@ -4,7 +4,7 @@
  * test app module
  */
 const nock = require('nock');
-const common = require('../../common');
+const common = require('../../utils/common');
 const {KintoneAPIException, Connection, Auth, App} = require(common.MAIN_PATH);
 
 const auth = new Auth();

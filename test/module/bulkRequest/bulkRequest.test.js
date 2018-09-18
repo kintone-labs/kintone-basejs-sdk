@@ -4,10 +4,8 @@
  * test record module
  */
 const nock = require('nock');
-const common = require('../../common');
-const Connection = require('../../../src/connection/Connection');
-const Auth = require('../../../src/authentication/Auth');
-const BulkRequest = require('../../../src/module/bulkRequest/BulkRequest');
+const common = require('../../utils/common');
+const {BulkRequest, Connection, Auth} = require(common.MAIN_PATH);
 
 const auth = new Auth();
 auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
