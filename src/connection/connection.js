@@ -60,7 +60,7 @@ class Connection {
     // set data to param if using GET method
     if (requestOptions.method === 'GET') {
       requestOptions.params = body;
-      requestOptions.paramsSerializer = this.paramsSerializing;
+      requestOptions.paramsSerializer = this.serializeParams;
     } else {
       requestOptions.data = body;
     }
@@ -133,8 +133,8 @@ class Connection {
     return this.requestFile('POST', 'FILE', formData);
   }
 
-  paramsSerializing(object) {
-    const pasreParams = (obj, prefix) => {
+  serializeParams(object) {
+    const parseParams = (obj, prefix) => {
       const queryArray = [];
       for (const key in obj) {
         if (obj.hasOwnProperty(key)) {
@@ -147,7 +147,7 @@ class Connection {
           const value = obj[key];
           if (value !== undefined) {
             queryArray.push(
-              (value !== null && typeof value === 'object') ? pasreParams(value, subPrefix) : subPrefix + '=' + encodeURIComponent(value)
+              (value !== null && typeof value === 'object') ? parseParams(value, subPrefix) : subPrefix + '=' + encodeURIComponent(value)
             );
           }
         }
