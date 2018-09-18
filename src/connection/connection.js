@@ -155,7 +155,7 @@ class Connection {
       return queryArray.join('&');
     };
 
-    return pasreParams(object);
+    return parseParams(object);
   }
 
   /**
