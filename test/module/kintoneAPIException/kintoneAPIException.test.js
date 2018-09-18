@@ -1,8 +1,8 @@
-const requestPromise = require('request-promise');
+const axios = require('axios');
 const nock = require('nock');
 
 const common = require('../../utils/common');
-const KintoneAPIException = require('../../../src/exception/KintoneAPIException');
+const {KintoneAPIException} = require(common.MAIN_PATH);
 
 const expectResult = {
   'code': 'CB_VA01',
@@ -12,17 +12,17 @@ const expectResult = {
 };
 
 nock('https://' + common.DOMAIN)
-  .get(`/k/v1/records.json`)
+  .get(`/k/v1/records.json?app=-2`)
   .reply(400, expectResult);
 
-const request = requestPromise({
-  uri: 'https://' + common.DOMAIN + '/k/v1/records.json',
+const request = axios({
+  url: 'https://' + common.DOMAIN + '/k/v1/records.json',
   method: 'GET',
   headers: {
     [common.PASSWORD_AUTH]: common.getPasswordAuth(common.USERNAME, common.PASSWORD),
     'Content-Type': 'application/json'
   },
-  body: {
+  params: {
     app: -2
   },
   json: true
