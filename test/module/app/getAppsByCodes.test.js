@@ -6,26 +6,26 @@
 const nock = require('nock');
 
 const common = require('../../common');
-const { KintoneAPIException, Connection, Auth, App } = require(common.MAIN_PATH);
+const {KintoneAPIException, Connection, Auth, App} = require(common.MAIN_PATH);
 
 const auth = new Auth();
 auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
 
 const conn = new Connection(common.DOMAIN, auth);
-
 const AppModule = new App(conn);
+const MAX_VALUE = 2147483647;
+const APPS_API_ROUTE = '/k/v1/apps.json';
+const APPS_API_GUEST_ROUTE = `/k/guest/${common.GUEST_SPACEID}/v1/apps.json`;
+const APP_CODES = ['test'];
 
 describe('getAppsByCodes function', () => {
-  const MAX_VALUE = 2147483647;
-  const codes = ['test'];
-
   describe('common function', () => {
     it('should return promise', () => {
       nock('https://' + common.DOMAIN)
-        .get(`/k/v1/apps.json?codes[0]=${codes[0]}`)
+        .get(`${APPS_API_ROUTE}?codes[0]=${APP_CODES[0]}`)
         .reply(200, {});
 
-      const getAppResult = AppModule.getAppsByCodes(codes);
+      const getAppResult = AppModule.getAppsByCodes(APP_CODES);
       expect(getAppResult).toHaveProperty('then');
       expect(getAppResult).toHaveProperty('catch');
     });
@@ -57,15 +57,15 @@ describe('getAppsByCodes function', () => {
           ]
         };
         nock('https://' + common.DOMAIN)
-          .get(`/k/v1/apps.json?codes[0]=${codes[0]}`)
+          .get(`${APPS_API_ROUTE}?codes[0]=${APP_CODES[0]}`)
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
             return true;
           })
           .reply(200, expectResult);
-        const getAppsResult = AppModule.getAppsByCodes(codes);
+        const getAppsResult = AppModule.getAppsByCodes(APP_CODES);
         return getAppsResult.then((rsp) => {
-          expect(rsp).toMatchObject(expectResult);
+          expect(rsp).toEqual(expectResult);
         });
       });
 
@@ -112,15 +112,15 @@ describe('getAppsByCodes function', () => {
           ]
         };
         nock('https://' + common.DOMAIN)
-          .get(`/k/v1/apps.json?limit=${limit}&codes[0]=${codes[0]}`)
+          .get(`${APPS_API_ROUTE}?limit=${limit}&codes[0]=${APP_CODES[0]}`)
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
             return true;
           })
           .reply(200, expectResult);
-        const getAppsResult = AppModule.getAppsByCodes(codes, undefined, limit);
+        const getAppsResult = AppModule.getAppsByCodes(APP_CODES, undefined, limit);
         return getAppsResult.then((rsp) => {
-          expect(rsp).toMatchObject(expectResult);
+          expect(rsp).toEqual(expectResult);
         });
       });
 
@@ -167,15 +167,15 @@ describe('getAppsByCodes function', () => {
           ]
         };
         nock('https://' + common.DOMAIN)
-          .get(`/k/v1/apps.json?offset=${offset}&codes[0]=${codes[0]}`)
+          .get(`${APPS_API_ROUTE}?offset=${offset}&codes[0]=${APP_CODES[0]}`)
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
             return true;
           })
           .reply(200, expectResult);
-        const getAppsResult = AppModule.getAppsByCodes(codes, offset, undefined);
+        const getAppsResult = AppModule.getAppsByCodes(APP_CODES, offset, undefined);
         return getAppsResult.then((rsp) => {
-          expect(rsp).toMatchObject(expectResult);
+          expect(rsp).toEqual(expectResult);
         });
       });
     });
@@ -205,7 +205,7 @@ describe('getAppsByCodes function', () => {
           ]
         };
         nock('https://' + common.DOMAIN)
-          .get(`/k/guest/${common.GUEST_SPACEID}/v1/apps.json?codes[0]=${codes[0]}`)
+          .get(`${APPS_API_GUEST_ROUTE}?codes[0]=${APP_CODES[0]}`)
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
             return true;
@@ -213,9 +213,9 @@ describe('getAppsByCodes function', () => {
           .reply(200, expectResult);
         const conn1 = new Connection(common.DOMAIN, auth, common.GUEST_SPACEID);
         const AppModuleGuestSpace = new App(conn1);
-        const getAppsResult = AppModuleGuestSpace.getAppsByCodes(codes);
+        const getAppsResult = AppModuleGuestSpace.getAppsByCodes(APP_CODES);
         return getAppsResult.then((rsp) => {
-          expect(rsp).toMatchObject(expectResult);
+          expect(rsp).toEqual(expectResult);
         });
       });
     });
@@ -246,15 +246,15 @@ describe('getAppsByCodes function', () => {
         };
 
         nock('https://' + common.DOMAIN)
-          .get(`/k/v1/apps.json?codes[0]=${codes[0]}`)
+          .get(`${APPS_API_ROUTE}?codes[0]=${APP_CODES[0]}`)
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
             return true;
           })
           .reply(200, expectResult);
-        const getAppsResult = AppModule.getAppsByCodes(codes);
+        const getAppsResult = AppModule.getAppsByCodes(APP_CODES);
         return getAppsResult.then((rsp) => {
-          expect(rsp).toMatchObject(expectResult);
+          expect(rsp).toEqual(expectResult);
         });
       });
 
@@ -282,15 +282,15 @@ describe('getAppsByCodes function', () => {
           ]
         };
         nock('https://' + common.DOMAIN)
-          .get(`/k/v1/apps.json?codes[0]=${codes[0]}`)
+          .get(`${APPS_API_ROUTE}?codes[0]=${APP_CODES[0]}`)
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
             expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
             return true;
           })
           .reply(200, expectResult);
-        const getAppsResult = AppModule.getAppsByCodes(codes);
+        const getAppsResult = AppModule.getAppsByCodes(APP_CODES);
         return getAppsResult.then((rsp) => {
-          expect(rsp).toMatchObject(expectResult);
+          expect(rsp).toEqual(expectResult);
         });
       });
     });
@@ -302,15 +302,16 @@ describe('getAppsByCodes function', () => {
         const expectResult = {
           'code': 'GAIA_NO01',
           'id': 'lzQPJ1hkW3Aj4iVebWCG',
+          'errors': {},
           'message': 'Using this API token, you cannot run the specified API.'
         };
         nock('https://' + common.DOMAIN)
-          .get(`/k/v1/apps.json?codes[0]=${codes[0]}`)
+          .get(`${APPS_API_ROUTE}?codes[0]=${APP_CODES[0]}`)
           .reply(403, expectResult);
-        const getAppsResult = AppModule.getAppsByCodes(codes);
+        const getAppsResult = AppModule.getAppsByCodes(APP_CODES);
         return getAppsResult.catch((err) => {
           expect(err).toBeInstanceOf(KintoneAPIException);
-          expect(err.get()).toMatchObject(expectResult);
+          expect(err.get()).toEqual(expectResult);
         });
       });
     });
@@ -329,12 +330,12 @@ describe('getAppsByCodes function', () => {
           }
         };
         nock('https://' + common.DOMAIN)
-          .get(`/k/v1/apps.json?limit=${limit}&codes[0]=${codes[0]}`)
+          .get(`${APPS_API_ROUTE}?limit=${limit}&codes[0]=${APP_CODES[0]}`)
           .reply(400, expectResult);
-        const getAppsResult = AppModule.getAppsByCodes(codes, undefined, limit);
+        const getAppsResult = AppModule.getAppsByCodes(APP_CODES, undefined, limit);
         return getAppsResult.catch((err) => {
           expect(err).toBeInstanceOf(KintoneAPIException);
-          expect(err.get()).toMatchObject(expectResult);
+          expect(err.get()).toEqual(expectResult);
         });
       });
 
@@ -351,12 +352,12 @@ describe('getAppsByCodes function', () => {
           }
         };
         nock('https://' + common.DOMAIN)
-          .get(`/k/v1/apps.json?limit=${limit}&codes[0]=${codes[0]}`)
+          .get(`${APPS_API_ROUTE}?limit=${limit}&codes[0]=${APP_CODES[0]}`)
           .reply(400, expectResult);
-        const getAppsResult = AppModule.getAppsByCodes(codes, undefined, limit);
+        const getAppsResult = AppModule.getAppsByCodes(APP_CODES, undefined, limit);
         return getAppsResult.catch((err) => {
           expect(err).toBeInstanceOf(KintoneAPIException);
-          expect(err.get()).toMatchObject(expectResult);
+          expect(err.get()).toEqual(expectResult);
         });
       });
 
@@ -373,12 +374,12 @@ describe('getAppsByCodes function', () => {
           }
         };
         nock('https://' + common.DOMAIN)
-          .get(`/k/v1/apps.json?offset=${offset}&codes[0]=${codes[0]}`)
+          .get(`${APPS_API_ROUTE}?offset=${offset}&codes[0]=${APP_CODES[0]}`)
           .reply(400, expectResult);
-        const getAppsResult = AppModule.getAppsByCodes(codes, offset, undefined);
+        const getAppsResult = AppModule.getAppsByCodes(APP_CODES, offset, undefined);
         return getAppsResult.catch((err) => {
           expect(err).toBeInstanceOf(KintoneAPIException);
-          expect(err.get()).toMatchObject(expectResult);
+          expect(err.get()).toEqual(expectResult);
         });
       });
     });
@@ -396,12 +397,12 @@ describe('getAppsByCodes function', () => {
           }
         };
         nock('https://' + common.DOMAIN)
-          .get(`/k/v1/apps.json?limit=${MAX_VALUE + 1}&codes[0]=${codes[0]}`)
+          .get(`${APPS_API_ROUTE}?limit=${MAX_VALUE + 1}&codes[0]=${APP_CODES[0]}`)
           .reply(400, expectResult);
-        const getAppsResult = AppModule.getAppsByCodes(codes, undefined, MAX_VALUE + 1);
+        const getAppsResult = AppModule.getAppsByCodes(APP_CODES, undefined, MAX_VALUE + 1);
         return getAppsResult.catch((err) => {
           expect(err).toBeInstanceOf(KintoneAPIException);
-          expect(err.get()).toMatchObject(expectResult);
+          expect(err.get()).toEqual(expectResult);
         });
       });
 
@@ -417,12 +418,12 @@ describe('getAppsByCodes function', () => {
           }
         };
         nock('https://' + common.DOMAIN)
-          .get(`/k/v1/apps.json?offset=${MAX_VALUE + 1}&codes[0]=${codes[0]}`)
+          .get(`${APPS_API_ROUTE}?offset=${MAX_VALUE + 1}&codes[0]=${APP_CODES[0]}`)
           .reply(400, expectResult);
-        const getAppsResult = AppModule.getAppsByCodes(codes, MAX_VALUE + 1, undefined);
+        const getAppsResult = AppModule.getAppsByCodes(APP_CODES, MAX_VALUE + 1, undefined);
         return getAppsResult.catch((err) => {
           expect(err).toBeInstanceOf(KintoneAPIException);
-          expect(err.get()).toMatchObject(expectResult);
+          expect(err.get()).toEqual(expectResult);
         });
       });
     });

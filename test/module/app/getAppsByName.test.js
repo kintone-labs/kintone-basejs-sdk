@@ -4,30 +4,29 @@
  * test app module
  */
 const nock = require('nock');
-
 const common = require('../../common');
-
 const {KintoneAPIException, Connection, Auth, App} = require(common.MAIN_PATH);
 
 const auth = new Auth();
-auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
+auth.setPasswordAuth(common.USERAPP_NAME, common.PASSWORD);
 
 const conn = new Connection(common.DOMAIN, auth);
-
 const AppModule = new App(conn);
 
-describe('getAppsByName function', () => {
-  const name = 'test';
-  const MAX_VALUE = 2147483647;
-  const URI = 'https://' + common.DOMAIN;
+const MAX_VALUE = 2147483647;
+const URI = 'https://' + common.DOMAIN;
+const APPS_API_ROUTE = '/k/v1/apps.json';
+const APPS_API_GUEST_ROUTE = `/k/guest/${common.GUEST_SPACEID}/v1/apps.json`;
+const APP_NAME = 'test';
 
+describe('getAppsByName function', () => {
   describe('common function', () => {
     it('should return promise', () => {
       nock(URI)
-        .get(`/k/v1/apps.json?name=${name}`)
+        .get(`${APPS_API_ROUTE}?name=${APP_NAME}`)
         .reply(200, {});
 
-      const getAppResult = AppModule.getAppsByName(name);
+      const getAppResult = AppModule.getAppsByName(APP_NAME);
       expect(getAppResult).toHaveProperty('then');
       expect(getAppResult).toHaveProperty('catch');
     });
@@ -35,39 +34,39 @@ describe('getAppsByName function', () => {
 
   describe('success common', () => {
     describe('Valid request', () => {
-      it('[App-45] should return the app information based on the app name (without limit, offset)', () => {
+      it('[App-45] should return the app information based on the app APP_NAME (without limit, offset)', () => {
         const expectResult = {
           apps: [
             {
               'appId': '1',
               'code': 'task',
-              'name': 'My Test App',
+              'APP_NAME': 'My Test App',
               'description': 'Testing this app',
               'spaceId': null,
               'threadId': null,
               'createdAt': '2014-06-02T05:14:05.000Z',
               'creator': {
                 'code': 'user1',
-                'name': 'user1'
+                'APP_NAME': 'user1'
               },
               'modifiedAt': '2014-06-02T05:14:05.000Z',
               'modifier': {
                 'code': 'user1',
-                'name': 'user1'
+                'APP_NAME': 'user1'
               }
             }
           ]
         };
         nock(URI)
-          .get(`/k/v1/apps.json?name=${name}`)
+          .get(`${APPS_API_ROUTE}?name=${APP_NAME}`)
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-            expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+            expect(authHeader).toBe(common.getPasswordAuth(common.USERAPP_NAME, common.PASSWORD));
             return true;
           })
           .reply(200, expectResult);
-        const getAppsResult = AppModule.getAppsByName(name);
+        const getAppsResult = AppModule.getAppsByName(APP_NAME);
         return getAppsResult.then((rsp) => {
-          expect(rsp).toMatchObject(expectResult);
+          expect(rsp).toEqual(expectResult);
         });
       });
 
@@ -78,51 +77,51 @@ describe('getAppsByName function', () => {
             {
               appId: '1',
               code: 'task',
-              name: 'My Test App',
+              APP_NAME: 'My Test App',
               description: 'Testing this app',
               spaceId: null,
               threadId: null,
               createdAt: '2014-06-02T05:14:05.000Z',
               creator: {
                 code: 'user1',
-                name: 'user1'
+                APP_NAME: 'user1'
               },
               modifiedAt: '2014-06-02T05:14:05.000Z',
               modifier: {
                 code: 'user1',
-                name: 'user1'
+                APP_NAME: 'user1'
               }
             },
             {
               appId: '2',
               code: 'task',
-              name: 'My Test App',
+              APP_NAME: 'My Test App',
               description: 'Testing this app',
               spaceId: null,
               threadId: null,
               createdAt: '2014-06-02T05:14:05.000Z',
               creator: {
                 code: 'user1',
-                name: 'user1'
+                APP_NAME: 'user1'
               },
               modifiedAt: '2014-06-02T05:14:05.000Z',
               modifier: {
                 code: 'user1',
-                name: 'user1'
+                APP_NAME: 'user1'
               }
             }
           ]
         };
         nock(URI)
-          .get(`/k/v1/apps.json?limit=${limit}&name=${name}`)
+          .get(`${APPS_API_ROUTE}?limit=${limit}&name=${APP_NAME}`)
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-            expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+            expect(authHeader).toBe(common.getPasswordAuth(common.USERAPP_NAME, common.PASSWORD));
             return true;
           })
           .reply(200, expectResult);
-        const getAppsResult = AppModule.getAppsByName(name, undefined, limit);
+        const getAppsResult = AppModule.getAppsByName(APP_NAME, undefined, limit);
         return getAppsResult.then((rsp) => {
-          expect(rsp).toMatchObject(expectResult);
+          expect(rsp).toEqual(expectResult);
         });
       });
 
@@ -133,51 +132,51 @@ describe('getAppsByName function', () => {
             {
               appId: '1',
               code: 'task',
-              name: 'My Test App',
+              APP_NAME: 'My Test App',
               description: 'Testing this app',
               spaceId: null,
               threadId: null,
               createdAt: '2014-06-02T05:14:05.000Z',
               creator: {
                 code: 'user1',
-                name: 'user1'
+                APP_NAME: 'user1'
               },
               modifiedAt: '2014-06-02T05:14:05.000Z',
               modifier: {
                 code: 'user1',
-                name: 'user1'
+                APP_NAME: 'user1'
               }
             },
             {
               appId: '2',
               code: 'task',
-              name: 'My Test App',
+              APP_NAME: 'My Test App',
               description: 'Testing this app',
               spaceId: null,
               threadId: null,
               createdAt: '2014-06-02T05:14:05.000Z',
               creator: {
                 code: 'user1',
-                name: 'user1'
+                APP_NAME: 'user1'
               },
               modifiedAt: '2014-06-02T05:14:05.000Z',
               modifier: {
                 code: 'user1',
-                name: 'user1'
+                APP_NAME: 'user1'
               }
             }
           ]
         };
         nock(URI)
-          .get(`/k/v1/apps.json?offset=${offset}&name=${name}`)
+          .get(`${APPS_API_ROUTE}?offset=${offset}&name=${APP_NAME}`)
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-            expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+            expect(authHeader).toBe(common.getPasswordAuth(common.USERAPP_NAME, common.PASSWORD));
             return true;
           })
           .reply(200, expectResult);
-        const getAppsResult = AppModule.getAppsByName(name, offset, undefined);
+        const getAppsResult = AppModule.getAppsByName(APP_NAME, offset, undefined);
         return getAppsResult.then((rsp) => {
-          expect(rsp).toMatchObject(expectResult);
+          expect(rsp).toEqual(expectResult);
         });
       });
 
@@ -187,34 +186,34 @@ describe('getAppsByName function', () => {
         const app = {
           'appId': '1',
           'code': 'task',
-          'name': 'My Test App',
+          'APP_NAME': 'My Test App',
           'description': 'Testing this app',
           'spaceId': null,
           'threadId': null,
           'createdAt': '2014-06-02T05:14:05.000Z',
           'creator': {
             'code': 'user1',
-            'name': 'user1'
+            'APP_NAME': 'user1'
           },
           'modifiedAt': '2014-06-02T05:14:05.000Z',
           'modifier': {
             'code': 'user1',
-            'name': 'user1'
+            'APP_NAME': 'user1'
           }
         };
         const expectResult = {
           apps: common.generateRecord(numberOfApps, app)
         };
         nock(URI)
-          .get(`/k/v1/apps.json?limit=${limit}&name=${name}`)
+          .get(`${APPS_API_ROUTE}?limit=${limit}&name=${APP_NAME}`)
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-            expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+            expect(authHeader).toBe(common.getPasswordAuth(common.USERAPP_NAME, common.PASSWORD));
             return true;
           })
           .reply(200, expectResult);
-        const getAppsResult = AppModule.getAppsByName(name, undefined, limit);
+        const getAppsResult = AppModule.getAppsByName(APP_NAME, undefined, limit);
         return getAppsResult.then((rsp) => {
-          expect(rsp).toMatchObject(expectResult);
+          expect(rsp).toEqual(expectResult);
         });
       });
     });
@@ -226,35 +225,35 @@ describe('getAppsByName function', () => {
             {
               'appId': '1',
               'code': 'task',
-              'name': 'My Test App',
+              'APP_NAME': 'My Test App',
               'description': 'Testing this app',
               'spaceId': null,
               'threadId': null,
               'createdAt': '2014-06-02T05:14:05.000Z',
               'creator': {
                 'code': 'user1',
-                'name': 'user1'
+                'APP_NAME': 'user1'
               },
               'modifiedAt': '2014-06-02T05:14:05.000Z',
               'modifier': {
                 'code': 'user1',
-                'name': 'user1'
+                'APP_NAME': 'user1'
               }
             }
           ]
         };
         nock(URI)
-          .get(`/k/guest/${common.GUEST_SPACEID}/v1/apps.json?name=${name}`)
+          .get(`${APPS_API_GUEST_ROUTE}?name=${APP_NAME}`)
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-            expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+            expect(authHeader).toBe(common.getPasswordAuth(common.USERAPP_NAME, common.PASSWORD));
             return true;
           })
           .reply(200, expectResult);
         const conn1 = new Connection(common.DOMAIN, auth, common.GUEST_SPACEID);
         const AppModuleGuestSpace = new App(conn1);
-        const getAppsResult = AppModuleGuestSpace.getAppsByName(name);
+        const getAppsResult = AppModuleGuestSpace.getAppsByName(APP_NAME);
         return getAppsResult.then((rsp) => {
-          expect(rsp).toMatchObject(expectResult);
+          expect(rsp).toEqual(expectResult);
         });
       });
     });
@@ -265,19 +264,19 @@ describe('getAppsByName function', () => {
         const app = {
           'appId': '1',
           'code': 'task',
-          'name': 'My Test App',
+          'APP_NAME': 'My Test App',
           'description': 'Testing this app',
           'spaceId': null,
           'threadId': null,
           'createdAt': '2014-06-02T05:14:05.000Z',
           'creator': {
             'code': 'user1',
-            'name': 'user1'
+            'APP_NAME': 'user1'
           },
           'modifiedAt': '2014-06-02T05:14:05.000Z',
           'modifier': {
             'code': 'user1',
-            'name': 'user1'
+            'APP_NAME': 'user1'
           }
         };
         const expectResult = {
@@ -285,15 +284,15 @@ describe('getAppsByName function', () => {
         };
 
         nock(URI)
-          .get(`/k/v1/apps.json?name=${name}`)
+          .get(`${APPS_API_ROUTE}?name=${APP_NAME}`)
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-            expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+            expect(authHeader).toBe(common.getPasswordAuth(common.USERAPP_NAME, common.PASSWORD));
             return true;
           })
           .reply(200, expectResult);
-        const getAppsResult = AppModule.getAppsByName(name);
+        const getAppsResult = AppModule.getAppsByName(APP_NAME);
         return getAppsResult.then((rsp) => {
-          expect(rsp).toMatchObject(expectResult);
+          expect(rsp).toEqual(expectResult);
         });
       });
 
@@ -303,33 +302,33 @@ describe('getAppsByName function', () => {
             {
               'appId': '1',
               'code': 'task',
-              'name': 'My Test App',
+              'APP_NAME': 'My Test App',
               'description': 'Testing this app',
               'spaceId': null,
               'threadId': null,
               'createdAt': '2014-06-02T05:14:05.000Z',
               'creator': {
                 'code': 'user1',
-                'name': 'user1'
+                'APP_NAME': 'user1'
               },
               'modifiedAt': '2014-06-02T05:14:05.000Z',
               'modifier': {
                 'code': 'user1',
-                'name': 'user1'
+                'APP_NAME': 'user1'
               }
             }
           ]
         };
         nock(URI)
-          .get(`/k/v1/apps.json?name=${name}`)
+          .get(`${APPS_API_ROUTE}?name=${APP_NAME}`)
           .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-            expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+            expect(authHeader).toBe(common.getPasswordAuth(common.USERAPP_NAME, common.PASSWORD));
             return true;
           })
           .reply(200, expectResult);
-        const getAppsResult = AppModule.getAppsByName(name);
+        const getAppsResult = AppModule.getAppsByName(APP_NAME);
         return getAppsResult.then((rsp) => {
-          expect(rsp).toMatchObject(expectResult);
+          expect(rsp).toEqual(expectResult);
         });
       });
     });
@@ -340,14 +339,15 @@ describe('getAppsByName function', () => {
       it('[App-45]should return error when using API token authentication ', () => {
         const expectResult = {'code': 'GAIA_NO01',
           'id': 'lzQPJ1hkW3Aj4iVebWCG',
+          'errors': {},
           'message': 'Using this API token, you cannot run the specified API.'
         };
         nock(URI)
-          .get(`/k/v1/apps.json?name=${name}`)
+          .get(`${APPS_API_ROUTE}?name=${APP_NAME}`)
           .reply(403, expectResult);
-        const getAppsResult = AppModule.getAppsByName(name);
+        const getAppsResult = AppModule.getAppsByName(APP_NAME);
         return getAppsResult.catch((err) => {
-          expect(err.get()).toMatchObject(expectResult);
+          expect(err.get()).toEqual(expectResult);
         });
       });
     });
@@ -366,12 +366,12 @@ describe('getAppsByName function', () => {
           }
         };
         nock(URI)
-          .get(`/k/v1/apps.json?limit=${limit}&name=${name}`)
+          .get(`${APPS_API_ROUTE}?limit=${limit}&name=${APP_NAME}`)
           .reply(400, expectResult);
-        const getAppsResult = AppModule.getAppsByName(name, undefined, limit);
+        const getAppsResult = AppModule.getAppsByName(APP_NAME, undefined, limit);
         return getAppsResult.catch((err) => {
           expect(err).toBeInstanceOf(KintoneAPIException);
-          expect(err.get()).toMatchObject(expectResult);
+          expect(err.get()).toEqual(expectResult);
         });
       });
 
@@ -388,12 +388,12 @@ describe('getAppsByName function', () => {
           }
         };
         nock(URI)
-          .get(`/k/v1/apps.json?limit=${limit}&name=${name}`)
+          .get(`${APPS_API_ROUTE}?limit=${limit}&name=${APP_NAME}`)
           .reply(400, expectResult);
-        const getAppsResult = AppModule.getAppsByName(name, undefined, limit);
+        const getAppsResult = AppModule.getAppsByName(APP_NAME, undefined, limit);
         return getAppsResult.catch((err) => {
           expect(err).toBeInstanceOf(KintoneAPIException);
-          expect(err.get()).toMatchObject(expectResult);
+          expect(err.get()).toEqual(expectResult);
         });
       });
 
@@ -410,12 +410,12 @@ describe('getAppsByName function', () => {
           }
         };
         nock(URI)
-          .get(`/k/v1/apps.json?offset=${offset}&name=${name}`)
+          .get(`${APPS_API_ROUTE}?offset=${offset}&name=${APP_NAME}`)
           .reply(400, expectResult);
-        const getAppsResult = AppModule.getAppsByName(name, offset, undefined);
+        const getAppsResult = AppModule.getAppsByName(APP_NAME, offset, undefined);
         return getAppsResult.catch((err) => {
           expect(err).toBeInstanceOf(KintoneAPIException);
-          expect(err.get()).toMatchObject(expectResult);
+          expect(err.get()).toEqual(expectResult);
         });
       });
     });
@@ -433,12 +433,12 @@ describe('getAppsByName function', () => {
           }
         };
         nock(URI)
-          .get(`/k/v1/apps.json?limit=${MAX_VALUE + 1}&name=${name}`)
+          .get(`${APPS_API_ROUTE}?limit=${MAX_VALUE + 1}&name=${APP_NAME}`)
           .reply(400, expectResult);
-        const getAppsResult = AppModule.getAppsByName(name, undefined, MAX_VALUE + 1);
+        const getAppsResult = AppModule.getAppsByName(APP_NAME, undefined, MAX_VALUE + 1);
         return getAppsResult.catch((err) => {
           expect(err).toBeInstanceOf(KintoneAPIException);
-          expect(err.get()).toMatchObject(expectResult);
+          expect(err.get()).toEqual(expectResult);
         });
       });
 
@@ -454,12 +454,12 @@ describe('getAppsByName function', () => {
           }
         };
         nock(URI)
-          .get(`/k/v1/apps.json?offset=${MAX_VALUE + 1}&name=${name}`)
+          .get(`${APPS_API_ROUTE}?offset=${MAX_VALUE + 1}&name=${APP_NAME}`)
           .reply(400, expectResult);
-        const getAppsResult = AppModule.getAppsByName(name, MAX_VALUE + 1, undefined);
+        const getAppsResult = AppModule.getAppsByName(APP_NAME, MAX_VALUE + 1, undefined);
         return getAppsResult.catch((err) => {
           expect(err).toBeInstanceOf(KintoneAPIException);
-          expect(err.get()).toMatchObject(expectResult);
+          expect(err.get()).toEqual(expectResult);
         });
       });
     });
