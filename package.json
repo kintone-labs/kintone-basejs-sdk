@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "@cybozu/eslint-config": "^2.0.2",
-    "eslint": "^4.19.1",
+    "eslint": "^5.0.0",
     "jest": "^23.4.1",
     "nock": "^9.6.0"
   },
