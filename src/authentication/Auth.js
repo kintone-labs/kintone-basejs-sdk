@@ -1,18 +1,17 @@
-/**
- * kintone api - nodejs client
- */
-
 const AUTH_CONST = require('./constant');
 const KintoneCredential = require('../model/authentication/Credential');
 const KintoneHTTPHeader = require('../model/http/HTTPHeader');
 
-const basicAuth = new WeakMap();
-const passwordAuth = new WeakMap();
-const kintoneApiToken = new WeakMap();
 /**
  * Authentication module
  */
 class Auth {
+  constructor() {
+    this.basicAuth = null;
+    this.passwordAuth = null;
+    this.apiToken = null;
+  }
+
   /**
      * setBasicAuth
      * @param {String} username
@@ -20,7 +19,7 @@ class Auth {
      * @return {this}
      */
   setBasicAuth(username, password) {
-    basicAuth.set(this, new KintoneCredential(username, password));
+    this.basicAuth = new KintoneCredential(username, password);
     return this;
   }
 
@@ -29,7 +28,7 @@ class Auth {
      * @return {KintoneCredential}
      */
   getBasicAuth() {
-    return basicAuth.get(this);
+    return this.basicAuth;
   }
 
   /**
@@ -39,7 +38,7 @@ class Auth {
      * @return {this}
      */
   setPasswordAuth(username, password) {
-    passwordAuth.set(this, new KintoneCredential(username, password));
+    this.passwordAuth = new KintoneCredential(username, password);
     return this;
   }
 
@@ -48,7 +47,7 @@ class Auth {
      * @return {KintoneCredential}
      */
   getPasswordAuth() {
-    return passwordAuth.get(this);
+    return this.passwordAuth;
   }
 
   /**
@@ -57,17 +56,16 @@ class Auth {
      * @return {this}
      */
   setApiToken(apiToken) {
-    kintoneApiToken.set(this, apiToken);
+    this.apiToken = apiToken;
     return this;
   }
-
 
   /**
      * getApiToken
      * @return {String}
      */
   getApiToken() {
-    return kintoneApiToken.get(this);
+    return this.apiToken;
   }
   /**
      * createHeaderCredentials
@@ -75,26 +73,24 @@ class Auth {
      */
   createHeaderCredentials() {
     const headerCredentials = [];
-    if (kintoneApiToken.get(this)) {
-      headerCredentials.push(new KintoneHTTPHeader(
-        AUTH_CONST.HEADER_KEY_AUTH_APITOKEN, kintoneApiToken.get(this)));
+    if (this.apiToken) {
+      headerCredentials.push(new KintoneHTTPHeader(AUTH_CONST.HEADER_KEY_AUTH_APITOKEN, this.apiToken));
     }
-    if (basicAuth.get(this)) {
-      headerCredentials.push(new KintoneHTTPHeader(
-        AUTH_CONST.HEADER_KEY_AUTH_BASIC,
-        'Basic ' + (new Buffer(
-          basicAuth.get(this).getUsername() +
-                    ':' + basicAuth.get(this).getPassword()).toString('base64'))
-      ));
+    if (this.basicAuth) {
+      headerCredentials.push(
+        new KintoneHTTPHeader(
+          AUTH_CONST.HEADER_KEY_AUTH_BASIC,
+          'Basic ' + (new Buffer(this.basicAuth.getUsername() + ':' + this.basicAuth.getPassword()).toString('base64'))
+        )
+      );
     }
-    if (passwordAuth.get(this)) {
-      headerCredentials.push(new KintoneHTTPHeader(
-        AUTH_CONST.HEADER_KEY_AUTH_PASSWORD,
-        new Buffer(
-          passwordAuth.get(this).getUsername() +
-                    ':' +
-                    passwordAuth.get(this).getPassword()).toString('base64')
-      ));
+    if (this.passwordAuth) {
+      headerCredentials.push(
+        new KintoneHTTPHeader(
+          AUTH_CONST.HEADER_KEY_AUTH_PASSWORD,
+          new Buffer(this.passwordAuth.getUsername() + ':' + this.passwordAuth.getPassword()).toString('base64')
+        )
+      );
     }
     return headerCredentials;
   }

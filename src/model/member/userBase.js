@@ -1,35 +1,28 @@
 /**
- * kintone api - nodejs client
- */
-
-const name = new WeakMap();
-const code = new WeakMap();
-
-/**
  * UserBase model
  */
 class UserBase {
   /**
-     * @param {String} nameInput
-     * @param {String} codeInput
+     * @param {String} name
+     * @param {String} code
      */
-  constructor(nameInput, codeInput) {
-    name.set(this, nameInput);
-    code.set(this, codeInput);
+  constructor(name, code) {
+    this.name = name;
+    this.code = code;
   }
   /**
      * Get the name of user
      * @return {String} The name of usee
      */
   getName() {
-    return name.get(this);
+    return this.name;
   }
   /**
      * Get the code of user
      * @return {String} the user ccode
      */
   getCode() {
-    return code.get(this);
+    return this.code;
   }
 }
 module.exports = UserBase;

@@ -1,11 +1,4 @@
 /**
- * kintone api - nodejs client
- */
-
-const app = new WeakMap();
-const id = new WeakMap();
-
-/**
  * GetRecordRequest model
  */
 class GetRecordRequest {
@@ -14,20 +7,20 @@ class GetRecordRequest {
      * @param {Integer} recordID
      */
   constructor(appID, recordID) {
-    app.set(this, appID);
-    id.set(this, recordID);
+    this.app = appID;
+    this.id = recordID;
   }
   /**
      * @return {Integer}
      */
   getRecordID() {
-    return id.get(this);
+    return this.id;
   }
   /**
      * @return {Integer}
      */
   getAppID() {
-    return app.get(this);
+    return this.app;
   }
   /**
      * @return {Object}
