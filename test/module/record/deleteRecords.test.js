@@ -88,21 +88,25 @@ describe('deleteRecords function', () => {
     it('[Record-129] error when the record id is not exsist', () => {
       const data = {
         app: 2,
-        ids: [1000]
+        ids: [1000000]
       };
-      const exepectRsp = {'code': 'GAIA_RE01', 'id': 'oXd3Yf2UTlJO7aoDATQT', 'message': '指定したレコード（id: 100000）が見つかりません。'};
+      const expectedResult = {
+        'code': 'GAIA_RE01',
+        'id': 'rmUof2dMm9kuEQeP96cO',
+        'message': 'The specified record (ID: 1000000) is not found.'
+      };
       nock('https://' + common.DOMAIN)
         .intercept('/k/v1/records.json', 'DELETE', (rqBody) => {
           expect(rqBody.app).toEqual(data.app);
           expect(rqBody.ids).toEqual(data.ids);
           return true;
         })
-        .reply(404, exepectRsp);
+        .reply(404, expectedResult);
 
       const deleteRecordsResult = recordModule.deleteRecords(data.app, data.ids);
       return deleteRecordsResult.catch((err) => {
         expect(err).toBeInstanceOf(KintoneAPIException);
-        expect(err.get()).toMatchObject(exepectRsp);
+        expect(err.get()).toMatchObject(expectedResult);
       });
     });
 
@@ -112,17 +116,19 @@ describe('deleteRecords function', () => {
           app: 2,
           ids: [1]
         };
+        const expectedResult = {'code': 'CB_NO02', 'id': 'DbTLTAJWHM70iV7jmpaW', 'message': 'No privilege to proceed.'};
         nock('https://' + common.DOMAIN)
           .intercept('/k/v1/records.json', 'DELETE', (rqBody) => {
             expect(rqBody.app).toEqual(data.app);
             expect(rqBody.ids).toEqual(data.ids);
             return true;
           })
-          .reply(403, {'code': 'CB_NO02', 'id': 'DbTLTAJWHM70iV7jmpaW', 'message': 'No privilege to proceed.'});
+          .reply(403, expectedResult);
 
         const deleteRecordsResult = recordModule.deleteRecords(data.app, data.ids);
         return deleteRecordsResult.catch((err) => {
           expect(err).toBeInstanceOf(KintoneAPIException);
+          expect(err.get()).toMatchObject(expectedResult);
         });
       });
     });
@@ -175,17 +181,19 @@ describe('deleteRecords function', () => {
           app: -2,
           ids: [1]
         };
+        const expectedResult = {'code': 'CB_VA01', 'id': '84Xn1q5RFbwN40k7K3ej', 'message': '入力内容が正しくありません。'};
         nock('https://' + common.DOMAIN)
           .intercept('/k/v1/records.json', 'DELETE', (rqBody) => {
             expect(rqBody.app).toEqual(data.app);
             expect(rqBody.ids).toEqual(data.ids);
             return true;
           })
-          .reply(404, {'code': 'CB_VA01', 'id': '84Xn1q5RFbwN40k7K3ej', 'message': '入力内容が正しくありません。'});
+          .reply(404, expectedResult);
 
         const deleteRecordsResult = recordModule.deleteRecords(data.app, data.ids);
         return deleteRecordsResult.catch((err) => {
           expect(err).toBeInstanceOf(KintoneAPIException);
+          expect(err.get()).toMatchObject(expectedResult);
         });
       });
     });
@@ -195,16 +203,18 @@ describe('deleteRecords function', () => {
         const data = {
           ids: [1]
         };
+        const expectedResult = {'code': 'CB_VA01', 'id': '84Xn1q5RFbwN40k7K3ej', 'message': '入力内容が正しくありません。'};
         nock('https://' + common.DOMAIN)
           .intercept('/k/v1/records.json', 'DELETE', (rqBody) => {
             expect(rqBody.ids).toEqual(data.ids);
             return true;
           })
-          .reply(404, {'code': 'CB_IJ01', 'id': '84Xn1q5RFbwN40k7K3ej', 'message': '不正なJSON文字列です。'});
+          .reply(404, expectedResult);
 
         const deleteRecordsResult = recordModule.deleteRecords(data.app, data.ids);
         return deleteRecordsResult.catch((err) => {
           expect(err).toBeInstanceOf(KintoneAPIException);
+          expect(err.get()).toMatchObject(expectedResult);
         });
       });
     });
@@ -214,16 +224,18 @@ describe('deleteRecords function', () => {
         const data = {
           app: 1
         };
+        const expectedResult = {'code': 'CB_VA01', 'id': '84Xn1q5RFbwN40k7K3ej', 'message': '入力内容が正しくありません。'};
         nock('https://' + common.DOMAIN)
           .intercept('/k/v1/records.json', 'DELETE', (rqBody) => {
             expect(rqBody.app).toEqual(data.app);
             return true;
           })
-          .reply(404, {'code': 'CB_VA01', 'id': '84Xn1q5RFbwN40k7K3ej', 'message': '入力内容が正しくありません。'});
+          .reply(404, expectedResult);
 
         const deleteRecordsResult = recordModule.deleteRecords(data.app, data.ids);
         return deleteRecordsResult.catch((err) => {
           expect(err).toBeInstanceOf(KintoneAPIException);
+          expect(err.get()).toMatchObject(expectedResult);
         });
       });
     });
@@ -258,18 +270,29 @@ describe('deleteRecords function', () => {
           app: -1,
           ids: [2]
         };
-
+        const expectedResult = {
+          'code': 'CB_VA01',
+          'id': 'aDykOjQtI48loGMo8hDC',
+          'message': 'Missing or invalid input.',
+          'errors': {
+            'app': {
+              'messages': [
+                'must be greater than or equal to 1']
+            }
+          }
+        };
         nock('https://' + common.DOMAIN)
           .intercept('/k/v1/records.json', 'DELETE', (rqBody) => {
             expect(rqBody.app).toEqual(data.app);
             expect(rqBody.ids).toEqual(data.ids);
             return true;
           })
-          .reply(400, {'code': 'CB_IJ01', 'id': 'fI40R4N5Kg6XFzDppGIf', 'message': 'Invalid JSON string.'});
+          .reply(400, expectedResult);
 
         const deleteRecordsResult = recordModule.deleteRecords(data.app, data.ids);
         return deleteRecordsResult.catch((err) => {
           expect(err).toBeInstanceOf(KintoneAPIException);
+          expect(err.get()).toMatchObject(expectedResult);
         });
       });
     });
@@ -285,7 +308,6 @@ describe('deleteRecords function', () => {
             84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100
           ]
         };
-
         nock('https://' + common.DOMAIN)
           .intercept('/k/v1/records.json', 'DELETE', (rqBody) => {
             expect(rqBody.app).toEqual(data.app);
@@ -312,18 +334,30 @@ describe('deleteRecords function', () => {
             84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103
           ]
         };
-
+        const expectedResult = {
+          'code': 'CB_VA01',
+          'id': 'RWt7OV6Pa40r1E3a2hgb',
+          'message': 'Missing or invalid input.',
+          'errors': {
+            'ids': {
+              'messages': [
+                'Between 1 and 100 records can be deleted at one time.'
+              ]
+            }
+          }
+        };
         nock('https://' + common.DOMAIN)
           .intercept('/k/v1/records.json', 'DELETE', (rqBody) => {
             expect(rqBody.app).toEqual(data.app);
             expect(rqBody.ids).toEqual(data.ids);
             return true;
           })
-          .reply(400, {'code': 'CB_VA01', 'id': 'fI40R4N5Kg6XFzDppGIf', 'message': '入力内容が正しくありません。'});
+          .reply(400, expectedResult);
 
         const deleteRecordsResult = recordModule.deleteRecords(data.app, data.ids);
         return deleteRecordsResult.catch((err) => {
           expect(err).toBeInstanceOf(KintoneAPIException);
+          expect(err.get()).toMatchObject(expectedResult);
         });
       });
     });
