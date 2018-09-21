@@ -78,12 +78,12 @@ describe('Connection module', () => {
 
         const INVALID_PROXY_HOST = 'unknown';
         conn.setProxy(INVALID_PROXY_HOST, common.PROXY_PORT);
-        const response = conn.request('GET', '/k/v1/test', {app: 1});
+        const response = conn.request('GET', '/k/v1/get', {app: 1});
         const expectProxy = {
           host: INVALID_PROXY_HOST,
           port: common.PROXY_PORT
         };
-        return response.catch((err) => {
+        response.catch((err) => {
           expect(err.config.httpsAgent.options.proxy).toMatchObject(expectProxy);
         });
       });
