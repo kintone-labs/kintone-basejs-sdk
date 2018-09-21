@@ -2,28 +2,27 @@
  * kintone api - nodejs client
  * test record module
  */
-const nock = require("nock");
-const common = require("../..//utils/common");
+const nock = require('nock');
+const common = require('../..//utils/common');
 const {
-  KintoneException,
   Connection,
   Auth,
   Record
-} = require("../../../src/main");
+} = require(common.MAIN_PATH);
 
-let auth = new Auth().setPasswordAuth(common.USERNAME, common.PASSWORD);
-let conn = new Connection(common.DOMAIN, auth);
-if (common.hasOwnProperty("proxy") && common.proxy) {
-  conn.addRequestOption("proxy", common.proxy);
+const auth = new Auth().setPasswordAuth(common.USERNAME, common.PASSWORD);
+const conn = new Connection(common.DOMAIN, auth);
+if (common.hasOwnProperty('proxy') && common.proxy) {
+  conn.addRequestOption('proxy', common.proxy);
 }
 const recordModule = new Record(conn);
-const URI = "https://" + common.DOMAIN;
-const ROUTE = "/k/v1/record/comments.json";
+const URI = 'https://' + common.DOMAIN;
+const ROUTE = '/k/v1/record/comments.json';
 
-describe("getComments function", () => {
-  describe("common cases", () => {
-    it("should return a promise", () => {
-      let data = {
+describe('getComments function', () => {
+  describe('common cases', () => {
+    it('should return a promise', () => {
+      const data = {
         app: 1,
         record: 2
       };
@@ -32,36 +31,36 @@ describe("getComments function", () => {
         .reply(200, {
           comments: [
             {
-              id: "2",
+              id: '2',
               text:
-                "user13 Global Sales APAC Taskforce \nHere is today's report.",
-              createdAt: "2016-05-09T18:27:54Z",
+                'user13 Global Sales APAC Taskforce \nHere is today\'s report.',
+              createdAt: '2016-05-09T18:27:54Z',
               creator: {
-                code: "user14",
-                name: "user14"
+                code: 'user14',
+                name: 'user14'
               }
             }
           ],
           older: false,
           newer: false
         });
-      let actualResult = recordModule.getComments(data.app, data.record);
-      expect(actualResult).toHaveProperty("then");
-      expect(actualResult).toHaveProperty("catch");
+      const actualResult = recordModule.getComments(data.app, data.record);
+      expect(actualResult).toHaveProperty('then');
+      expect(actualResult).toHaveProperty('catch');
     });
   });
 
-  describe("success cases", () => {
-    describe("valid data, app + record only", () => {
-      it("[RecordModule-215] should return correctly the comments of record,", () => {
-        let data = {
+  describe('success cases', () => {
+    describe('valid data, app + record only', () => {
+      it('[RecordModule-215] should return correctly the comments of record,', () => {
+        const data = {
           app: 1,
           record: 2
         };
 
         nock(URI)
           .get(ROUTE + `?app=${data.app}&record=${data.record}`)
-          .matchHeader("X-Cybozu-Authorization", authHeader => {
+          .matchHeader('X-Cybozu-Authorization', authHeader => {
             expect(authHeader).toBe(
               common.getPasswordAuth(common.USERNAME, common.PASSWORD)
             );
@@ -70,66 +69,66 @@ describe("getComments function", () => {
           .reply(200, {
             comments: [
               {
-                id: "2",
+                id: '2',
                 text:
-                  "user13 Global Sales APAC Taskforce \nHere is today's report.",
-                createdAt: "2016-05-09T18:27:54Z",
+                  'user13 Global Sales APAC Taskforce \nHere is today\'s report.',
+                createdAt: '2016-05-09T18:27:54Z',
                 creator: {
-                  code: "user14",
-                  name: "user14"
+                  code: 'user14',
+                  name: 'user14'
                 }
               }
             ],
             older: false,
             newer: false
           });
-        let actualResult = recordModule.getComments(data.app, data.record);
+        const actualResult = recordModule.getComments(data.app, data.record);
         return actualResult.then(response => {
-          expect(response).toHaveProperty("comments");
+          expect(response).toHaveProperty('comments');
         });
       });
 
-      it("[RecordModule-216] should return the comments of record by the order of `asc`", () => {
-        let data = { app: 1, record: 2 };
-        let expectedResult = {
+      it('[RecordModule-216] should return the comments of record by the order of `asc`', () => {
+        const data = {app: 1, record: 2};
+        const expectedResult = {
           comments: [
             {
-              id: "1",
-              text: "asd",
-              createdAt: "2018-09-07T07:47:07Z",
+              id: '1',
+              text: 'asd',
+              createdAt: '2018-09-07T07:47:07Z',
               creator: {
-                code: "cybozu",
-                name: "cybozu"
+                code: 'cybozu',
+                name: 'cybozu'
               },
               mentions: []
             },
             {
-              id: "2",
-              text: "bnm",
-              createdAt: "2018-09-07T07:47:14Z",
+              id: '2',
+              text: 'bnm',
+              createdAt: '2018-09-07T07:47:14Z',
               creator: {
-                code: "cybozu",
-                name: "cybozu"
+                code: 'cybozu',
+                name: 'cybozu'
               },
               mentions: []
             },
             {
-              id: "3",
-              text: "qwe",
-              createdAt: "2018-09-07T07:49:27Z",
+              id: '3',
+              text: 'qwe',
+              createdAt: '2018-09-07T07:49:27Z',
               creator: {
-                code: "cybozu",
-                name: "cybozu"
+                code: 'cybozu',
+                name: 'cybozu'
               },
               mentions: []
             },
             {
-              id: "4",
-              text: "cvb",
-              createdAt: "2018-09-07T07:49:37Z",
+              id: '4',
+              text: 'cvb',
+              createdAt: '2018-09-07T07:49:37Z',
               creator: {
-                code: "cybozu",
-                name: "cybozu"
+                code: 'cybozu',
+                name: 'cybozu'
               },
               mentions: []
             }
@@ -141,60 +140,60 @@ describe("getComments function", () => {
           .get(ROUTE + `?app=${data.app}&record=${data.record}&order=asc`)
           .reply(200, expectedResult);
 
-        let actualResult = recordModule.getComments(
+        const actualResult = recordModule.getComments(
           data.app,
           data.record,
-          "asc",
+          'asc',
           undefined,
           undefined
         );
         return actualResult.then(response => {
-          expect(response).toHaveProperty("comments");
+          expect(response).toHaveProperty('comments');
           expect(response).toMatchObject(expectedResult);
         });
       });
 
-      it("[RecordModule-217] should return the comments of record by the order of `desc`", () => {
-        let data = { app: 1, record: 2 };
-        let expectedResult = {
+      it('[RecordModule-217] should return the comments of record by the order of `desc`', () => {
+        const data = {app: 1, record: 2};
+        const expectedResult = {
           comments: [
             {
-              id: "4",
-              text: "cvb",
-              createdAt: "2018-09-07T07:49:37Z",
+              id: '4',
+              text: 'cvb',
+              createdAt: '2018-09-07T07:49:37Z',
               creator: {
-                code: "cybozu",
-                name: "cybozu"
+                code: 'cybozu',
+                name: 'cybozu'
               },
               mentions: []
             },
             {
-              id: "3",
-              text: "qwe",
-              createdAt: "2018-09-07T07:49:27Z",
+              id: '3',
+              text: 'qwe',
+              createdAt: '2018-09-07T07:49:27Z',
               creator: {
-                code: "cybozu",
-                name: "cybozu"
+                code: 'cybozu',
+                name: 'cybozu'
               },
               mentions: []
             },
             {
-              id: "2",
-              text: "bnm",
-              createdAt: "2018-09-07T07:47:14Z",
+              id: '2',
+              text: 'bnm',
+              createdAt: '2018-09-07T07:47:14Z',
               creator: {
-                code: "cybozu",
-                name: "cybozu"
+                code: 'cybozu',
+                name: 'cybozu'
               },
               mentions: []
             },
             {
-              id: "1",
-              text: "asd",
-              createdAt: "2018-09-07T07:47:07Z",
+              id: '1',
+              text: 'asd',
+              createdAt: '2018-09-07T07:47:07Z',
               creator: {
-                code: "cybozu",
-                name: "cybozu"
+                code: 'cybozu',
+                name: 'cybozu'
               },
               mentions: []
             }
@@ -206,40 +205,40 @@ describe("getComments function", () => {
           .get(ROUTE + `?app=${data.app}&record=${data.record}&order=desc`)
           .reply(200, expectedResult);
 
-        let actualResult = recordModule.getComments(
+        const actualResult = recordModule.getComments(
           data.app,
           data.record,
-          "desc",
+          'desc',
           undefined,
           undefined
         );
         return actualResult.then(response => {
-          expect(response).toHaveProperty("comments");
+          expect(response).toHaveProperty('comments');
           expect(response).toMatchObject(expectedResult);
         });
       });
 
-      it("[RecordModule-219] should return the comments of record according to the offset value", () => {
-        let data = { app: 1, record: 2 };
-        let expectedResult = {
+      it('[RecordModule-219] should return the comments of record according to the offset value', () => {
+        const data = {app: 1, record: 2};
+        const expectedResult = {
           comments: [
             {
-              id: "3",
-              text: "qwe",
-              createdAt: "2018-09-07T07:49:27Z",
+              id: '3',
+              text: 'qwe',
+              createdAt: '2018-09-07T07:49:27Z',
               creator: {
-                code: "cybozu",
-                name: "cybozu"
+                code: 'cybozu',
+                name: 'cybozu'
               },
               mentions: []
             },
             {
-              id: "4",
-              text: "cvb",
-              createdAt: "2018-09-07T07:49:37Z",
+              id: '4',
+              text: 'cvb',
+              createdAt: '2018-09-07T07:49:37Z',
               creator: {
-                code: "cybozu",
-                name: "cybozu"
+                code: 'cybozu',
+                name: 'cybozu'
               },
               mentions: []
             }
@@ -247,7 +246,7 @@ describe("getComments function", () => {
           older: true,
           newer: false
         };
-        let OFFSET = 2;
+        const OFFSET = 2;
 
         nock(URI)
           .get(
@@ -258,60 +257,60 @@ describe("getComments function", () => {
           )
           .reply(200, expectedResult);
 
-        let actualResult = recordModule.getComments(
+        const actualResult = recordModule.getComments(
           data.app,
           data.record,
-          "asc",
+          'asc',
           OFFSET,
           undefined
         );
         return actualResult.then(response => {
-          expect(response).toHaveProperty("comments");
+          expect(response).toHaveProperty('comments');
           expect(response).toMatchObject(expectedResult);
         });
       });
 
-      it("[RecordModule-220] should return the comments of record without skipping when the offset value is 0", () => {
-        let data = { app: 1, record: 2 };
-        let expectedResult = {
+      it('[RecordModule-220] should return the comments of record without skipping when the offset value is 0', () => {
+        const data = {app: 1, record: 2};
+        const expectedResult = {
           comments: [
             {
-              id: "4",
-              text: "cvb",
-              createdAt: "2018-09-07T07:49:37Z",
+              id: '4',
+              text: 'cvb',
+              createdAt: '2018-09-07T07:49:37Z',
               creator: {
-                code: "cybozu",
-                name: "cybozu"
+                code: 'cybozu',
+                name: 'cybozu'
               },
               mentions: []
             },
             {
-              id: "3",
-              text: "qwe",
-              createdAt: "2018-09-07T07:49:27Z",
+              id: '3',
+              text: 'qwe',
+              createdAt: '2018-09-07T07:49:27Z',
               creator: {
-                code: "cybozu",
-                name: "cybozu"
+                code: 'cybozu',
+                name: 'cybozu'
               },
               mentions: []
             },
             {
-              id: "2",
-              text: "bnm",
-              createdAt: "2018-09-07T07:47:14Z",
+              id: '2',
+              text: 'bnm',
+              createdAt: '2018-09-07T07:47:14Z',
               creator: {
-                code: "cybozu",
-                name: "cybozu"
+                code: 'cybozu',
+                name: 'cybozu'
               },
               mentions: []
             },
             {
-              id: "1",
-              text: "asd",
-              createdAt: "2018-09-07T07:47:07Z",
+              id: '1',
+              text: 'asd',
+              createdAt: '2018-09-07T07:47:07Z',
               creator: {
-                code: "cybozu",
-                name: "cybozu"
+                code: 'cybozu',
+                name: 'cybozu'
               },
               mentions: []
             }
@@ -319,7 +318,7 @@ describe("getComments function", () => {
           older: false,
           newer: false
         };
-        let OFFSET = 0;
+        const OFFSET = 0;
 
         nock(URI)
           .get(
@@ -330,40 +329,40 @@ describe("getComments function", () => {
           )
           .reply(200, expectedResult);
 
-        let actualResult = recordModule.getComments(
+        const actualResult = recordModule.getComments(
           data.app,
           data.record,
-          "desc",
+          'desc',
           OFFSET,
           undefined
         );
         return actualResult.then(response => {
-          expect(response).toHaveProperty("comments");
+          expect(response).toHaveProperty('comments');
           expect(response).toMatchObject(expectedResult);
         });
       });
 
-      it("[RecordModule-222] should return the comments of record according to the limit value", () => {
-        let data = { app: 1, record: 2 };
-        let expectedResult = {
+      it('[RecordModule-222] should return the comments of record according to the limit value', () => {
+        const data = {app: 1, record: 2};
+        const expectedResult = {
           comments: [
             {
-              id: "4",
-              text: "cvb",
-              createdAt: "2018-09-07T07:49:37Z",
+              id: '4',
+              text: 'cvb',
+              createdAt: '2018-09-07T07:49:37Z',
               creator: {
-                code: "cybozu",
-                name: "cybozu"
+                code: 'cybozu',
+                name: 'cybozu'
               },
               mentions: []
             },
             {
-              id: "3",
-              text: "qwe",
-              createdAt: "2018-09-07T07:49:27Z",
+              id: '3',
+              text: 'qwe',
+              createdAt: '2018-09-07T07:49:27Z',
               creator: {
-                code: "cybozu",
-                name: "cybozu"
+                code: 'cybozu',
+                name: 'cybozu'
               },
               mentions: []
             }
@@ -371,13 +370,13 @@ describe("getComments function", () => {
           older: true,
           newer: false
         };
-        let LIMIT = 2;
+        const LIMIT = 2;
 
         nock(URI)
           .get(ROUTE + `?app=${data.app}&record=${data.record}&limit=${LIMIT}`)
           .reply(200, expectedResult);
 
-        let actualResult = recordModule.getComments(
+        const actualResult = recordModule.getComments(
           data.app,
           data.record,
           undefined,
@@ -385,24 +384,24 @@ describe("getComments function", () => {
           LIMIT
         );
         return actualResult.then(response => {
-          expect(response).toHaveProperty("comments");
+          expect(response).toHaveProperty('comments');
           expect(response).toMatchObject(expectedResult);
         });
       });
 
-      it("[RecordModule-223] should NOT return the comments of record when the limit value is 0", () => {
-        let data = { app: 1, record: 2 };
-        let expectedResult = {
+      it('[RecordModule-223] should NOT return the comments of record when the limit value is 0', () => {
+        const data = {app: 1, record: 2};
+        const expectedResult = {
           comments: [],
           older: true,
           newer: false
         };
-        let LIMIT = 0;
+        const LIMIT = 0;
         nock(URI)
           .get(ROUTE + `?app=${data.app}&record=${data.record}&limit=${LIMIT}`)
           .reply(200, expectedResult);
 
-        let actualResult = recordModule.getComments(
+        const actualResult = recordModule.getComments(
           data.app,
           data.record,
           undefined,
@@ -410,24 +409,24 @@ describe("getComments function", () => {
           LIMIT
         );
         return actualResult.then(response => {
-          expect(response).toHaveProperty("comments");
+          expect(response).toHaveProperty('comments');
           expect(response).toMatchObject(expectedResult);
         });
       });
     });
 
-    describe("combination of order + offset + limit", () => {
-      it("[RecordModule-225] should return the comments of record when combining the three param {order, offset, limit}", () => {
-        let data = { app: 1, record: 2, order: "desc", offset: 3, limit: 3 };
-        let expectedResult = {
+    describe('combination of order + offset + limit', () => {
+      it('[RecordModule-225] should return the comments of record when combining the three param {order, offset, limit}', () => {
+        const data = {app: 1, record: 2, order: 'desc', offset: 3, limit: 3};
+        const expectedResult = {
           comments: [
             {
-              id: "1",
-              text: "asd",
-              createdAt: "2018-09-07T07:47:07Z",
+              id: '1',
+              text: 'asd',
+              createdAt: '2018-09-07T07:47:07Z',
               creator: {
-                code: "cybozu",
-                name: "cybozu"
+                code: 'cybozu',
+                name: 'cybozu'
               },
               mentions: []
             }
@@ -444,7 +443,7 @@ describe("getComments function", () => {
               }&offset=${data.offset}&limit=${data.limit}`
           )
           .reply(200, expectedResult);
-        let actualResult = recordModule.getComments(
+        const actualResult = recordModule.getComments(
           data.app,
           data.record,
           data.order,
@@ -452,26 +451,26 @@ describe("getComments function", () => {
           data.limit
         );
         return actualResult.then(response => {
-          expect(response).toHaveProperty("comments");
+          expect(response).toHaveProperty('comments');
           expect(response).toMatchObject(expectedResult);
         });
       });
     });
   });
 
-  describe("error case", () => {
-    it("[RecordModule-218] should return an error when the value of order is invalid", () => {
-      let data = {
+  describe('error case', () => {
+    it('[RecordModule-218] should return an error when the value of order is invalid', () => {
+      const data = {
         app: 2,
         record: 1,
-        order: "dd"
+        order: 'dd'
       };
-      let expectedResult = {
-        code: "CB_VA01",
-        id: "Z8rWaqS8S8x8zfqoVLyt",
-        message: "入力内容が正しくありません。",
+      const expectedResult = {
+        code: 'CB_VA01',
+        id: 'Z8rWaqS8S8x8zfqoVLyt',
+        message: '入力内容が正しくありません。',
         errors: {
-          order: { messages: ["Enum値のいずれかでなければなりません。"] }
+          order: {messages: ['Enum値のいずれかでなければなりません。']}
         }
       };
       nock(URI)
@@ -479,7 +478,7 @@ describe("getComments function", () => {
           ROUTE + `?app=${data.app}&record=${data.record}&order=${data.order}`
         )
         .reply(400, expectedResult);
-      let actualResult = recordModule.getComments(
+      const actualResult = recordModule.getComments(
         data.app,
         data.record,
         data.order
@@ -489,16 +488,16 @@ describe("getComments function", () => {
       });
     });
 
-    it("[RecordModule-221] should return an error when the value of offset is invalid", () => {
-      let data = { app: 1, record: 2 };
-      let OFFSET = -1;
-      let expectedResult = {
-        code: "CB_VA01",
-        id: "N0t3WAWaUpYycmdwqdDK",
-        message: "入力内容が正しくありません。",
+    it('[RecordModule-221] should return an error when the value of offset is invalid', () => {
+      const data = {app: 1, record: 2};
+      const OFFSET = -1;
+      const expectedResult = {
+        code: 'CB_VA01',
+        id: 'N0t3WAWaUpYycmdwqdDK',
+        message: '入力内容が正しくありません。',
         errors: {
           offset: {
-            messages: ["最小でも0以上です。"]
+            messages: ['最小でも0以上です。']
           }
         }
       };
@@ -506,7 +505,7 @@ describe("getComments function", () => {
         .get(ROUTE + `?app=${data.app}&record=${data.record}&offset=${OFFSET}`)
         .reply(400, expectedResult);
 
-      let actualResult = recordModule.getComments(
+      const actualResult = recordModule.getComments(
         data.app,
         data.record,
         undefined,
@@ -518,16 +517,16 @@ describe("getComments function", () => {
       });
     });
 
-    it("[RecordModule-224] should return an error when the value of limit is greater than 10", () => {
-      let data = { app: 1, record: 2 };
-      let LIMIT = 11;
-      let expectedResult = {
-        code: "CB_VA01",
-        id: "GK7azPfLL3wV1Jq2GvUH",
-        message: "入力内容が正しくありません。",
+    it('[RecordModule-224] should return an error when the value of limit is greater than 10', () => {
+      const data = {app: 1, record: 2};
+      const LIMIT = 11;
+      const expectedResult = {
+        code: 'CB_VA01',
+        id: 'GK7azPfLL3wV1Jq2GvUH',
+        message: '入力内容が正しくありません。',
         errors: {
           limit: {
-            messages: ["最大でも10以下です。"]
+            messages: ['最大でも10以下です。']
           }
         }
       };
@@ -535,7 +534,7 @@ describe("getComments function", () => {
         .get(ROUTE + `?app=${data.app}&record=${data.record}&limit=${LIMIT}`)
         .reply(400, expectedResult);
 
-      let actualResult = recordModule.getComments(
+      const actualResult = recordModule.getComments(
         data.app,
         data.record,
         undefined,
@@ -547,15 +546,15 @@ describe("getComments function", () => {
       });
     });
 
-    it("[RecordModule-230] should return an error when using invalid appId", () => {
-      let data = { app: -1, record: 2 };
-      let expectedResult = {
-        code: "CB_VA01",
-        id: "7IAqt2O3hm4Fw1oui0bn",
-        message: "入力内容が正しくありません。",
+    it('[RecordModule-230] should return an error when using invalid appId', () => {
+      const data = {app: -1, record: 2};
+      const expectedResult = {
+        code: 'CB_VA01',
+        id: '7IAqt2O3hm4Fw1oui0bn',
+        message: '入力内容が正しくありません。',
         errors: {
           app: {
-            messages: ["最小でも1以上です。"]
+            messages: ['最小でも1以上です。']
           }
         }
       };
@@ -563,7 +562,7 @@ describe("getComments function", () => {
         .get(ROUTE + `?app=${data.app}&record=${data.record}`)
         .reply(400, expectedResult);
 
-      let actualResult = recordModule.getComments(
+      const actualResult = recordModule.getComments(
         data.app,
         data.record,
         undefined,
@@ -575,15 +574,15 @@ describe("getComments function", () => {
       });
     });
 
-    it("[RecordModule-231] should return an error when using invalid recordId", () => {
-      let data = { app: 1, record: -2 };
-      let expectedResult = {
-        code: "CB_VA01",
-        id: "4KCVyFaCn4JTEEhw6ozb",
-        message: "入力内容が正しくありません。",
+    it('[RecordModule-231] should return an error when using invalid recordId', () => {
+      const data = {app: 1, record: -2};
+      const expectedResult = {
+        code: 'CB_VA01',
+        id: '4KCVyFaCn4JTEEhw6ozb',
+        message: '入力内容が正しくありません。',
         errors: {
           record: {
-            messages: ["最小でも1以上です。"]
+            messages: ['最小でも1以上です。']
           }
         }
       };
@@ -591,7 +590,7 @@ describe("getComments function", () => {
         .get(ROUTE + `?app=${data.app}&record=${data.record}`)
         .reply(400, expectedResult);
 
-      let actualResult = recordModule.getComments(
+      const actualResult = recordModule.getComments(
         data.app,
         data.record,
         undefined,
@@ -603,15 +602,15 @@ describe("getComments function", () => {
       });
     });
 
-    it("[RecordModule-232] should return an error when missing appId", () => {
-      let data = { app: 1, record: 2 };
-      let expectedResult = {
-        code: "CB_VA01",
-        id: "fPvGX7iqoF0DxeCI04Pk",
-        message: "入力内容が正しくありません。",
+    it('[RecordModule-232] should return an error when missing appId', () => {
+      const data = {app: 1, record: 2};
+      const expectedResult = {
+        code: 'CB_VA01',
+        id: 'fPvGX7iqoF0DxeCI04Pk',
+        message: '入力内容が正しくありません。',
         errors: {
           app: {
-            messages: ["必須です。"]
+            messages: ['必須です。']
           }
         }
       };
@@ -619,7 +618,7 @@ describe("getComments function", () => {
         .get(ROUTE + `?record=${data.record}`)
         .reply(400, expectedResult);
 
-      let actualResult = recordModule.getComments(
+      const actualResult = recordModule.getComments(
         undefined,
         data.record,
         undefined,
@@ -631,15 +630,15 @@ describe("getComments function", () => {
       });
     });
 
-    it("[RecordModule-233] should return an error when missing recordId", () => {
-      let data = { app: 1, record: 2 };
-      let expectedResult = {
-        code: "CB_VA01",
-        id: "DUB0DXXSrnORvhKeC4mz",
-        message: "入力内容が正しくありません。",
+    it('[RecordModule-233] should return an error when missing recordId', () => {
+      const data = {app: 1, record: 2};
+      const expectedResult = {
+        code: 'CB_VA01',
+        id: 'DUB0DXXSrnORvhKeC4mz',
+        message: '入力内容が正しくありません。',
         errors: {
           record: {
-            messages: ["必須です。"]
+            messages: ['必須です。']
           }
         }
       };
@@ -647,7 +646,7 @@ describe("getComments function", () => {
         .get(ROUTE + `?app=${data.app}`)
         .reply(400, expectedResult);
 
-      let actualResult = recordModule.getComments(
+      const actualResult = recordModule.getComments(
         data.app,
         undefined,
         undefined,

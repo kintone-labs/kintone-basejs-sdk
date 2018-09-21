@@ -2,53 +2,53 @@
  * kintone api - nodejs client
  * test app module
  */
-const nock = require("nock");
-const common = require("../../utils/common");
-const { Connection, Auth, App } = require("../../../src/main");
+const nock = require('nock');
+const common = require('../../utils/common');
+const {Connection, Auth, App} = require(common.MAIN_PATH);
 
-let auth = new Auth().setPasswordAuth(common.USERNAME, common.PASSWORD);
-let conn = new Connection(common.DOMAIN, auth);
-let appModule = new App(conn);
+const auth = new Auth().setPasswordAuth(common.USERNAME, common.PASSWORD);
+const conn = new Connection(common.DOMAIN, auth);
+const appModule = new App(conn);
 
-const URI = "https://" + common.DOMAIN;
-const ROUTE = "/k/v1/apps.json";
+const URI = 'https://' + common.DOMAIN;
+const ROUTE = '/k/v1/apps.json';
 
-describe("[TestSuite] getAppsByIDs", () => {
-  describe("Common functions", () => {
-    it("should return promise", () => {
-      let ids = [1];
+describe('[TestSuite] getAppsByIDs', () => {
+  describe('Common functions', () => {
+    it('should return promise', () => {
+      const ids = [1];
       nock(URI)
         .get(ROUTE + `?ids[0]=${ids[0]}`)
         .reply(200, {});
 
-      let actualResult = appModule.getAppsByIDs(ids);
-      expect(actualResult).toHaveProperty("then");
-      expect(actualResult).toHaveProperty("catch");
+      const actualResult = appModule.getAppsByIDs(ids);
+      expect(actualResult).toHaveProperty('then');
+      expect(actualResult).toHaveProperty('catch');
     });
   });
 
-  describe("Success cases", () => {
-    describe("Valid request", () => {
-      it("should return the app information based on the list of id (without limit, offset)", () => {
-        let appIds = [1];
-        let expectedResult = {
+  describe('Success cases', () => {
+    describe('Valid request', () => {
+      it('should return the app information based on the list of id (without limit, offset)', () => {
+        const appIds = [1];
+        const expectedResult = {
           apps: [
             {
-              appId: "1",
-              code: "task",
-              name: "My Test App",
-              description: "Testing this app",
+              appId: '1',
+              code: 'task',
+              name: 'My Test App',
+              description: 'Testing this app',
               spaceId: null,
               threadId: null,
-              createdAt: "2014-06-02T05:14:05.000Z",
+              createdAt: '2014-06-02T05:14:05.000Z',
               creator: {
-                code: "user1",
-                name: "user1"
+                code: 'user1',
+                name: 'user1'
               },
-              modifiedAt: "2014-06-02T05:14:05.000Z",
+              modifiedAt: '2014-06-02T05:14:05.000Z',
               modifier: {
-                code: "user1",
-                name: "user1"
+                code: 'user1',
+                name: 'user1'
               }
             }
           ]
@@ -62,55 +62,55 @@ describe("[TestSuite] getAppsByIDs", () => {
             return true;
           })
           .reply(200, expectedResult);
-        let actualResult = appModule.getAppsByIDs(appIds);
+        const actualResult = appModule.getAppsByIDs(appIds);
         return actualResult.then(rsp => {
           expect(rsp).toMatchObject(expectedResult);
         });
       });
 
-      it("should return the app information based on the list of ids and the limit", () => {
-        let expectedResult = {
+      it('should return the app information based on the list of ids and the limit', () => {
+        const expectedResult = {
           apps: [
             {
-              appId: "1",
-              code: "task",
-              name: "My Test App",
-              description: "Testing this app",
+              appId: '1',
+              code: 'task',
+              name: 'My Test App',
+              description: 'Testing this app',
               spaceId: null,
               threadId: null,
-              createdAt: "2014-06-02T05:14:05.000Z",
+              createdAt: '2014-06-02T05:14:05.000Z',
               creator: {
-                code: "user1",
-                name: "user1"
+                code: 'user1',
+                name: 'user1'
               },
-              modifiedAt: "2014-06-02T05:14:05.000Z",
+              modifiedAt: '2014-06-02T05:14:05.000Z',
               modifier: {
-                code: "user1",
-                name: "user1"
+                code: 'user1',
+                name: 'user1'
               }
             },
             {
-              appId: "2",
-              code: "task",
-              name: "My Test App",
-              description: "Testing this app",
+              appId: '2',
+              code: 'task',
+              name: 'My Test App',
+              description: 'Testing this app',
               spaceId: null,
               threadId: null,
-              createdAt: "2014-06-02T05:14:05.000Z",
+              createdAt: '2014-06-02T05:14:05.000Z',
               creator: {
-                code: "user1",
-                name: "user1"
+                code: 'user1',
+                name: 'user1'
               },
-              modifiedAt: "2014-06-02T05:14:05.000Z",
+              modifiedAt: '2014-06-02T05:14:05.000Z',
               modifier: {
-                code: "user1",
-                name: "user1"
+                code: 'user1',
+                name: 'user1'
               }
             }
           ]
         };
-        let limit = 2;
-        let appIDs = [1, 2, 3, 4, 5];
+        const limit = 2;
+        const appIDs = [1, 2, 3, 4, 5];
         nock(URI)
           .get(
             ROUTE +
@@ -120,49 +120,49 @@ describe("[TestSuite] getAppsByIDs", () => {
           )
           .reply(200, expectedResult);
 
-        let actualResult = appModule.getAppsByIDs(appIDs, undefined, limit);
+        const actualResult = appModule.getAppsByIDs(appIDs, undefined, limit);
         return actualResult.then(response => {
           expect(response).toMatchObject(expectedResult);
         });
       });
 
-      it("should return the app information based on the list of ids and the offset", () => {
+      it('should return the app information based on the list of ids and the offset', () => {
         const expectedResult = {
           apps: [
             {
-              appId: "1",
-              code: "task",
-              name: "My Test App",
-              description: "Testing this app",
+              appId: '1',
+              code: 'task',
+              name: 'My Test App',
+              description: 'Testing this app',
               spaceId: null,
               threadId: null,
-              createdAt: "2014-06-02T05:14:05.000Z",
+              createdAt: '2014-06-02T05:14:05.000Z',
               creator: {
-                code: "user1",
-                name: "user1"
+                code: 'user1',
+                name: 'user1'
               },
-              modifiedAt: "2014-06-02T05:14:05.000Z",
+              modifiedAt: '2014-06-02T05:14:05.000Z',
               modifier: {
-                code: "user1",
-                name: "user1"
+                code: 'user1',
+                name: 'user1'
               }
             },
             {
-              appId: "3",
-              code: "task",
-              name: "My Test App",
-              description: "Testing this app",
+              appId: '3',
+              code: 'task',
+              name: 'My Test App',
+              description: 'Testing this app',
               spaceId: null,
               threadId: null,
-              createdAt: "2014-06-02T05:14:05.000Z",
+              createdAt: '2014-06-02T05:14:05.000Z',
               creator: {
-                code: "user1",
-                name: "user1"
+                code: 'user1',
+                name: 'user1'
               },
-              modifiedAt: "2014-06-02T05:14:05.000Z",
+              modifiedAt: '2014-06-02T05:14:05.000Z',
               modifier: {
-                code: "user1",
-                name: "user1"
+                code: 'user1',
+                name: 'user1'
               }
             }
           ]
@@ -178,7 +178,7 @@ describe("[TestSuite] getAppsByIDs", () => {
           )
           .reply(200, expectedResult);
 
-        let actualResult = appModule.getAppsByIDs(appIDs, offset, undefined);
+        const actualResult = appModule.getAppsByIDs(appIDs, offset, undefined);
         return actualResult.then(response => {
           expect(response).toMatchObject(expectedResult);
         });
@@ -186,13 +186,13 @@ describe("[TestSuite] getAppsByIDs", () => {
     });
   });
 
-  describe("error case", () => {
-    describe("using API token authentication", () => {
-      it("should return error when using API token authentication ", () => {
+  describe('error case', () => {
+    describe('using API token authentication', () => {
+      it('should return error when using API token authentication ', () => {
         const expectedResult = {
-          code: "GAIA_NO01",
-          id: "lzQPJ1hkW3Aj4iVebWCG",
-          message: "Using this API token, you cannot run the specified API."
+          code: 'GAIA_NO01',
+          id: 'lzQPJ1hkW3Aj4iVebWCG',
+          message: 'Using this API token, you cannot run the specified API.'
         };
         nock(URI)
           .get(ROUTE + `?ids[0]=1`)
@@ -204,16 +204,16 @@ describe("[TestSuite] getAppsByIDs", () => {
       });
     });
 
-    it("should return an error when the param limit has value of 0", () => {
+    it('should return an error when the param limit has value of 0', () => {
       const appIDs = [1, 2, 3];
       const limit = 0;
       const expectedResult = {
-        code: "CB_VA01",
-        id: "u5raHo9ugggi6JhuwaBN",
-        message: "入力内容が正しくありません。",
+        code: 'CB_VA01',
+        id: 'u5raHo9ugggi6JhuwaBN',
+        message: '入力内容が正しくありません。',
         errors: {
           limit: {
-            messages: ["最小でも1以上です。"]
+            messages: ['最小でも1以上です。']
           }
         }
       };
@@ -226,22 +226,22 @@ describe("[TestSuite] getAppsByIDs", () => {
         )
         .reply(400, expectedResult);
 
-      let actualResult = appModule.getAppsByIDs(appIDs, undefined, limit);
+      const actualResult = appModule.getAppsByIDs(appIDs, undefined, limit);
       return actualResult.catch(err => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
 
-    it("should return an error when the param limit has value greater than 100", () => {
+    it('should return an error when the param limit has value greater than 100', () => {
       const limit = 101;
       const appIDs = [1, 2, 3];
       const expectedResult = {
-        code: "CB_VA01",
-        id: "rhfkAm75Cs0AJw0jpUU3",
-        message: "入力内容が正しくありません。",
+        code: 'CB_VA01',
+        id: 'rhfkAm75Cs0AJw0jpUU3',
+        message: '入力内容が正しくありません。',
         errors: {
           limit: {
-            messages: ["最大でも100以下です。"]
+            messages: ['最大でも100以下です。']
           }
         }
       };
@@ -254,22 +254,22 @@ describe("[TestSuite] getAppsByIDs", () => {
         )
         .reply(400, expectedResult);
 
-      let actualResult = appModule.getAppsByIDs(appIDs, undefined, limit);
+      const actualResult = appModule.getAppsByIDs(appIDs, undefined, limit);
       return actualResult.catch(err => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
 
-    it("should return an error when the param offset has value less than 0", () => {
+    it('should return an error when the param offset has value less than 0', () => {
       const offset = -1;
       const appIDs = [1, 2, 3];
       const expectedResult = {
-        code: "CB_VA01",
-        id: "k6cykYqDofAjHMmq40w1",
-        message: "入力内容が正しくありません。",
+        code: 'CB_VA01',
+        id: 'k6cykYqDofAjHMmq40w1',
+        message: '入力内容が正しくありません。',
         errors: {
           offset: {
-            messages: ["最小でも0以上です。"]
+            messages: ['最小でも0以上です。']
           }
         }
       };
@@ -282,22 +282,22 @@ describe("[TestSuite] getAppsByIDs", () => {
         )
         .reply(400, expectedResult);
 
-      let actualResult = appModule.getAppsByIDs(appIDs, offset, undefined);
+      const actualResult = appModule.getAppsByIDs(appIDs, offset, undefined);
       return actualResult.catch(err => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
 
-    it("should return an error when the param offset has value greater than max value 2147483647", () => {
+    it('should return an error when the param offset has value greater than max value 2147483647', () => {
       const MAX_VALUE = 2147483647;
       const appIDs = [1, 2, 3];
       const expectedResult = {
-        code: "CB_VA01",
-        id: "OcOVMlF0yn6jSkvKctSI",
-        message: "入力内容が正しくありません。",
+        code: 'CB_VA01',
+        id: 'OcOVMlF0yn6jSkvKctSI',
+        message: '入力内容が正しくありません。',
         errors: {
           offset: {
-            messages: ["最大でも2,147,483,647以下です。"]
+            messages: ['最大でも2,147,483,647以下です。']
           }
         }
       };
@@ -310,7 +310,7 @@ describe("[TestSuite] getAppsByIDs", () => {
         )
         .reply(400, expectedResult);
 
-      let actualResult = appModule.getAppsByIDs(
+      const actualResult = appModule.getAppsByIDs(
         appIDs,
         MAX_VALUE + 1,
         undefined
@@ -320,7 +320,7 @@ describe("[TestSuite] getAppsByIDs", () => {
       });
     });
 
-    it("should return an error when the param limit has value greater than max value 2147483647", () => {
+    it('should return an error when the param limit has value greater than max value 2147483647', () => {
       const MAX_VALUE = 2147483647;
       const appIDs = [1, 2, 3];
       const expectedResult = {};
@@ -333,7 +333,7 @@ describe("[TestSuite] getAppsByIDs", () => {
         )
         .reply(400, expectedResult);
 
-      let actualResult = appModule.getAppsByIDs(
+      const actualResult = appModule.getAppsByIDs(
         appIDs,
         undefined,
         MAX_VALUE + 1
