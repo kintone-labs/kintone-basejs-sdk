@@ -12,20 +12,25 @@ const APP_SETTINGS_ROUTE = '/k/v1/app/settings.json';
 const GUEST_APP_PREVIEW_SETTINGS_ROUTE = `/k/guest/${common.GUEST_SPACEID}/v1/preview/app/settings.json`;
 const GUEST_APP_SETTINGS_ROUTE = `/k/guest/${common.GUEST_SPACEID}/v1/app/settings.json`;
 
+// Init Connection
 const auth = new Auth();
 auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
 const conn = new Connection(common.DOMAIN, auth);
 const appModule = new App(conn);
 
+// Init API Connection
 const authAPI = new Auth();
 authAPI.setApiToken('testAPIToken');
 const connAPI = new Connection(common.DOMAIN, authAPI);
-const connAPIGuestSpace = new Connection(common.DOMAIN, authAPI, common.GUEST_SPACEID);
 const appModuleAPI = new App(connAPI);
-const appModuleAPIGuestSpace = new App(connAPIGuestSpace);
 
+// Init Connection Guest Space
 const connGuestSpace = new Connection(common.DOMAIN, auth, common.GUEST_SPACEID);
 const appModuleGuestSpace = new App(connGuestSpace);
+
+// Init API Connection Guest Space
+const connAPIGuestSpace = new Connection(common.DOMAIN, authAPI, common.GUEST_SPACEID);
+const appModuleAPIGuestSpace = new App(connAPIGuestSpace);
 
 describe('getGeneralSettings function', () => {
   describe('common function', () => {
