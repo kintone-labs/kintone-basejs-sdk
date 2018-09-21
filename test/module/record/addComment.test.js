@@ -3,7 +3,7 @@
  * test record module
  */
 const nock = require("nock");
-const common = require("../../common");
+const common = require("../..//utils/common");
 const {
   KintoneException,
   Connection,
@@ -11,8 +11,8 @@ const {
   Record
 } = require("../../../src/main");
 
-const auth = new Auth().setPasswordAuth(common.USERNAME, common.PASSWORD);
-const conn = new Connection(common.DOMAIN, auth);
+let auth = new Auth().setPasswordAuth(common.USERNAME, common.PASSWORD);
+let conn = new Connection(common.DOMAIN, auth);
 const recordModule = new Record(conn);
 
 const URI = "https://" + common.DOMAIN;
@@ -49,10 +49,6 @@ describe("addComment function", () => {
           expect(authHeader).toBe(
             common.getPasswordAuth(common.USERNAME, common.PASSWORD)
           );
-          return true;
-        })
-        .matchHeader("Content-Type", type => {
-          expect(type).toBe("application/json");
           return true;
         })
         .reply(200, { id: "1" });
@@ -184,7 +180,7 @@ describe("addComment function", () => {
         };
         nock(URI)
           .post(ROUTE, reqBody => {
-            expect(reqBody).toMatchObject(data);
+            expect(reqBody).toEqual(data);
             return true;
           })
           .reply(400, expectResult);
@@ -195,7 +191,6 @@ describe("addComment function", () => {
           data.comment
         );
         return actualResult.catch(err => {
-          expect(err).toBeInstanceOf(KintoneException);
           expect(err.get()).toMatchObject(expectResult);
         });
       });
@@ -274,7 +269,6 @@ describe("addComment function", () => {
         data.comment
       );
       return actualResult.catch(err => {
-        expect(err).toBeInstanceOf(KintoneException);
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
@@ -307,7 +301,6 @@ describe("addComment function", () => {
         data.comment
       );
       return actualResult.catch(err => {
-        expect(err).toBeInstanceOf(KintoneException);
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
@@ -341,7 +334,7 @@ describe("addComment function", () => {
         data.comment
       );
       return actualResult.catch(err => {
-        expect(err).toBeInstanceOf(KintoneException);
+        expect(err.get()).toMatchObject(expectedResult);
       });
     });
 
@@ -374,7 +367,7 @@ describe("addComment function", () => {
         data.comment
       );
       return actualResult.catch(err => {
-        expect(err).toBeInstanceOf(KintoneException);
+        expect(err.get()).toMatchObject(expectedResult);
       });
     });
 
@@ -407,7 +400,7 @@ describe("addComment function", () => {
         data.comment
       );
       return actualResult.catch(err => {
-        expect(err).toBeInstanceOf(KintoneException);
+        expect(err.get()).toMatchObject(expectedResult);
       });
     });
   });

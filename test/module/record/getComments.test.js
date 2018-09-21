@@ -3,7 +3,7 @@
  * test record module
  */
 const nock = require("nock");
-const common = require("../../common");
+const common = require("../..//utils/common");
 const {
   KintoneException,
   Connection,
@@ -11,8 +11,8 @@ const {
   Record
 } = require("../../../src/main");
 
-const auth = new Auth().setPasswordAuth(common.USERNAME, common.PASSWORD);
-const conn = new Connection(common.DOMAIN, auth);
+let auth = new Auth().setPasswordAuth(common.USERNAME, common.PASSWORD);
+let conn = new Connection(common.DOMAIN, auth);
 if (common.hasOwnProperty("proxy") && common.proxy) {
   conn.addRequestOption("proxy", common.proxy);
 }
@@ -28,7 +28,7 @@ describe("getComments function", () => {
         record: 2
       };
       nock(URI)
-        .get(ROUTE)
+        .get(ROUTE + `?app=${data.app}&record=${data.record}`)
         .reply(200, {
           comments: [
             {
@@ -60,19 +60,11 @@ describe("getComments function", () => {
         };
 
         nock(URI)
-          .get(ROUTE, reqBody => {
-            expect(reqBody.app).toEqual(data.app);
-            expect(reqBody.record).toEqual(data.record);
-            return true;
-          })
+          .get(ROUTE + `?app=${data.app}&record=${data.record}`)
           .matchHeader("X-Cybozu-Authorization", authHeader => {
             expect(authHeader).toBe(
               common.getPasswordAuth(common.USERNAME, common.PASSWORD)
             );
-            return true;
-          })
-          .matchHeader("Content-Type", type => {
-            expect(type).toBe("application/json");
             return true;
           })
           .reply(200, {
@@ -146,10 +138,7 @@ describe("getComments function", () => {
           newer: false
         };
         nock(URI)
-          .get(ROUTE, reqBody => {
-            expect(reqBody.order).toBe("asc");
-            return true;
-          })
+          .get(ROUTE + `?app=${data.app}&record=${data.record}&order=asc`)
           .reply(200, expectedResult);
 
         let actualResult = recordModule.getComments(
@@ -214,10 +203,7 @@ describe("getComments function", () => {
           newer: false
         };
         nock(URI)
-          .get(ROUTE, reqBody => {
-            expect(reqBody.order).toBe("desc");
-            return true;
-          })
+          .get(ROUTE + `?app=${data.app}&record=${data.record}&order=desc`)
           .reply(200, expectedResult);
 
         let actualResult = recordModule.getComments(
@@ -264,10 +250,12 @@ describe("getComments function", () => {
         let OFFSET = 2;
 
         nock(URI)
-          .get(ROUTE, reqBody => {
-            expect(reqBody.offset).toEqual(OFFSET);
-            return true;
-          })
+          .get(
+            ROUTE +
+              `?app=${data.app}&record=${
+                data.record
+              }&order=asc&offset=${OFFSET}`
+          )
           .reply(200, expectedResult);
 
         let actualResult = recordModule.getComments(
@@ -334,10 +322,12 @@ describe("getComments function", () => {
         let OFFSET = 0;
 
         nock(URI)
-          .get(ROUTE, reqBody => {
-            expect(reqBody.offset).toEqual(OFFSET);
-            return true;
-          })
+          .get(
+            ROUTE +
+              `?app=${data.app}&record=${
+                data.record
+              }&order=desc&offset=${OFFSET}`
+          )
           .reply(200, expectedResult);
 
         let actualResult = recordModule.getComments(
@@ -384,10 +374,7 @@ describe("getComments function", () => {
         let LIMIT = 2;
 
         nock(URI)
-          .get(ROUTE, reqBody => {
-            expect(reqBody.limit).toEqual(LIMIT);
-            return true;
-          })
+          .get(ROUTE + `?app=${data.app}&record=${data.record}&limit=${LIMIT}`)
           .reply(200, expectedResult);
 
         let actualResult = recordModule.getComments(
@@ -412,10 +399,7 @@ describe("getComments function", () => {
         };
         let LIMIT = 0;
         nock(URI)
-          .get(ROUTE, reqBody => {
-            expect(reqBody.limit).toEqual(LIMIT);
-            return true;
-          })
+          .get(ROUTE + `?app=${data.app}&record=${data.record}&limit=${LIMIT}`)
           .reply(200, expectedResult);
 
         let actualResult = recordModule.getComments(
@@ -453,12 +437,12 @@ describe("getComments function", () => {
         };
 
         nock(URI)
-          .get(ROUTE, reqBody => {
-            expect(reqBody.order).toBe(data.order);
-            expect(reqBody.offset).toEqual(data.offset);
-            expect(reqBody.limit).toEqual(data.limit);
-            return true;
-          })
+          .get(
+            ROUTE +
+              `?app=${data.app}&record=${data.record}&order=${
+                data.order
+              }&offset=${data.offset}&limit=${data.limit}`
+          )
           .reply(200, expectedResult);
         let actualResult = recordModule.getComments(
           data.app,
@@ -482,27 +466,26 @@ describe("getComments function", () => {
         record: 1,
         order: "dd"
       };
-
+      let expectedResult = {
+        code: "CB_VA01",
+        id: "Z8rWaqS8S8x8zfqoVLyt",
+        message: "入力内容が正しくありません。",
+        errors: {
+          order: { messages: ["Enum値のいずれかでなければなりません。"] }
+        }
+      };
       nock(URI)
-        .get(ROUTE, reqBody => {
-          expect(reqBody.order).toEqual(data.order);
-          return true;
-        })
-        .reply(400, {
-          code: "CB_VA01",
-          id: "Z8rWaqS8S8x8zfqoVLyt",
-          message: "入力内容が正しくありません。",
-          errors: {
-            order: { messages: ["Enum値のいずれかでなければなりません。"] }
-          }
-        });
+        .get(
+          ROUTE + `?app=${data.app}&record=${data.record}&order=${data.order}`
+        )
+        .reply(400, expectedResult);
       let actualResult = recordModule.getComments(
         data.app,
         data.record,
         data.order
       );
       return actualResult.catch(err => {
-        expect(err).toBeInstanceOf(KintoneException);
+        expect(err.get()).toMatchObject(expectedResult);
       });
     });
 
@@ -520,10 +503,7 @@ describe("getComments function", () => {
         }
       };
       nock(URI)
-        .get(ROUTE, reqBody => {
-          expect(reqBody.offset).toBeLessThan(0);
-          return true;
-        })
+        .get(ROUTE + `?app=${data.app}&record=${data.record}&offset=${OFFSET}`)
         .reply(400, expectedResult);
 
       let actualResult = recordModule.getComments(
@@ -534,7 +514,7 @@ describe("getComments function", () => {
         undefined
       );
       return actualResult.catch(err => {
-        expect(err).toBeInstanceOf(KintoneException);
+        expect(err.get()).toMatchObject(expectedResult);
       });
     });
 
@@ -552,10 +532,7 @@ describe("getComments function", () => {
         }
       };
       nock(URI)
-        .get(ROUTE, reqBody => {
-          expect(reqBody.limit).toBeGreaterThan(10);
-          return true;
-        })
+        .get(ROUTE + `?app=${data.app}&record=${data.record}&limit=${LIMIT}`)
         .reply(400, expectedResult);
 
       let actualResult = recordModule.getComments(
@@ -566,7 +543,7 @@ describe("getComments function", () => {
         LIMIT
       );
       return actualResult.catch(err => {
-        expect(err).toBeInstanceOf(KintoneException);
+        expect(err.get()).toMatchObject(expectedResult);
       });
     });
 
@@ -583,10 +560,7 @@ describe("getComments function", () => {
         }
       };
       nock(URI)
-        .get(ROUTE, reqBody => {
-          expect(reqBody.app).toBeLessThan(0);
-          return true;
-        })
+        .get(ROUTE + `?app=${data.app}&record=${data.record}`)
         .reply(400, expectedResult);
 
       let actualResult = recordModule.getComments(
@@ -597,7 +571,6 @@ describe("getComments function", () => {
         undefined
       );
       return actualResult.catch(err => {
-        expect(err).toBeInstanceOf(KintoneException);
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
@@ -615,10 +588,7 @@ describe("getComments function", () => {
         }
       };
       nock(URI)
-        .get(ROUTE, reqBody => {
-          expect(reqBody.record).toBeLessThan(0);
-          return true;
-        })
+        .get(ROUTE + `?app=${data.app}&record=${data.record}`)
         .reply(400, expectedResult);
 
       let actualResult = recordModule.getComments(
@@ -629,7 +599,6 @@ describe("getComments function", () => {
         undefined
       );
       return actualResult.catch(err => {
-        expect(err).toBeInstanceOf(KintoneException);
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
@@ -647,10 +616,7 @@ describe("getComments function", () => {
         }
       };
       nock(URI)
-        .get(ROUTE, reqBody => {
-          expect(reqBody).not.toHaveProperty("app");
-          return true;
-        })
+        .get(ROUTE + `?record=${data.record}`)
         .reply(400, expectedResult);
 
       let actualResult = recordModule.getComments(
@@ -661,7 +627,6 @@ describe("getComments function", () => {
         undefined
       );
       return actualResult.catch(err => {
-        expect(err).toBeInstanceOf(KintoneException);
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
@@ -679,10 +644,7 @@ describe("getComments function", () => {
         }
       };
       nock(URI)
-        .get(ROUTE, reqBody => {
-          expect(reqBody).not.toHaveProperty("record");
-          return true;
-        })
+        .get(ROUTE + `?app=${data.app}`)
         .reply(400, expectedResult);
 
       let actualResult = recordModule.getComments(
@@ -693,7 +655,6 @@ describe("getComments function", () => {
         undefined
       );
       return actualResult.catch(err => {
-        expect(err).toBeInstanceOf(KintoneException);
         expect(err.get()).toMatchObject(expectedResult);
       });
     });

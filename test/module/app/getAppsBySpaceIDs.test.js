@@ -3,31 +3,31 @@
  * test app module
  */
 const nock = require("nock");
-const common = require("../../common");
+const common = require("../../utils/common");
 const { Connection, Auth, App } = require("../../../src/main");
-const auth = new Auth();
-auth.setPasswordAuth(common.USERNAME, common.PASSWORD);
-const conn = new Connection(common.DOMAIN, auth);
-const appModule = new App(conn);
+
+let auth = new Auth().setPasswordAuth(common.USERNAME, common.PASSWORD);
+let conn = new Connection(common.DOMAIN, auth);
+let appModule = new App(conn);
 
 const URI = "https://" + common.DOMAIN;
 const ROUTE = "/k/v1/apps.json";
 
-describe("getAppsBySpaceIDs function", () => {
-  describe("common function", () => {
+describe("[TestSuite] getAppsBySpaceIDs", () => {
+  describe("Common functions", () => {
     it("should return promise", () => {
       const spaceIds = [1];
-      nock("https://" + common.DOMAIN)
-        .get("/k/v1/apps.json")
+      nock(URI)
+        .get(ROUTE + `?spaceIds[0]=${spaceIds[0]}`)
         .reply(200, {});
 
-      const getAppResult = appModule.getAppsBySpaceIDs(spaceIds);
-      expect(getAppResult).toHaveProperty("then");
-      expect(getAppResult).toHaveProperty("catch");
+      const actuaResult = appModule.getAppsBySpaceIDs(spaceIds);
+      expect(actuaResult).toHaveProperty("then");
+      expect(actuaResult).toHaveProperty("catch");
     });
   });
 
-  describe("success common", () => {
+  describe("Success cases", () => {
     describe("Valid request", () => {
       it("[AppModule-58] should return the app information based on the list of space ID (without limit, offset)", () => {
         const spaceIds = [1];
@@ -53,26 +53,17 @@ describe("getAppsBySpaceIDs function", () => {
             }
           ]
         };
-        nock("https://" + common.DOMAIN)
-          .get("/k/v1/apps.json", rqBody => {
-            expect(rqBody.spaceIds).toEqual(spaceIds);
-            return true;
-          })
+        nock(URI)
+          .get(ROUTE + `?spaceIds[0]=${spaceIds[0]}`)
           .matchHeader(common.PASSWORD_AUTH, authHeader => {
             expect(authHeader).toBe(
               common.getPasswordAuth(common.USERNAME, common.PASSWORD)
             );
             return true;
           })
-          .matchHeader("Content-Type", type => {
-            expect(type).toBe("application/json");
-            return true;
-          })
           .reply(200, expectResult);
-        const getAppsBySpaceIDsByIDsResult = appModule.getAppsBySpaceIDs(
-          spaceIds
-        );
-        return getAppsBySpaceIDsByIDsResult.then(rsp => {
+        const actualResult = appModule.getAppsBySpaceIDs(spaceIds);
+        return actualResult.then(rsp => {
           expect(rsp).toMatchObject(expectResult);
         });
       });
@@ -123,11 +114,12 @@ describe("getAppsBySpaceIDs function", () => {
       let limit = 2;
       let spaceIds = [1, 2];
       nock(URI)
-        .get(ROUTE, reqBody => {
-          expect(reqBody.spaceIds).toEqual(spaceIds);
-          expect(reqBody.limit).toEqual(limit);
-          return true;
-        })
+        .get(
+          ROUTE +
+            `?limit=${limit}&spaceIds[0]=${spaceIds[0]}&spaceIds[1]=${
+              spaceIds[1]
+            }`
+        )
         .reply(200, expectedResult);
 
       let actualResult = appModule.getAppsBySpaceIDs(
@@ -184,11 +176,12 @@ describe("getAppsBySpaceIDs function", () => {
       let offset = 2;
       let spaceIds = [1, 2, 3];
       nock(URI)
-        .get(ROUTE, reqBody => {
-          expect(reqBody.spaceIds).toEqual(spaceIds);
-          expect(reqBody.offset).toEqual(offset);
-          return true;
-        })
+        .get(
+          ROUTE +
+            `?offset=${offset}&spaceIds[0]=${spaceIds[0]}&spaceIds[1]=${
+              spaceIds[1]
+            }&spaceIds[2]=${spaceIds[2]}`
+        )
         .reply(200, expectedResult);
 
       let actualResult = appModule.getAppsBySpaceIDs(
@@ -205,22 +198,25 @@ describe("getAppsBySpaceIDs function", () => {
   describe("error case", () => {
     describe("using API token authentication", () => {
       it("[AppModule-57] should return error when using API token authentication ", () => {
+        const spaceIds = [1];
         const expectResult = {
           code: "GAIA_NO01",
           id: "lzQPJ1hkW3Aj4iVebWCG",
           message: "Using this API token, you cannot run the specified API."
         };
-        nock("https://" + common.DOMAIN)
-          .get("/k/v1/apps.json")
+        nock(URI)
+          .get(ROUTE + `?spaceIds[0]=${spaceIds[0]}`)
           .reply(403, expectResult);
-        const getAppsResult = appModule.getAppsBySpaceIDs([1]);
-        return getAppsResult.catch(err => {
+        const actualResult = appModule.getAppsBySpaceIDs(spaceIds);
+        return actualResult.catch(err => {
           expect(err.get()).toMatchObject(expectResult);
         });
       });
     });
 
     it("[AppModule-62] should return an error when the param limit has value of 0", () => {
+      let spaceIds = [1, 2, 3];
+      let limit = 0;
       const expectedResult = {
         code: "CB_VA01",
         id: "DtsFKYOmw2gfIUgOG0Wh",
@@ -232,20 +228,27 @@ describe("getAppsBySpaceIDs function", () => {
         }
       };
       nock(URI)
-        .get(ROUTE, reqBody => {
-          expect(reqBody.limit).toEqual(0);
-          return true;
-        })
+        .get(
+          ROUTE +
+            `?limit=${limit}&spaceIds[0]=${spaceIds[0]}&spaceIds[1]=${
+              spaceIds[1]
+            }&spaceIds[2]=${spaceIds[2]}`
+        )
         .reply(400, expectedResult);
 
-      let spaceIds = [1, 2, 3];
-      let actualResult = appModule.getAppsBySpaceIDs(spaceIds, undefined, 0);
+      let actualResult = appModule.getAppsBySpaceIDs(
+        spaceIds,
+        undefined,
+        limit
+      );
       return actualResult.catch(err => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
 
     it("[AppMoudle-63] should return an error when the param limit has value greater than 100", () => {
+      let spaceIds = [1, 2, 3];
+      let limit = 101;
       const expectedResult = {
         code: "CB_VA01",
         id: "H6bw2ZEUMUvP6fZSfCJL",
@@ -257,20 +260,27 @@ describe("getAppsBySpaceIDs function", () => {
         }
       };
       nock(URI)
-        .get(ROUTE, reqBody => {
-          expect(reqBody.limit).toBeGreaterThan(100);
-          return true;
-        })
+        .get(
+          ROUTE +
+            `?limit=${limit}&spaceIds[0]=${spaceIds[0]}&spaceIds[1]=${
+              spaceIds[1]
+            }&spaceIds[2]=${spaceIds[2]}`
+        )
         .reply(400, expectedResult);
 
-      let spaceIds = [1, 2, 3];
-      let actualResult = appModule.getAppsBySpaceIDs(spaceIds, undefined, 101);
+      let actualResult = appModule.getAppsBySpaceIDs(
+        spaceIds,
+        undefined,
+        limit
+      );
       return actualResult.catch(err => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
 
     it("[AppModule-64] should return an error when the param offset has value less than 0", () => {
+      let spaceIds = [1, 2, 3];
+      let offset = -1;
       const expectedResult = {
         code: "CB_VA01",
         id: "v23TyuqDg6QpEYrU7JpX",
@@ -282,21 +292,27 @@ describe("getAppsBySpaceIDs function", () => {
         }
       };
       nock(URI)
-        .get(ROUTE, reqBody => {
-          expect(reqBody.offset).toBeLessThan(0);
-          return true;
-        })
+        .get(
+          ROUTE +
+            `?offset=${offset}&spaceIds[0]=${spaceIds[0]}&spaceIds[1]=${
+              spaceIds[1]
+            }&spaceIds[2]=${spaceIds[2]}`
+        )
         .reply(400, expectedResult);
 
-      let spaceIds = [1, 2, 3];
-      let actualResult = appModule.getAppsBySpaceIDs(spaceIds, -1, undefined);
+      let actualResult = appModule.getAppsBySpaceIDs(
+        spaceIds,
+        offset,
+        undefined
+      );
       return actualResult.catch(err => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
 
     it("[AppModule-74] should return an error when the param offset has value greater than max value 2147483647", () => {
-      const MAX_VALUE = 2147483647;
+      let spaceIds = [1, 2, 3];
+      let offset = 2147483647 + 1;
       const expectedResult = {
         code: "CB_VA01",
         id: "RWue1TbVHvtSYABtAg6V",
@@ -308,16 +324,17 @@ describe("getAppsBySpaceIDs function", () => {
         }
       };
       nock(URI)
-        .get(ROUTE, reqBody => {
-          expect(reqBody.offset).toBeGreaterThan(MAX_VALUE);
-          return true;
-        })
+        .get(
+          ROUTE +
+            `?offset=${offset}&spaceIds[0]=${spaceIds[0]}&spaceIds[1]=${
+              spaceIds[1]
+            }&spaceIds[2]=${spaceIds[2]}`
+        )
         .reply(400, expectedResult);
 
-      let spaceIds = [1, 2, 3];
       let actualResult = appModule.getAppsBySpaceIDs(
         spaceIds,
-        MAX_VALUE + 1,
+        offset,
         undefined
       );
       return actualResult.catch(err => {
@@ -326,7 +343,8 @@ describe("getAppsBySpaceIDs function", () => {
     });
 
     it("[AppModule-75] should return an error when the param limit has value greater than max value 2147483647", () => {
-      const MAX_VALUE = 2147483647;
+      let spaceIds = [1, 2, 3];
+      let limit = 2147483647 + 1;
       const expectedResult = {
         code: "CB_VA01",
         id: "ASeFDvLefehJ5IKyLmBJ",
@@ -339,17 +357,18 @@ describe("getAppsBySpaceIDs function", () => {
       };
 
       nock(URI)
-        .get(ROUTE, reqBody => {
-          expect(reqBody.limit).toBeGreaterThan(MAX_VALUE);
-          return true;
-        })
+        .get(
+          ROUTE +
+            `?limit=${limit}&spaceIds[0]=${spaceIds[0]}&spaceIds[1]=${
+              spaceIds[1]
+            }&spaceIds[2]=${spaceIds[2]}`
+        )
         .reply(400, expectedResult);
 
-      let spaceIds = [1, 2, 3];
       let actualResult = appModule.getAppsBySpaceIDs(
         spaceIds,
         undefined,
-        MAX_VALUE + 1
+        limit
       );
       return actualResult.catch(err => {
         expect(err.get()).toMatchObject(expectedResult);
