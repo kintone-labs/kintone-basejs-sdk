@@ -6,9 +6,9 @@
 const nock = require('nock');
 
 const common = require('../../../test/utils/common');
-const {KintoneAPIException, Connection, Auth, App} = require(common.MAIN_PATH);
+const constants = require('../../../test/utils/constant');
+const { KintoneAPIException, Connection, Auth, App } = require(common.MAIN_PATH);
 const auth = new Auth().setPasswordAuth(common.USERNAME, common.PASSWORD);
-
 const conn = new Connection(common.DOMAIN, auth);
 const appModule = new App(conn);
 
@@ -16,8 +16,8 @@ describe('getApp function', () => {
   describe('common function', () => {
     it('should return promise', () => {
       const id = 1;
-      nock('https://' + common.DOMAIN)
-        .get(`/k/v1/app.json?id=${id}`)
+      nock(constants.URI)
+        .get(constants.API_ROUTE.APP + `?id=${id}`)
         .reply(200, {});
 
       const getAppResult = appModule.getApp(id);
@@ -27,47 +27,42 @@ describe('getApp function', () => {
   });
 
   describe('success case', () => {
-    describe('Valid request', () => {
-      it('[App module-3] - should get successfully the app infomation', () => {
-        const appID = 1;
-        const expectResult = {
-          'appId': '1',
-          'code': '',
-          'name': 'ToDo App',
-          'description': 'This is a great app!',
-          'spaceId': '2',
-          'threadId': '3',
-          'createdAt': '2015-03-06T02:24:03.000Z',
-          'creator': {
-            'code': 'user1',
-            'name': 'User1'
-          },
-          'modifiedAt': '2015-03-06T03:06:57.000Z',
-          'modifier': {
-            'code': 'login-name',
-            'name': 'Display Name'
-          }
-        };
-        nock('https://' + common.DOMAIN)
-          .get(`/k/v1/app.json?id=${appID}`)
-          .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-            expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
-            return true;
-          })
-          .reply(200, expectResult);
-        const getAppResult = appModule.getApp(appID);
-        return getAppResult.then((rsp) => {
-          expect(rsp).toMatchObject(expectResult);
-        });
+    it('[App-3] - should get successfully the app infomation', () => {
+      const appID = 1;
+      const expectResult = {
+        'appId': '1',
+        'code': '',
+        'name': 'ToDo App',
+        'description': 'This is a great app!',
+        'spaceId': '2',
+        'threadId': '3',
+        'createdAt': '2015-03-06T02:24:03.000Z',
+        'creator': {
+          'code': 'user1',
+          'name': 'User1'
+        },
+        'modifiedAt': '2015-03-06T03:06:57.000Z',
+        'modifier': {
+          'code': 'login-name',
+          'name': 'Display Name'
+        }
+      };
+      nock(constants.URI)
+        .get(constants.API_ROUTE.APP + `?id=${appID}`)
+        .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+          expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+          return true;
+        })
+        .reply(200, expectResult);
+      const getAppResult = appModule.getApp(appID);
+      return getAppResult.then((rsp) => {
+        expect(rsp).toMatchObject(expectResult);
       });
     });
     /**
-     * Todo: Implement another success case
-     */
-    /**
-     * Guest space app
-     */
-    it('[App module-4] - should get successfully the app infomation in guest space', () => {
+   * Guest space app
+   */
+    it('[App-4] - should get successfully the app infomation in guest space', () => {
       const appID = 1;
       const connGuest = new Connection(common.DOMAIN, auth, common.GUEST_SPACEID);
       const appModuleGuest = new App(connGuest);
@@ -89,8 +84,8 @@ describe('getApp function', () => {
         'spaceId': '4',
         'threadId': '4'
       };
-      nock('https://' + common.DOMAIN)
-        .get(`/k/guest/1/v1/app.json?id=${appID}`)
+      nock(constants.URI)
+        .get(constants.API_ROUTE.GUEST_APP + `?id=${appID}`)
         .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
           expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
           return true;
@@ -104,65 +99,64 @@ describe('getApp function', () => {
   });
 
   describe('error case', () => {
-    describe('Invalid request', () => {
-      it('[App module-5] - should return error when using invalid app ID', () => {
-        const appID = 0;
-        const expectResult = {
-          'code': 'CB_VA01',
-          'id': 'MJHWAlCKzzhtnWrTCrSY',
-          'message': 'Missing or invalid input.',
-          'errors': {'id': {'messages': ['must be greater than or equal to 1']}}
-        };
-
-        nock('https://' + common.DOMAIN)
-          .get(`/k/v1/app.json?id=${appID}`)
-          .reply(400, expectResult);
-        const getAppResult = appModule.getApp(appID);
-        return getAppResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneAPIException);
-          expect(err.get()).toMatchObject(expectResult);
-        });
+    /**
+ * API Token Authentication
+ * Error happens when running the command with API token as it is not supported yet
+ */
+    it('[App-2] - should return error when using API token authentication ', () => {
+      const appID = 31;
+      const expectResult = {
+        code: 'GAIA_NO01',
+        id: 'lzQPJ1hkW3Aj4iVebWCG',
+        message: 'Using this API token, you cannot run the specified API.'
+      };
+      nock(constants.URI)
+        .get(constants.API_ROUTE.APP + `?id=${appID}`)
+        .reply(403, expectResult);
+      const getAppResult = appModule.getApp(appID);
+      return getAppResult.catch((err) => {
+        expect(err).toBeInstanceOf(KintoneAPIException);
+        expect(err.get()).toMatchObject(expectResult);
       });
-
-      it('[App module-6] - should return error when using unexist app ID', () => {
-        const unexistAppID = 766666;
-        const expectResult = {
-          'code': 'GAIA_AP01',
-          'id': '63aA2ILWtC6MuAf3pOgr',
-          'message': 'The app (ID: 76666) not found. The app may have been deleted.'
-        };
-
-        nock('https://' + common.DOMAIN)
-          .get(`/k/v1/app.json?id=${unexistAppID}`)
-          .reply(404, expectResult);
-        const getAppResult = appModule.getApp(unexistAppID);
-        return getAppResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneAPIException);
-          expect(err.get()).toMatchObject(expectResult);
-        });
-      });
-      /**
-     * Todo: Implement another error case
+    });
+    /**
+     * should return error when using invalid app ID
      */
-      /**
-       * API Token Authentication
-       * Error happens when running the command with API token as it is not supported yet
-       */
-      it('[App module-2] - should return error when using API token authentication ', () => {
-        const appID = 31;
-        const expectResult = {
-          code: 'GAIA_NO01',
-          id: 'lzQPJ1hkW3Aj4iVebWCG',
-          message: 'Using this API token, you cannot run the specified API.'
-        };
-        nock('https://' + common.DOMAIN)
-          .get(`/k/v1/app.json?id=${appID}`)
-          .reply(403, expectResult);
-        const getAppResult = appModule.getApp(appID);
-        return getAppResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneAPIException);
-          expect(err.get()).toMatchObject(expectResult);
-        });
+    it('[App-5] - should return error when using invalid app ID', () => {
+      const appID = 0;
+      const expectResult = {
+        'code': 'CB_VA01',
+        'id': 'MJHWAlCKzzhtnWrTCrSY',
+        'message': 'Missing or invalid input.',
+        'errors': { 'id': { 'messages': ['must be greater than or equal to 1'] } }
+      };
+
+      nock(constants.URI)
+        .get(constants.API_ROUTE.APP + `?id=${appID}`)
+        .reply(400, expectResult);
+      const getAppResult = appModule.getApp(appID);
+      return getAppResult.catch((err) => {
+        expect(err).toBeInstanceOf(KintoneAPIException);
+        expect(err.get()).toMatchObject(expectResult);
+      });
+    });
+    /**
+     * should return error when using unexist app ID
+     */
+    it('[App-6] - should return error when using unexist app ID', () => {
+      const unexistAppID = 766666;
+      const expectResult = {
+        'code': 'GAIA_AP01',
+        'id': '63aA2ILWtC6MuAf3pOgr',
+        'message': 'The app (ID: 76666) not found. The app may have been deleted.'
+      };
+      nock(constants.URI)
+        .get(constants.API_ROUTE.APP + `?id=${unexistAppID}`)
+        .reply(404, expectResult);
+      const getAppResult = appModule.getApp(unexistAppID);
+      return getAppResult.catch((err) => {
+        expect(err).toBeInstanceOf(KintoneAPIException);
+        expect(err.get()).toMatchObject(expectResult);
       });
     });
   });
