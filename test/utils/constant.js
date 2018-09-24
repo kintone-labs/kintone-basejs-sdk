@@ -5,6 +5,8 @@ const COMMON = require('./common.js');
 const URI = 'https://' + COMMON.DOMAIN;
 const API_ROUTE = {
   RECORD: `/k/v1/record.json`,
+  RECORD_GET: `/k/v1/record.json`,
+  RECORD_GET_TEST: `/k/v1/test`,
   GUEST_RECORD: `/k/guest/${COMMON.GUEST_SPACEID}/v1/record.json`,
   RECORDS: `/k/v1/records.json`,
   GUEST_RECORDS: `/k/guest/${COMMON.GUEST_SPACEID}/v1/records.json`,
