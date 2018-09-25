@@ -6,7 +6,7 @@
 const nock = require('nock');
 
 const common = require('../../../test/utils/common');
-const constants = require('../../../test/utils/constant');
+const {API_ROUTE, URI} = require('../../../test/utils/constant');
 const { KintoneAPIException, Connection, Auth, App } = require(common.MAIN_PATH);
 const auth = new Auth().setPasswordAuth(common.USERNAME, common.PASSWORD);
 const conn = new Connection(common.DOMAIN, auth);
@@ -16,8 +16,8 @@ describe('getApp function', () => {
   describe('common function', () => {
     it('should return promise', () => {
       const id = 1;
-      nock(constants.URI)
-        .get(constants.API_ROUTE.APP + `?id=${id}`)
+      nock(URI)
+        .get(API_ROUTE.APP + `?id=${id}`)
         .reply(200, {});
 
       const getAppResult = appModule.getApp(id);
@@ -47,8 +47,8 @@ describe('getApp function', () => {
           'name': 'Display Name'
         }
       };
-      nock(constants.URI)
-        .get(constants.API_ROUTE.APP + `?id=${appID}`)
+      nock(URI)
+        .get(API_ROUTE.APP + `?id=${appID}`)
         .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
           expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
           return true;
@@ -84,8 +84,8 @@ describe('getApp function', () => {
         'spaceId': '4',
         'threadId': '4'
       };
-      nock(constants.URI)
-        .get(constants.API_ROUTE.GUEST_APP + `?id=${appID}`)
+      nock(URI)
+        .get(API_ROUTE.GUEST_APP + `?id=${appID}`)
         .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
           expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
           return true;
@@ -110,8 +110,8 @@ describe('getApp function', () => {
         id: 'lzQPJ1hkW3Aj4iVebWCG',
         message: 'Using this API token, you cannot run the specified API.'
       };
-      nock(constants.URI)
-        .get(constants.API_ROUTE.APP + `?id=${appID}`)
+      nock(URI)
+        .get(API_ROUTE.APP + `?id=${appID}`)
         .reply(403, expectResult);
       const getAppResult = appModule.getApp(appID);
       return getAppResult.catch((err) => {
@@ -131,8 +131,8 @@ describe('getApp function', () => {
         'errors': { 'id': { 'messages': ['must be greater than or equal to 1'] } }
       };
 
-      nock(constants.URI)
-        .get(constants.API_ROUTE.APP + `?id=${appID}`)
+      nock(URI)
+        .get(API_ROUTE.APP + `?id=${appID}`)
         .reply(400, expectResult);
       const getAppResult = appModule.getApp(appID);
       return getAppResult.catch((err) => {
@@ -150,8 +150,8 @@ describe('getApp function', () => {
         'id': '63aA2ILWtC6MuAf3pOgr',
         'message': 'The app (ID: 76666) not found. The app may have been deleted.'
       };
-      nock(constants.URI)
-        .get(constants.API_ROUTE.APP + `?id=${unexistAppID}`)
+      nock(URI)
+        .get(API_ROUTE.APP + `?id=${unexistAppID}`)
         .reply(404, expectResult);
       const getAppResult = appModule.getApp(unexistAppID);
       return getAppResult.catch((err) => {

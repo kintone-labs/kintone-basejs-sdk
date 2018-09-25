@@ -5,7 +5,7 @@
  */
 const nock = require('nock');
 const common = require('../../../test/utils/common');
-const constants = require('../../../test/utils/constant');
+const {API_ROUTE, URI} = require('../../../test/utils/constant');
 const {KintoneAPIException, Connection, Auth, Record} = require(common.MAIN_PATH);
 const auth = new Auth().setPasswordAuth(common.USERNAME, common.PASSWORD);
 const conn = new Connection(common.DOMAIN, auth);
@@ -23,8 +23,8 @@ describe('updateRecords function', () => {
     };
     const recordsData = [recordDataUpdate];
     it('[Record-0-common] - should return a promise', () => {
-      nock(constants.URI)
-        .put(constants.API_ROUTE.RECORDS)
+      nock(URI)
+        .put(API_ROUTE.RECORDS)
         .reply(200, {
           'records': [{
             id: 1,
@@ -56,8 +56,8 @@ describe('updateRecords function', () => {
         }]
       };
 
-      nock(constants.URI)
-        .put(constants.API_ROUTE.RECORDS, (rqBody) => {
+      nock(URI)
+        .put(API_ROUTE.RECORDS, (rqBody) => {
           expect(rqBody.app).toEqual(appID);
           expect(rqBody.records).toEqual(recordsData);
           return true;
@@ -125,8 +125,8 @@ describe('updateRecords function', () => {
           }
         ]
       };
-      nock(constants.URI)
-        .put(constants.API_ROUTE.RECORDS, (rqBody) => {
+      nock(URI)
+        .put(API_ROUTE.RECORDS, (rqBody) => {
           expect(rqBody.records).toEqual(recordsData);
           return true;
         })
@@ -187,8 +187,8 @@ describe('updateRecords function', () => {
           }
         ]
       };
-      nock(constants.URI)
-        .put(constants.API_ROUTE.RECORDS, (rqBody) => {
+      nock(URI)
+        .put(API_ROUTE.RECORDS, (rqBody) => {
           expect(rqBody.records).toEqual(recordsData);
           return true;
         })
@@ -255,8 +255,8 @@ describe('updateRecords function', () => {
         ]
       };
       const recordsData = [recordDataUpdate];
-      nock(constants.URI)
-        .put(constants.API_ROUTE.RECORDS, (rqBody) => {
+      nock(URI)
+        .put(API_ROUTE.RECORDS, (rqBody) => {
           expect(rqBody.records).toEqual(recordsData);
           return true;
         })
@@ -308,8 +308,8 @@ describe('updateRecords function', () => {
         ]
       };
       const recordsData = [recordDataUpdate];
-      nock(constants.URI)
-        .put(constants.API_ROUTE.GUEST_RECORDS, (rqBody) => {
+      nock(URI)
+        .put(API_ROUTE.GUEST_RECORDS, (rqBody) => {
           expect(rqBody.records).toEqual(recordsData);
           return true;
         })
@@ -359,8 +359,8 @@ describe('updateRecords function', () => {
         ]
       };
       const recordsData = [recordDataUpdate];
-      nock(constants.URI)
-        .put(constants.API_ROUTE.RECORDS, (rqBody) => {
+      nock(URI)
+        .put(API_ROUTE.RECORDS, (rqBody) => {
           expect(rqBody.records).toEqual(recordsData);
           return true;
         })
@@ -397,8 +397,8 @@ describe('updateRecords function', () => {
         'id': '4ucJiURAv0LsXBkLCDdi',
         'message': 'The revision is not the latest. Someone may update a record.'
       };
-      nock(constants.URI)
-        .put(constants.API_ROUTE.RECORDS, (rqBody) => {
+      nock(URI)
+        .put(API_ROUTE.RECORDS, (rqBody) => {
           expect(rqBody.records).toEqual(recordsData);
           return true;
         })
@@ -456,8 +456,8 @@ describe('updateRecords function', () => {
         'id': 'KySHqaEs9dbE8o6gbZG6',
         'message': 'Invalid JSON string.'
       };
-      nock(constants.URI)
-        .put(constants.API_ROUTE.RECORDS, (rqBody) => {
+      nock(URI)
+        .put(API_ROUTE.RECORDS, (rqBody) => {
           expect(rqBody.records).toEqual(recordsData);
           return true;
         })
@@ -518,8 +518,8 @@ describe('updateRecords function', () => {
         'id': 'M00VPaOdPEmu4kNlBawh',
         'message': 'No privilege to proceed.'
       };
-      nock(constants.URI)
-        .put(constants.API_ROUTE.RECORDS, (rqBody) => {
+      nock(URI)
+        .put(API_ROUTE.RECORDS, (rqBody) => {
           expect(rqBody.records).toEqual(recordsData);
           return true;
         })
@@ -581,8 +581,8 @@ describe('updateRecords function', () => {
         'id': 'M00VPaOdPEmu4kNlBawh',
         'message': 'No privilege to proceed.'
       };
-      nock(constants.URI)
-        .put(constants.API_ROUTE.RECORDS, (rqBody) => {
+      nock(URI)
+        .put(API_ROUTE.RECORDS, (rqBody) => {
           expect(rqBody.records).toEqual(recordsData);
           return true;
         })
@@ -643,8 +643,8 @@ describe('updateRecords function', () => {
         'id': 'xnADSZe3pmfqNwkVtmsg',
         'message': 'Edit permissions are required to edit field "title_event".'
       };
-      nock(constants.URI)
-        .put(constants.API_ROUTE.RECORDS, (rqBody) => {
+      nock(URI)
+        .put(API_ROUTE.RECORDS, (rqBody) => {
           expect(rqBody.records).toEqual(recordsData);
           return true;
         })
@@ -698,8 +698,8 @@ describe('updateRecords function', () => {
         'id': 'F1m5aSXHdHNEWxY9gZdS',
         'message': 'The app (ID: 220) not found. The app may have been deleted.'
       };
-      nock(constants.URI)
-        .put(constants.API_ROUTE.RECORDS, (rqBody) => {
+      nock(URI)
+        .put(API_ROUTE.RECORDS, (rqBody) => {
           expect(rqBody.records).toEqual(recordsData);
           return true;
         })
@@ -754,8 +754,8 @@ describe('updateRecords function', () => {
         'id': '2EvqyBpppiTZP4wQfPtx',
         'message': 'Invalid JSON string.'
       };
-      nock(constants.URI)
-        .put(constants.API_ROUTE.RECORDS, (rqBody) => {
+      nock(URI)
+        .put(API_ROUTE.RECORDS, (rqBody) => {
           expect(rqBody.records).toEqual(recordsData);
           return true;
         })
@@ -787,8 +787,8 @@ describe('updateRecords function', () => {
         ]
       };
       const recordsData = [recordDataUpdate];
-      nock(constants.URI)
-        .put(constants.API_ROUTE.RECORDS, (rqBody) => {
+      nock(URI)
+        .put(API_ROUTE.RECORDS, (rqBody) => {
           expect(rqBody.records).toEqual(recordsData);
           return true;
         })
@@ -849,8 +849,8 @@ describe('updateRecords function', () => {
           }
         }
       };
-      nock(constants.URI)
-        .put(constants.API_ROUTE.RECORDS, (rqBody) => {
+      nock(URI)
+        .put(API_ROUTE.RECORDS, (rqBody) => {
           expect(rqBody.records).toEqual(recordsData);
           return true;
         })
@@ -901,8 +901,8 @@ describe('updateRecords function', () => {
         ]
       };
       const recordsData = [recordDataUpdate];
-      nock(constants.URI)
-        .put(constants.API_ROUTE.RECORDS, (rqBody) => {
+      nock(URI)
+        .put(API_ROUTE.RECORDS, (rqBody) => {
           expect(rqBody.records).toEqual(recordsData);
           return true;
         })
@@ -963,8 +963,8 @@ describe('updateRecords function', () => {
           }
         }
       };
-      nock(constants.URI)
-        .put(constants.API_ROUTE.RECORDS, (rqBody) => {
+      nock(URI)
+        .put(API_ROUTE.RECORDS, (rqBody) => {
           expect(rqBody.records).toEqual(recordsData);
           return true;
         })
@@ -1026,8 +1026,8 @@ describe('updateRecords function', () => {
           }
         }
       };
-      nock(constants.URI)
-        .put(constants.API_ROUTE.RECORDS, (rqBody) => {
+      nock(URI)
+        .put(API_ROUTE.RECORDS, (rqBody) => {
           expect(rqBody.records).toEqual(recordsData);
           return true;
         })
@@ -1090,8 +1090,8 @@ describe('updateRecords function', () => {
           }
         }
       };
-      nock(constants.URI)
-        .put(constants.API_ROUTE.RECORDS, (rqBody) => {
+      nock(URI)
+        .put(API_ROUTE.RECORDS, (rqBody) => {
           expect(rqBody.records).toEqual(recordsData);
           return true;
         })
