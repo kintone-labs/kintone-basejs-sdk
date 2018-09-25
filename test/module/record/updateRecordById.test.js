@@ -5,8 +5,8 @@
 const nock = require('nock');
 
 const common = require('../../../test/utils/common');
-const constants = require('../../../test/utils/constant');
-const { KintoneAPIException, Connection, Auth, Record } = require(common.MAIN_PATH);
+const {API_ROUTE, URI} = require('../../../test/utils/constant');
+const {KintoneAPIException, Connection, Auth, Record} = require(common.MAIN_PATH);
 const auth = new Auth().setPasswordAuth(common.USERNAME, common.PASSWORD);
 const conn = new Connection(common.DOMAIN, auth);
 const recordModule = new Record(conn);
@@ -24,9 +24,9 @@ describe('updateRecordById function', () => {
         },
         revision: 2
       };
-      nock(constants.URI)
-        .put(constants.API_ROUTE.RECORD)
-        .reply(200, { 'revisions': '1' });
+      nock(URI)
+        .put(API_ROUTE.RECORD)
+        .reply(200, {'revisions': '1'});
 
       const updateRecordByIdResult = recordModule.updateRecordByID(data.app, data.id, data.record, data.revision);
       expect(updateRecordByIdResult).toHaveProperty('then');
@@ -46,8 +46,8 @@ describe('updateRecordById function', () => {
         },
         revision: 2
       };
-      nock(constants.URI)
-        .put(constants.API_ROUTE.RECORD, (rqBody) => {
+      nock(URI)
+        .put(API_ROUTE.RECORD, (rqBody) => {
           expect(rqBody).toEqual(data);
           return true;
         })
@@ -59,7 +59,7 @@ describe('updateRecordById function', () => {
           expect(type).toBe('application/json;charset=utf-8');
           return true;
         })
-        .reply(200, { 'revision': '3' });
+        .reply(200, {'revision': '3'});
 
       const updateRecordByIdResult = recordModule.updateRecordByID(data.app, data.id, data.record, data.revision);
       return updateRecordByIdResult.then((rsp) => {
@@ -78,12 +78,12 @@ describe('updateRecordById function', () => {
         },
         revision: -1
       };
-      nock(constants.URI)
-        .put(constants.API_ROUTE.RECORD, (rqBody) => {
+      nock(URI)
+        .put(API_ROUTE.RECORD, (rqBody) => {
           expect(rqBody).toEqual(data);
           return true;
         })
-        .reply(200, { 'revision': '3' });
+        .reply(200, {'revision': '3'});
 
       const updateRecordByIdResult = recordModule.updateRecordByID(data.app, data.id, data.record, data.revision);
       return updateRecordByIdResult.then((rsp) => {
@@ -130,8 +130,8 @@ describe('updateRecordById function', () => {
         }
       };
       const recordsData = [recordDataUpdate];
-      nock(constants.URI)
-        .put(constants.API_ROUTE.RECORD, (rqBody) => {
+      nock(URI)
+        .put(API_ROUTE.RECORD, (rqBody) => {
           expect(rqBody.record).toMatchObject(recordsData);
           return true;
         })
@@ -143,7 +143,7 @@ describe('updateRecordById function', () => {
           expect(type).toBe('application/json;charset=utf-8');
           return true;
         })
-        .reply(200, { 'revision': '2' });
+        .reply(200, {'revision': '2'});
 
       const updateRecordByIdResult = recordModule.updateRecordByID(appID, recordID, recordsData);
       return updateRecordByIdResult.then((rsp) => {
@@ -188,8 +188,8 @@ describe('updateRecordById function', () => {
         }
       };
       const recordsData = [recordDataUpdate];
-      nock(constants.URI)
-        .put(constants.API_ROUTE.GUEST_RECORD, (rqBody) => {
+      nock(URI)
+        .put(API_ROUTE.GUEST_RECORD, (rqBody) => {
           expect(rqBody.record).toMatchObject(recordsData);
           return true;
         })
@@ -201,7 +201,7 @@ describe('updateRecordById function', () => {
           expect(type).toBe('application/json;charset=utf-8');
           return true;
         })
-        .reply(200, { 'revision': '3' });
+        .reply(200, {'revision': '3'});
 
       const recordGuestModule = new Record(connGuestSpace);
       const updateRecordByIdResult = recordGuestModule.updateRecordByID(appID, recordID, recordsData);
@@ -246,8 +246,8 @@ describe('updateRecordById function', () => {
         }
       };
       const recordsData = [recordDataUpdate];
-      nock(constants.URI)
-        .put(constants.API_ROUTE.RECORD, (rqBody) => {
+      nock(URI)
+        .put(API_ROUTE.RECORD, (rqBody) => {
           expect(rqBody.record).toMatchObject(recordsData);
           return true;
         })
@@ -259,7 +259,7 @@ describe('updateRecordById function', () => {
           expect(type).toBe('application/json;charset=utf-8');
           return true;
         })
-        .reply(200, { 'revision': '4' });
+        .reply(200, {'revision': '4'});
 
       const updateRecordByIdResult = recordModule.updateRecordByID(appID, recordID, recordsData);
       return updateRecordByIdResult.then((rsp) => {
@@ -285,8 +285,8 @@ describe('updateRecordById function', () => {
         'id': 'MJkW0PkiEJ3HhuPRkl3H',
         'message': '指定したrevisionは最新ではありません。ほかのユーザーがレコードを更新した可能性があります。'
       };
-      nock(constants.URI)
-        .put(constants.API_ROUTE.RECORD, (rqBody) => {
+      nock(URI)
+        .put(API_ROUTE.RECORD, (rqBody) => {
           expect(rqBody.revision).toEqual(wrongRevison);
           return true;
         })
@@ -313,46 +313,46 @@ describe('updateRecordById function', () => {
       'Updated by' +
       'Created datetime' +
       'Updated datetime', () => {
-        const recordID = 95;
-        const appID = 22;
-        const recordDataUpdate = {
-          'app': appID,
-          'id': recordID,
-          'revision': null,
-          'record': {
-            'Updated_by': {
-              'value': 'Updated'
-            }
+      const recordID = 95;
+      const appID = 22;
+      const recordDataUpdate = {
+        'app': appID,
+        'id': recordID,
+        'revision': null,
+        'record': {
+          'Updated_by': {
+            'value': 'Updated'
           }
-        };
-        const recordsData = [recordDataUpdate];
+        }
+      };
+      const recordsData = [recordDataUpdate];
 
-        const expectedResult = {
-          'code': 'CB_IJ01',
-          'id': 'wcRfYn4IOTtdsHuExF5a',
-          'message': 'Invalid JSON string.'
-        };
-        nock(constants.URI)
-          .put(constants.API_ROUTE.RECORD, (rqBody) => {
-            expect(rqBody.record).toMatchObject(recordsData);
-            return true;
-          })
-          .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-            expect(authHeader).toBe(Buffer.from(common.USERNAME + ':' + common.PASSWORD).toString('base64'));
-            return true;
-          })
-          .matchHeader('Content-Type', (type) => {
-            expect(type).toBe('application/json;charset=utf-8');
-            return true;
-          })
-          .reply(400, expectedResult);
+      const expectedResult = {
+        'code': 'CB_IJ01',
+        'id': 'wcRfYn4IOTtdsHuExF5a',
+        'message': 'Invalid JSON string.'
+      };
+      nock(URI)
+        .put(API_ROUTE.RECORD, (rqBody) => {
+          expect(rqBody.record).toMatchObject(recordsData);
+          return true;
+        })
+        .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+          expect(authHeader).toBe(Buffer.from(common.USERNAME + ':' + common.PASSWORD).toString('base64'));
+          return true;
+        })
+        .matchHeader('Content-Type', (type) => {
+          expect(type).toBe('application/json;charset=utf-8');
+          return true;
+        })
+        .reply(400, expectedResult);
 
-        const getRecordResult = recordModule.updateRecordByID(appID, recordID, recordsData);
-        return getRecordResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneAPIException);
-          expect(err.get()).toMatchObject(expectedResult);
-        });
+      const getRecordResult = recordModule.updateRecordByID(appID, recordID, recordsData);
+      return getRecordResult.catch((err) => {
+        expect(err).toBeInstanceOf(KintoneAPIException);
+        expect(err.get()).toMatchObject(expectedResult);
       });
+    });
     /**
      * Permission
      * Error happens when user does not have Edit permission for app
@@ -377,8 +377,8 @@ describe('updateRecordById function', () => {
         'id': 'M00VPaOdPEmu4kNlBawh',
         'message': 'No privilege to proceed.'
       };
-      nock(constants.URI)
-        .put(constants.API_ROUTE.RECORD, (rqBody) => {
+      nock(URI)
+        .put(API_ROUTE.RECORD, (rqBody) => {
           expect(rqBody.record).toMatchObject(recordsData);
           return true;
         })
@@ -423,8 +423,8 @@ describe('updateRecordById function', () => {
         'id': 'M00VPaOdPEmu4kNlBawh',
         'message': 'No privilege to proceed.'
       };
-      nock(constants.URI)
-        .put(constants.API_ROUTE.RECORD, (rqBody) => {
+      nock(URI)
+        .put(API_ROUTE.RECORD, (rqBody) => {
           expect(rqBody.record).toMatchObject(recordsData);
           return true;
         })
@@ -468,8 +468,8 @@ describe('updateRecordById function', () => {
         'id': 'xnADSZe3pmfqNwkVtmsg',
         'message': 'Edit permissions are required to edit field "title_event".'
       };
-      nock(constants.URI)
-        .put(constants.API_ROUTE.RECORD, (rqBody) => {
+      nock(URI)
+        .put(API_ROUTE.RECORD, (rqBody) => {
           expect(rqBody.record).toMatchObject(recordsData);
           return true;
         })
@@ -512,8 +512,8 @@ describe('updateRecordById function', () => {
         'id': 'F1m5aSXHdHNEWxY9gZdS',
         'message': 'The app (ID: 220) not found. The app may have been deleted.'
       };
-      nock(constants.URI)
-        .put(constants.API_ROUTE.RECORD, (rqBody) => {
+      nock(URI)
+        .put(API_ROUTE.RECORD, (rqBody) => {
           expect(rqBody.record).toMatchObject(recordsData);
           return true;
         })
@@ -563,8 +563,8 @@ describe('updateRecordById function', () => {
           }
         }
       };
-      nock(constants.URI)
-        .put(constants.API_ROUTE.RECORD, (rqBody) => {
+      nock(URI)
+        .put(API_ROUTE.RECORD, (rqBody) => {
           expect(rqBody.record).toMatchObject(recordsData);
           return true;
         })
@@ -607,8 +607,8 @@ describe('updateRecordById function', () => {
         'id': '2EvqyBpppiTZP4wQfPtx',
         'message': 'Invalid JSON string.'
       };
-      nock(constants.URI)
-        .put(constants.API_ROUTE.RECORD, (rqBody) => {
+      nock(URI)
+        .put(API_ROUTE.RECORD, (rqBody) => {
           expect(rqBody.record).toMatchObject(recordsData);
           return true;
         })
@@ -643,8 +643,8 @@ describe('updateRecordById function', () => {
         }
       };
       const recordsData = [recordDataUpdate];
-      nock(constants.URI)
-        .put(constants.API_ROUTE.RECORD, (rqBody) => {
+      nock(URI)
+        .put(API_ROUTE.RECORD, (rqBody) => {
           expect(rqBody.record).toMatchObject(recordsData);
           return true;
         })
@@ -656,7 +656,7 @@ describe('updateRecordById function', () => {
           expect(type).toBe('application/json;charset=utf-8');
           return true;
         })
-        .reply(200, { 'revision': '7' });
+        .reply(200, {'revision': '7'});
 
       const updateRecordByIdResult = recordModule.updateRecordByID(appID, recordID, recordsData);
       return updateRecordByIdResult.then((rsp) => {
@@ -693,8 +693,8 @@ describe('updateRecordById function', () => {
           }
         }
       };
-      nock(constants.URI)
-        .put(constants.API_ROUTE.RECORD, (rqBody) => {
+      nock(URI)
+        .put(API_ROUTE.RECORD, (rqBody) => {
           expect(rqBody.record).toMatchObject(recordsData);
           return true;
         })
@@ -736,8 +736,8 @@ describe('updateRecordById function', () => {
         }
       };
       const recordsData = [recordDataUpdate];
-      nock(constants.URI)
-        .put(constants.API_ROUTE.RECORD, (rqBody) => {
+      nock(URI)
+        .put(API_ROUTE.RECORD, (rqBody) => {
           expect(rqBody.record).toMatchObject(recordsData);
           return true;
         })
@@ -749,7 +749,7 @@ describe('updateRecordById function', () => {
           expect(type).toBe('application/json;charset=utf-8');
           return true;
         })
-        .reply(200, { 'revision': '9' });
+        .reply(200, {'revision': '9'});
 
       const updateRecordByIdResult = recordModule.updateRecordByID(appID, recordID, recordsData);
       return updateRecordByIdResult.then((rsp) => {
@@ -789,8 +789,8 @@ describe('updateRecordById function', () => {
           }
         }
       };
-      nock(constants.URI)
-        .put(constants.API_ROUTE.RECORD, (rqBody) => {
+      nock(URI)
+        .put(API_ROUTE.RECORD, (rqBody) => {
           expect(rqBody.record).toMatchObject(recordsData);
           return true;
         })
@@ -843,8 +843,8 @@ describe('updateRecordById function', () => {
           }
         }
       };
-      nock(constants.URI)
-        .put(constants.API_ROUTE.RECORD, (rqBody) => {
+      nock(URI)
+        .put(API_ROUTE.RECORD, (rqBody) => {
           expect(rqBody.record).toMatchObject(recordsData);
           return true;
         })
@@ -898,8 +898,8 @@ describe('updateRecordById function', () => {
           }
         }
       };
-      nock(constants.URI)
-        .put(constants.API_ROUTE.RECORD, (rqBody) => {
+      nock(URI)
+        .put(API_ROUTE.RECORD, (rqBody) => {
           expect(rqBody.record).toMatchObject(recordsData);
           return true;
         })

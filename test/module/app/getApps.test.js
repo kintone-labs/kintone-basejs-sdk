@@ -5,8 +5,8 @@
  */
 const nock = require('nock');
 const common = require('../../../test/utils/common');
-const constants = require('../../../test/utils/constant');
-const { KintoneAPIException, Connection, Auth, App } = require(common.MAIN_PATH);
+const {API_ROUTE, URI} = require('../../../test/utils/constant');
+const {KintoneAPIException, Connection, Auth, App} = require(common.MAIN_PATH);
 const auth = new Auth().setPasswordAuth(common.USERNAME, common.PASSWORD);
 
 const conn = new Connection(common.DOMAIN, auth);
@@ -15,8 +15,8 @@ const appModule = new App(conn);
 describe('getApps function', () => {
   describe('common function', () => {
     it('should return promise', () => {
-      nock(constants.URI)
-        .get(constants.API_ROUTE.APPS + '?offset=1&limit=10')
+      nock(URI)
+        .get(API_ROUTE.APPS + '?offset=1&limit=10')
         .reply(200, {});
 
       const getAppResult = appModule.getApps(1, 10);
@@ -25,7 +25,7 @@ describe('getApps function', () => {
     });
   });
   describe('success case', () => {
-    it('[App module-8] - should return the app information based on the limit', () => {
+    it('[App-8] - should return the app information based on the limit', () => {
       const limit = 3;
       const offset = 1;
       const expectResult = {
@@ -86,8 +86,8 @@ describe('getApps function', () => {
           }
         ]
       };
-      nock(constants.URI)
-        .get(constants.API_ROUTE.APPS + `?offset=${offset}&limit=${limit}`)
+      nock(URI)
+        .get(API_ROUTE.APPS + `?offset=${offset}&limit=${limit}`)
         .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
           expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
           return true;
@@ -101,7 +101,7 @@ describe('getApps function', () => {
     /**
    * Guest space app
    */
-    it('[App module-12] - should return the app information of guest space', () => {
+    it('[App-12] - should return the app information of guest space', () => {
       const limit = 3;
       const offset = 1;
       const connGuest = new Connection(common.DOMAIN, auth, common.GUEST_SPACEID);
@@ -128,7 +128,7 @@ describe('getApps function', () => {
           }
         ]
       };
-      nock(constants.URI)
+      nock(URI)
         .get(`/k/guest/1/v1/apps.json?offset=${offset}&limit=${limit}`)
         .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
           expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
@@ -143,7 +143,7 @@ describe('getApps function', () => {
     /**
      * Verify when not specifying the limit, the default limit value is 100
      */
-    it('[App module-16] - should return the app information when not specifying the limit, the default limit value is 100', () => {
+    it('[App-16] - should return the app information when not specifying the limit, the default limit value is 100', () => {
       const limit = null;
       const offset = 0;
       const expectResult = {
@@ -168,8 +168,8 @@ describe('getApps function', () => {
           }
         ]
       };
-      nock(constants.URI)
-        .get(constants.API_ROUTE.APPS + `?offset=${offset}&limit=${limit}`)
+      nock(URI)
+        .get(API_ROUTE.APPS + `?offset=${offset}&limit=${limit}`)
         .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
           expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
           return true;
@@ -183,7 +183,7 @@ describe('getApps function', () => {
     /**
     * Verify when not specifying the offset, the default offset value is 0
     */
-    it('[App module-17] - should return the app information when not specifying the limit, the default limit value is 100', () => {
+    it('[App-17] - should return the app information when not specifying the limit, the default limit value is 100', () => {
       const limit = 10;
       const offset = null;
       const expectResult = {
@@ -208,8 +208,8 @@ describe('getApps function', () => {
           }
         ]
       };
-      nock(constants.URI)
-        .get(constants.API_ROUTE.APPS + `?offset=${offset}&limit=${limit}`)
+      nock(URI)
+        .get(API_ROUTE.APPS + `?offset=${offset}&limit=${limit}`)
         .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
           expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
           return true;
@@ -223,7 +223,7 @@ describe('getApps function', () => {
   });
 
   describe('error case', () => {
-    it('[App module-7] - should return error when using API token authentication ', () => {
+    it('[App-7] - should return error when using API token authentication ', () => {
       const limit = 1;
       const offset = 1;
       const expectResult = {
@@ -231,8 +231,8 @@ describe('getApps function', () => {
         'id': 'lzQPJ1hkW3Aj4iVebWCG',
         'message': 'Using this API token, you cannot run the specified API.'
       };
-      nock(constants.URI)
-        .get(constants.API_ROUTE.APPS + `?offset=${offset}&limit=${limit}`)
+      nock(URI)
+        .get(API_ROUTE.APPS + `?offset=${offset}&limit=${limit}`)
         .reply(403, expectResult);
       const getAppsResult = appModule.getApps(offset, limit);
       return getAppsResult.catch((err) => {
@@ -243,7 +243,7 @@ describe('getApps function', () => {
     /**
     * Verify the error will be displayed when input 0 to the limit
     */
-    it('[App module-13] - should return error when the param limit has value of 0', () => {
+    it('[App-13] - should return error when the param limit has value of 0', () => {
       const limit = 0;
       const offset = 0;
       const expectedResult = {
@@ -256,8 +256,8 @@ describe('getApps function', () => {
           }
         }
       };
-      nock(constants.URI)
-        .get(constants.API_ROUTE.APPS + `?offset=${offset}&limit=${limit}`)
+      nock(URI)
+        .get(API_ROUTE.APPS + `?offset=${offset}&limit=${limit}`)
         .reply(400, expectedResult);
 
       const getAppsResult = appModule.getApps(offset, limit);
@@ -269,7 +269,7 @@ describe('getApps function', () => {
     /**
      * Verify the error will be displayed when input number > 100 to the limit
      */
-    it('[App module-14] - should return error when the param limit has value greater than 100', () => {
+    it('[App-14] - should return error when the param limit has value greater than 100', () => {
       const limit = 1000;
       const offset = 0;
       const expectedResult = {
@@ -282,8 +282,8 @@ describe('getApps function', () => {
           }
         }
       };
-      nock(constants.URI)
-        .get(constants.API_ROUTE.APPS + `?offset=${offset}&limit=${limit}`)
+      nock(URI)
+        .get(API_ROUTE.APPS + `?offset=${offset}&limit=${limit}`)
         .reply(400, expectedResult);
 
       const getAppsResult = appModule.getApps(offset, limit);
@@ -295,7 +295,7 @@ describe('getApps function', () => {
     /**
      * Verify the error will be displayed when input < 0 to the offset
      */
-    it('[App module-15] - should return error when the param offset has value less than 0', () => {
+    it('[App-15] - should return error when the param offset has value less than 0', () => {
       const limit = 10;
       const offset = -10;
       const expectedResult = {
@@ -310,8 +310,8 @@ describe('getApps function', () => {
           }
         }
       };
-      nock(constants.URI)
-        .get(constants.API_ROUTE.APPS + `?offset=${offset}&limit=${limit}`)
+      nock(URI)
+        .get(API_ROUTE.APPS + `?offset=${offset}&limit=${limit}`)
         .reply(400, expectedResult);
 
       const getAppsResult = appModule.getApps(offset, limit);
@@ -323,7 +323,7 @@ describe('getApps function', () => {
     /**
      * Verify the error will be displayed when input > 2147483647 to the offset
      */
-    it('[App module-18] - should return error when the param offset has value greater than max value 2147483647', () => {
+    it('[App-18] - should return error when the param offset has value greater than max value 2147483647', () => {
       const limit = 10;
       const offset = 2147483648;
       const expectedResult = {
@@ -336,8 +336,8 @@ describe('getApps function', () => {
           }
         }
       };
-      nock(constants.URI)
-        .get(constants.API_ROUTE.APPS + `?offset=${offset}&limit=${limit}`)
+      nock(URI)
+        .get(API_ROUTE.APPS + `?offset=${offset}&limit=${limit}`)
         .reply(400, expectedResult);
 
       const getAppsResult = appModule.getApps(offset, limit);
@@ -349,7 +349,7 @@ describe('getApps function', () => {
     /**
      * Verify the error will be displayed when input > 2147483647 to limit
      */
-    it('[App module-19] - should return error when the param limit has value greater than max value 2147483647', () => {
+    it('[App-19] - should return error when the param limit has value greater than max value 2147483647', () => {
       const limit = 2147483648;
       const offset = 0;
       const expectedResult = {
@@ -364,8 +364,8 @@ describe('getApps function', () => {
           }
         }
       };
-      nock(constants.URI)
-        .get(constants.API_ROUTE.APPS + `?offset=${offset}&limit=${limit}`)
+      nock(URI)
+        .get(API_ROUTE.APPS + `?offset=${offset}&limit=${limit}`)
         .reply(400, expectedResult);
 
       const getAppsResult = appModule.getApps(offset, limit);
