@@ -1,107 +1,402 @@
-
 /**
  * kintone api - nodejs client
  * test record module
  */
-
-const KintoneExeption = require('../../../src/exception/KintoneAPIException');
-const KintoneConnection = require('../../../src/connection/Connection');
-const KintoneAuth = require('../../../src/authentication/Auth');
-const KintoneRecord = require('../../../src/module/record/Record');
-const config = require('../../config');
 const nock = require('nock');
-const Common = require('../../Common');
+const common = require('../..//utils/common');
+const {Connection, Auth, Record} = require(common.MAIN_PATH);
 
-const common = new Common();
+const auth = new Auth().setPasswordAuth(common.USERNAME, common.PASSWORD);
+const conn = new Connection(common.DOMAIN, auth);
+const recordModule = new Record(conn);
 
-const auth = new KintoneAuth();
-auth.setPasswordAuth(config.username, config.password);
-
-const conn = new KintoneConnection(config.domain, auth);
-if (config.hasOwnProperty('proxy') && config.proxy) {
-  conn.addRequestOption('proxy', config.proxy);
-}
+const URI = 'https://' + common.DOMAIN;
+const ROUTE = '/k/v1/record/comment.json';
 
 describe('addComment function', () => {
   describe('common case', () => {
     it('should return a promise', () => {
-
-      nock('https://' + config.domain)
-        .post('/k/v1/record/comment.json')
-        .reply(200, {'id': '1'});
-      const recordModule = new KintoneRecord(conn);
+      nock(URI)
+        .post(ROUTE)
+        .reply(200, {id: '1'});
       const addCommentResult = recordModule.addComment();
       expect(addCommentResult).toHaveProperty('then');
       expect(addCommentResult).toHaveProperty('catch');
     });
   });
 
-  describe('success case', () => {
-    describe('valid data', () => {
+  describe('success cases', () => {
+    it('[RecordModule-236] should add comment to record successfully', () => {
       const data = {
-        app: config.app,
+        app: 1,
         record: 1,
         comment: {
           text: 'hello'
         }
       };
 
-      nock('https://' + config.domain)
-        .post('/k/v1/record/comment.json', (rqBody) => {
-          expect(rqBody).toMatchObject(data);
+      nock(URI)
+        .post(ROUTE, reqBody => {
+          expect(reqBody).toMatchObject(data);
           return true;
         })
-        .matchHeader('X-Cybozu-Authorization', (authHeader) => {
-          expect(authHeader).toBe(common.getPasswordAuth(config.username, config.password));
+        .matchHeader(common.PASSWORD_AUTH, authHeader => {
+          expect(authHeader).toBe(
+            common.getPasswordAuth(common.USERNAME, common.PASSWORD)
+          );
           return true;
         })
-        .matchHeader('Content-Type', (type) => {
-          expect(type).toBe('application/json');
-          return true;
-        })
-        .reply(200, {'id': '1'});
+        .reply(200, {id: '1'});
 
-      const recordModule = new KintoneRecord(conn);
-      const addCommentResult = recordModule.addComment(data.app, data.record, data.comment);
-      it('should add comment to record successfully', () => {
-        return addCommentResult.then((rsp) => {
-          expect(rsp).toHaveProperty('id');
-        });
+      const actualResult = recordModule.addComment(
+        data.app,
+        data.record,
+        data.comment
+      );
+      return actualResult.then(rsp => {
+        expect(rsp).toHaveProperty('id');
       });
-    // todo
     });
-  // todo
+
+    it('[RecordModule-237] should add a comment with the content containing special characters', () => {
+      const data = {
+        app: 1,
+        record: 2,
+        comment: {text: 'new comment containing 日本'}
+      };
+      const expectedResult = {id: '5'};
+      nock(URI)
+        .post(ROUTE, reqBody => {
+          expect(reqBody).toHaveProperty('comment');
+          return true;
+        })
+        .reply(200, expectedResult);
+
+      const actualResult = recordModule.addComment(
+        data.app,
+        data.record,
+        data.comment
+      );
+      return actualResult.then(response => {
+        expect(response).toMatchObject(expectedResult);
+      });
+    });
+
+    it('[RecordModule-239] should add a comment with mention', () => {
+      const data = {
+        app: 1,
+        record: 2,
+        comment: {
+          text: 'new comment containing 日本',
+          mentions: [
+            {
+              code: 'user16',
+              type: 'USER'
+            },
+            {
+              code: 'Global Sales_1BNZeQ',
+              type: 'ORGANIZATION'
+            },
+            {
+              code: 'APAC Taskforce_DJrvzu',
+              type: 'GROUP'
+            }
+          ]
+        }
+      };
+      const expectedResult = {id: '5'};
+      nock(URI)
+        .post(ROUTE, reqBody => {
+          expect(reqBody).toHaveProperty('comment');
+          expect(reqBody.comment).toHaveProperty('mentions');
+          return true;
+        })
+        .reply(200, expectedResult);
+
+      const actualResult = recordModule.addComment(
+        data.app,
+        data.record,
+        data.comment
+      );
+      return actualResult.then(response => {
+        expect(response).toMatchObject(expectedResult);
+      });
+    });
+
+    it('[RecordModule-252] should add a comment successfully when inputting string for appId', () => {
+      const data = {
+        app: 1,
+        record: 2,
+        comment: {text: 'something goes here'}
+      };
+      const expectedResult = {id: '8'};
+      nock(URI)
+        .post(ROUTE, reqBody => {
+          expect(reqBody).toHaveProperty('app');
+          expect(reqBody).toHaveProperty('record');
+          expect(reqBody).toHaveProperty('comment');
+          return true;
+        })
+        .reply(200, expectedResult);
+
+      const actualResult = recordModule.addComment(
+        data.app,
+        data.record,
+        data.comment
+      );
+      return actualResult.then(response => {
+        expect(response).toMatchObject(expectedResult);
+      });
+    });
   });
 
   describe('error case', () => {
     describe('invalid comment content', () => {
-      const data = {
-        app: config.app,
-        record: 1,
-        comment: {
-          text: 'hello'
-        }
-      };
-      const expectResult = common.getMissingOrInvalidInputResp();
-      nock('https://' + config.domain)
-        .post('/k/v1/record/comment.json', (rqBody) => {
-          expect(rqBody).toMatchObject(data);
-          return true;
-        })
-        .reply(400, expectResult);
+      it('[RecordModule-241] should return error when the comment text is blank', () => {
+        const data = {
+          app: 1,
+          record: 1,
+          comment: {
+            text: ''
+          }
+        };
+        const expectResult = {
+          code: 'CB_VA01',
+          id: '7oiYHOZd11fTpyvY00kG',
+          message: 'Missing or invalid input.',
+          errors: {
+            'comment.text': {
+              messages: [
+                'Enter between 1 and 65,535 characters.',
+                'Required field.'
+              ]
+            }
+          }
+        };
+        nock(URI)
+          .post(ROUTE, reqBody => {
+            expect(reqBody).toEqual(data);
+            return true;
+          })
+          .reply(400, expectResult);
 
-      const recordModule = new KintoneRecord(conn);
-      const addCommentResult = recordModule.addComment(data.app, data.record, data.comment);
-      it('should return error when the comment text is blank', () => {
-        return addCommentResult.catch((err) => {
-          expect(err).toBeInstanceOf(KintoneExeption);
-          expect(err.get()).toHaveProperty('id');
-          expect(err.get().code).toEqual(expectResult.code);
-          expect(err.get().message).toEqual(expectResult.message);
+        const actualResult = recordModule.addComment(
+          data.app,
+          data.record,
+          data.comment
+        );
+        return actualResult.catch(err => {
+          expect(err.get()).toMatchObject(expectResult);
         });
       });
-      // todo
     });
-    // todo
+
+    // it("[RecordModule-242] should return an error when specifying an unexisted user in mention", () => {
+    //   const data = {
+    //     app: 1,
+    //     record: 2,
+    //     comment: {
+    //       text: "something goes here",
+    //       mention: [
+    //         {
+    //           code: "un-existed",
+    //           type: "USER"
+    //         }
+    //       ]
+    //     }
+    //   };
+    //   const expectedResult = {
+    //     code: "CB_VA01",
+    //     id: "7oiYHOZd11fTpyvY00kG",
+    //     message: "Missing or invalid input.",
+    //     errors: {
+    //       "comment.text": {
+    //         messages: [
+    //           "Enter between 1 and 65,535 characters.",
+    //           "Required field."
+    //         ]
+    //       }
+    //     }
+    //   };
+    //   nock(URI)
+    //     .post(ROUTE, reqBody => {
+    //       expect(reqBody).toHaveProperty("comment");
+    //       expect(reqBody.comment).toHaveProperty("mention");
+    //       return true;
+    //     })
+    //     .reply(400, expectedResult);
+    //   const actualResult = recordModule.addComment(
+    //     data.app,
+    //     data.record,
+    //     data.comment
+    //   );
+    //   return actualResult.catch(err => {
+    //     expect(err).toBeInstanceOf(KintoneException);
+    //     expect(err.get()).toMatchObject(expectedResult);
+    //   });
+    // });
+
+    it('[RecordModule-246] should return an error when using invalid appId', () => {
+      const data = {
+        app: -1,
+        record: 2,
+        comment: {text: 'something goes here'}
+      };
+      const expectedResult = {
+        code: 'CB_VA01',
+        id: 'R4E6puJFh6nDPXypT796',
+        message: '入力内容が正しくありません。',
+        errors: {
+          app: {
+            messages: ['最小でも1以上です。']
+          }
+        }
+      };
+      nock(URI)
+        .post(ROUTE, reqBody => {
+          expect(reqBody.app).toBeLessThan(0);
+          return true;
+        })
+        .reply(400, expectedResult);
+      const actualResult = recordModule.addComment(
+        data.app,
+        data.record,
+        data.comment
+      );
+      return actualResult.catch(err => {
+        expect(err.get()).toMatchObject(expectedResult);
+      });
+    });
+
+    it('[RecordModule-247] should return an error when using invalid recordId', () => {
+      const data = {
+        app: 1,
+        record: -2,
+        comment: {text: 'something goes here'}
+      };
+      const expectedResult = {
+        code: 'CB_VA01',
+        id: 'MDx5kAIOfK4AbeJssEYW',
+        message: '入力内容が正しくありません。',
+        errors: {
+          record: {
+            messages: ['最小でも1以上です。']
+          }
+        }
+      };
+      nock(URI)
+        .post(ROUTE, reqBody => {
+          expect(reqBody.record).toBeLessThan(0);
+          return true;
+        })
+        .reply(400, expectedResult);
+      const actualResult = recordModule.addComment(
+        data.app,
+        data.record,
+        data.comment
+      );
+      return actualResult.catch(err => {
+        expect(err.get()).toMatchObject(expectedResult);
+      });
+    });
+
+    it('[RecordModule-248] should return an error when missing appId', () => {
+      const data = {
+        app: undefined,
+        record: 2,
+        comment: {text: 'something goes here'}
+      };
+      const expectedResult = {
+        code: 'CB_VA01',
+        id: '9JAS954ZZpOZk7PcZ3JS',
+        message: '入力内容が正しくありません。',
+        errors: {
+          app: {
+            messages: ['必須です。']
+          }
+        }
+      };
+      nock(URI)
+        .post(ROUTE, reqBody => {
+          expect(reqBody).not.toHaveProperty('app');
+          return true;
+        })
+        .reply(400, expectedResult);
+
+      const actualResult = recordModule.addComment(
+        data.app,
+        data.record,
+        data.comment
+      );
+      return actualResult.catch(err => {
+        expect(err.get()).toMatchObject(expectedResult);
+      });
+    });
+
+    it('[RecordModule-249] should return an error when missing recordId', () => {
+      const data = {
+        app: 1,
+        record: undefined,
+        comment: {text: 'something goes here'}
+      };
+      const expectedResult = {
+        code: 'CB_VA01',
+        id: 'jxdkEErN6fBh5Uip6qik',
+        message: '入力内容が正しくありません。',
+        errors: {
+          record: {
+            messages: ['必須です。']
+          }
+        }
+      };
+      nock(URI)
+        .post(ROUTE, reqBody => {
+          expect(reqBody).not.toHaveProperty('record');
+          return true;
+        })
+        .reply(400, expectedResult);
+
+      const actualResult = recordModule.addComment(
+        data.app,
+        data.record,
+        data.comment
+      );
+      return actualResult.catch(err => {
+        expect(err.get()).toMatchObject(expectedResult);
+      });
+    });
+
+    it('[RecordModule-250] should return an error when missing comment', () => {
+      const data = {
+        app: 1,
+        record: undefined,
+        comment: undefined
+      };
+      const expectedResult = {
+        code: 'CB_VA01',
+        id: 'GCUZnHDYCC6bvKjOSgoB',
+        message: '入力内容が正しくありません。',
+        errors: {
+          comment: {
+            messages: ['必須です。']
+          }
+        }
+      };
+      nock(URI)
+        .post(ROUTE, reqBody => {
+          expect(reqBody).not.toHaveProperty('comment');
+          return true;
+        })
+        .reply(400, expectedResult);
+
+      const actualResult = recordModule.addComment(
+        data.app,
+        data.record,
+        data.comment
+      );
+      return actualResult.catch(err => {
+        expect(err.get()).toMatchObject(expectedResult);
+      });
+    });
   });
 });
