@@ -380,7 +380,7 @@ describe('getAppDeployStatus function', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
-    it('should return error when use API token', () => {
+    it('should return error when use API token in GUEST SPACE', () => {
       const data = {
         'apps': [1, 2]
       };
@@ -403,7 +403,7 @@ describe('getAppDeployStatus function', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
-    it('should return error when input no appID', () => {
+    it('should return error when input no appID GUEST SPACE', () => {
       const expectedResult = {
         'code': 'CB_VA01',
         'id': 'b8mLxY4d96WXnfJmdoPi',
@@ -429,7 +429,7 @@ describe('getAppDeployStatus function', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
-    it('should return error when the appId is none exist', () => {
+    it('should return error when the appId is none exist GUEST SPACE', () => {
       const data = {
         'apps': [444444]
       };
@@ -447,7 +447,7 @@ describe('getAppDeployStatus function', () => {
         expect(err.get()).toMatchObject(expectResult);
       });
     });
-    it('should return error when input duplicated appID', () => {
+    it('should return error when input duplicated appID GUEST SPACE', () => {
       const data = {
         'apps': [1, 2]
       };
@@ -477,7 +477,7 @@ describe('getAppDeployStatus function', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
-    it('should return error when input appID is negative', () => {
+    it('should return error when input appID is negative GUEST SPACE', () => {
       const data = {
         'apps': [-1, 2]
       };
@@ -507,7 +507,7 @@ describe('getAppDeployStatus function', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
-    it('should return error when input appID is zero', () => {
+    it('should return error when input appID is zero GUEST SPACE', () => {
       const data = {
         'apps': [0, 2]
       };
@@ -537,7 +537,7 @@ describe('getAppDeployStatus function', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
-    it('should return error when input more than 300 appID', () => {
+    it('should return error when input more than 300 appID GUEST SPACE', () => {
       const data = {
         'apps': []
       };
@@ -561,7 +561,7 @@ describe('getAppDeployStatus function', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
-    it('should return error permission deny', () => {
+    it('should return error permission deny GUEST SPACE', () => {
       const data = {
         'apps': [1, 2]
       };
