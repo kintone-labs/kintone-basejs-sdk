@@ -59,7 +59,7 @@ describe('deleteComment function', () => {
         data.comment
       );
       return actualResult.then(response => {
-        expect(response).toEqual({});
+        expect(response).toMatchObject({});
       });
     });
   });
