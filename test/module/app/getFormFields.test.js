@@ -22,7 +22,7 @@ const conn = new Connection(common.DOMAIN, auth);
 const recordModule = new App(conn);
 
 const connGuest = new Connection(common.DOMAIN, auth, common.GUEST_SPACEID);
-const formField = new App(connGuest);
+const guestFormModule = new App(connGuest);
 
 describe('getFormFields function', () => {
   describe('common function', () => {
@@ -74,9 +74,114 @@ describe('getFormFields function', () => {
         expect(rsp).toMatchObject(expectResult);
       });
     });
-    it('[Form-6] Verify the data in localization', () => {
+    it('[Form-6] Verify the data in localization - JA', () => {
       const app = 10;
       const lang = 'ja';
+      const isPreview = false;
+      const expectResult = {
+        'properties': {
+          'Text__single_line_1': {
+            'type': 'SINGLE_LINE_TEXT',
+            'code': 'Text__single_line_1',
+            'label': 'テキスト',
+            'noLabel': false,
+            'required': true,
+            'unique': true,
+            'maxLength': '64',
+            'minLength': '0',
+            'defaultValue': '',
+            'expression': '',
+            'hideExpression': false
+          },
+        },
+        'revision': '2'
+      };
+      nock(URI)
+        .get(`${APP_FORM_FIELD_ROUTE}?app=${app}&lang=${lang}`)
+        .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+          expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+          return true;
+        })
+        .reply(200, expectResult);
+
+      const getFormFieldsResult = recordModule.getFormFields(app, lang, isPreview);
+      return getFormFieldsResult.then((rsp) => {
+        expect(rsp).toMatchObject(expectResult);
+      });
+    });
+    it('[Form-6] Verify the data in localization - EN', () => {
+      const app = 10;
+      const lang = 'en';
+      const isPreview = false;
+      const expectResult = {
+        'properties': {
+          'Text__single_line_1': {
+            'type': 'SINGLE_LINE_TEXT',
+            'code': 'Text__single_line_1',
+            'label': 'Text',
+            'noLabel': false,
+            'required': true,
+            'unique': true,
+            'maxLength': '64',
+            'minLength': '0',
+            'defaultValue': '',
+            'expression': '',
+            'hideExpression': false
+          },
+        },
+        'revision': '2'
+      };
+      nock(URI)
+        .get(`${APP_FORM_FIELD_ROUTE}?app=${app}&lang=${lang}`)
+        .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+          expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+          return true;
+        })
+        .reply(200, expectResult);
+
+      const getFormFieldsResult = recordModule.getFormFields(app, lang, isPreview);
+      return getFormFieldsResult.then((rsp) => {
+        expect(rsp).toMatchObject(expectResult);
+      });
+    });
+    it('[Form-6] Verify the data in localization - ZH', () => {
+      const app = 10;
+      const lang = 'zh';
+      const isPreview = false;
+      const expectResult = {
+        'properties': {
+          'Text__single_line_1': {
+            'type': 'SINGLE_LINE_TEXT',
+            'code': 'Text__single_line_1',
+            'label': '数据采集完成日期和时间',
+            'noLabel': false,
+            'required': true,
+            'unique': true,
+            'maxLength': '64',
+            'minLength': '0',
+            'defaultValue': '',
+            'expression': '',
+            'hideExpression': false
+          },
+        },
+        'revision': '2'
+      };
+      nock(URI)
+        .get(`${APP_FORM_FIELD_ROUTE}?app=${app}&lang=${lang}`)
+        .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+          expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+          return true;
+        })
+        .reply(200, expectResult);
+
+      const getFormFieldsResult = recordModule.getFormFields(app, lang, isPreview);
+      return getFormFieldsResult.then((rsp) => {
+        expect(rsp).toMatchObject(expectResult);
+      });
+    });
+    it('[Form-6] Verify the data in localization - USER BROWSER LANGUAGE', () => {
+      const app = 10;
+      const lang = 'user';
       const isPreview = false;
       const expectResult = {
         'properties': {
@@ -252,7 +357,7 @@ describe('getFormFields function', () => {
           return true;
         })
         .reply(200, expectResult);
-      const getFormFieldsResult = formField.getFormFields(app, lang, isPreview);
+      const getFormFieldsResult = guestFormModule.getFormFields(app, lang, isPreview);
       return getFormFieldsResult.then((rsp) => {
         expect(rsp).toMatchObject(expectResult);
       });

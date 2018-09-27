@@ -21,12 +21,12 @@ const conn = new Connection(common.DOMAIN, auth);
 const appModule = new App(conn);
 
 const connGuest = new Connection(common.DOMAIN, auth, common.GUEST_SPACEID);
-const guestappModule = new App(connGuest);
+const guestFormModule = new App(connGuest);
 
 const authToken = new Auth();
-authToken.setApiToken('a2386gf84gd663a12s32s');
+authToken.setApiToken(common.API_TOKEN);
 const connUsingToken = new Connection(common.DOMAIN, authToken);
-const appUsingtOKEN = new App(connUsingToken);
+const appUsingToken = new App(connUsingToken);
 
 describe('addFormFields function', () => {
   describe('common function', () => {
@@ -222,7 +222,7 @@ describe('addFormFields function', () => {
         })
         .reply(200, expectResult);
 
-      const addFormFieldsResult = guestappModule.addFormFields(data.app, data.properties, data.revision);
+      const addFormFieldsResult = guestFormModule.addFormFields(data.app, data.properties, data.revision);
       return addFormFieldsResult.then((rsp) => {
         expect(rsp).toMatchObject(expectResult);
       });
@@ -239,11 +239,11 @@ describe('addFormFields function', () => {
       nock(URI)
         .post(`${APP_FORM_FIELD_PREVIEW_ROUTE}`)
         .matchHeader(common.API_TOKEN, (authHeader) => {
-          expect(authHeader).toBe('a2386gf84gd663a12s32s');
+          expect(authHeader).toBe(common.API_TOKEN);
           return true;
         })
         .reply(520, expectResult);
-      const addFormFieldsResult = appUsingtOKEN.addFormFields(10);
+      const addFormFieldsResult = appUsingToken.addFormFields(10);
       return addFormFieldsResult.catch((err) => {
         expect(err.get()).toMatchObject(expectResult);
       });
