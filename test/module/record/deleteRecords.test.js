@@ -125,8 +125,8 @@ describe('deleteRecords function', () => {
         ids: [2]
       };
 
-      const conn_Guest_Space = new Connection(common.DOMAIN, auth, common.GUEST_SPACEID);
-      const recordModule_Guest_Space = new Record(conn_Guest_Space);
+      const connGuestSpace = new Connection(common.DOMAIN, auth, common.GUEST_SPACEID);
+      const recordInGuestSpace = new Record(connGuestSpace);
       nock(URI)
         .intercept(API_ROUTE.GUEST_RECORDS, 'DELETE', (rqBody) => {
           expect(rqBody.app).toEqual(data.app);
@@ -135,7 +135,7 @@ describe('deleteRecords function', () => {
         })
         .reply(200, {});
 
-      const deleteRecordsResult = recordModule_Guest_Space.deleteRecords(data.app, data.ids);
+      const deleteRecordsResult =recordInGuestSpace.deleteRecords(data.app, data.ids);
       return deleteRecordsResult.catch((err) => {
         expect(err).toBeInstanceOf(KintoneAPIException);
       });
