@@ -20,12 +20,12 @@ const conn = new Connection(common.DOMAIN, auth);
 const appModule = new App(conn);
 
 const connGuest = new Connection(common.DOMAIN, auth, common.GUEST_SPACEID);
-const guestappModule = new App(connGuest);
+const guestFormModule = new App(connGuest);
 
 const authToken = new Auth();
-authToken.setApiToken('a2386gf84gd663a12s32s');
+authToken.setApiToken(common.API_TOKEN);
 const connUsingToken = new Connection(common.DOMAIN, authToken);
-const appUsingtOKEN = new App(connUsingToken);
+const appUsingToken = new App(connUsingToken);
 
 describe('updateFormLayout function', () => {
   describe('common function', () => {
@@ -160,7 +160,7 @@ describe('updateFormLayout function', () => {
           return true;
         })
         .reply(200, expectResult);
-      const updateFormLayoutResult = guestappModule.updateFormLayout(data.app, data.layout);
+      const updateFormLayoutResult = guestFormModule.updateFormLayout(data.app, data.layout);
       return updateFormLayoutResult.then((rsp) => {
         expect(rsp).toMatchObject(expectResult);
       });
@@ -261,7 +261,7 @@ describe('updateFormLayout function', () => {
       nock(URI)
         .put(APP_FORM_LAYOUT_PREVIEW)
         .reply(520, expectResult);
-      const updateFormLayoutResult = appUsingtOKEN.updateFormLayout(10);
+      const updateFormLayoutResult = appUsingToken.updateFormLayout(10);
       return updateFormLayoutResult.catch((err) => {
         expect(err.get()).toMatchObject(expectResult);
       });

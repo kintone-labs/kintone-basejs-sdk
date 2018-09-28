@@ -27,7 +27,7 @@ const guestViewModule = new App(connGuest);
 const authToken = new Auth();
 authToken.setApiToken('a2386gf84gd663a12s32s');
 const connUsingToken = new Connection(common.DOMAIN, authToken);
-const appUsingtOKEN = new App(connUsingToken);
+const appUsingToken = new App(connUsingToken);
 
 describe('getViews function', () => {
   describe('common function', () => {
@@ -64,7 +64,7 @@ describe('getViews function', () => {
         }
       };
       nock(URI)
-        .get(`/k/v1/preview/app/views.json?app=${data.app}&lang=${data.lang}`)
+        .get(`${APP_VIEW_PREVIEW_ROUTE}?app=${data.app}&lang=${data.lang}`)
         .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
           expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
           return true;
@@ -206,7 +206,7 @@ describe('getViews function', () => {
         expect(rsp).toMatchObject(expectResult);
       });
     });
-    it('[View-5] localized language', () => {
+    it('[View-5] localized language - JA', () => {
       const data = {
         'app': '1',
         'lang': 'ja'
@@ -221,9 +221,107 @@ describe('getViews function', () => {
             'id': '5520267',
             'filterCond': '',
             'sort': 'Record_number asc',
-            'index': '0',
-            'date': 'Updated_datetime',
-            'title': 'Record_number'
+            'index': '1',
+            'fields': ['Record_number', 'Author']
+          }
+        },
+        'revision': '3'
+      };
+      nock(URI)
+        .get(`${APP_VIEW_ROUTE}?app=${data.app}&lang=${data.lang}`)
+        .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+          expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+          return true;
+        })
+        .reply(200, expectResult);
+      const getViewsResult = appModule.getViews(data.app, data.lang, isPreview);
+      return getViewsResult.then((rsp) => {
+        expect(rsp).toMatchObject(expectResult);
+      });
+    });
+    it('[View-5] localized language - EN', () => {
+      const data = {
+        'app': '1',
+        'lang': 'en'
+      };
+      const isPreview = false;
+
+      const expectResult = {
+        'views': {
+          'My List View': {
+            'type': 'CALENDAR',
+            'name': 'New Name',
+            'id': '5520267',
+            'filterCond': '',
+            'sort': 'Record_number asc',
+            'index': '1',
+            'fields': ['Record_number', 'Author']
+          }
+        },
+        'revision': '3'
+      };
+      nock(URI)
+        .get(`${APP_VIEW_ROUTE}?app=${data.app}&lang=${data.lang}`)
+        .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+          expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+          return true;
+        })
+        .reply(200, expectResult);
+      const getViewsResult = appModule.getViews(data.app, data.lang, isPreview);
+      return getViewsResult.then((rsp) => {
+        expect(rsp).toMatchObject(expectResult);
+      });
+    });
+    it('[View-5] localized language - ZH', () => {
+      const data = {
+        'app': '1',
+        'lang': 'zh'
+      };
+      const isPreview = false;
+
+      const expectResult = {
+        'views': {
+          '一覧1': {
+            'type': 'LIST',
+            'name': '一覧1',
+            'id': '5393788',
+            'filterCond': '',
+            'sort': 'レコード番号 desc',
+            'index': '1',
+            'fields': ['Record_number', 'Author']
+          }
+        },
+        'revision': '3'
+      };
+      nock(URI)
+        .get(`${APP_VIEW_ROUTE}?app=${data.app}&lang=${data.lang}`)
+        .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+          expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+          return true;
+        })
+        .reply(200, expectResult);
+      const getViewsResult = appModule.getViews(data.app, data.lang, isPreview);
+      return getViewsResult.then((rsp) => {
+        expect(rsp).toMatchObject(expectResult);
+      });
+    });
+    it('[View-5] localized language - USER BROWSER LANGUAGE', () => {
+      const data = {
+        'app': '1',
+        'lang': 'user'
+      };
+      const isPreview = false;
+
+      const expectResult = {
+        'views': {
+          'My List View': {
+            'type': 'CALENDAR',
+            'name': 'New Name',
+            'id': '5520267',
+            'filterCond': '',
+            'sort': 'Record_number asc',
+            'index': '1',
+            'fields': ['Record_number', 'Author']
           }
         },
         'revision': '3'
@@ -288,7 +386,7 @@ describe('getViews function', () => {
       nock(URI)
         .get(`${APP_VIEW_ROUTE}?app=${data.app}`)
         .reply(520, expectResult);
-      const addFormFieldsResult = appUsingtOKEN.getViews(data.app);
+      const addFormFieldsResult = appUsingToken.getViews(data.app);
       return addFormFieldsResult.catch((err) => {
         expect(err.get()).toMatchObject(expectResult);
       });

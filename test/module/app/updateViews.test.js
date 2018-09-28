@@ -24,9 +24,9 @@ const connGuest = new Connection(common.DOMAIN, auth, common.GUEST_SPACEID);
 const guestViewModule = new App(connGuest);
 
 const authToken = new Auth();
-authToken.setApiToken('a2386gf84gd663a12s32s');
+authToken.setApiToken(common.API_TOKEN);
 const connUsingToken = new Connection(common.DOMAIN, authToken);
-const appUsingtOKEN = new App(connUsingToken);
+const appUsingToken = new App(connUsingToken);
 
 describe('updateViews function', () => {
   describe('common function', () => {
@@ -242,7 +242,7 @@ describe('updateViews function', () => {
           return true;
         })
         .reply(520, expectResult);
-      const updateViewsResult = appUsingtOKEN.updateViews(appID);
+      const updateViewsResult = appUsingToken.updateViews(appID);
       return updateViewsResult.catch((err) => {
         expect(err).toBeInstanceOf(KintoneAPIException);
         expect(err.get()).toMatchObject(expectResult);
