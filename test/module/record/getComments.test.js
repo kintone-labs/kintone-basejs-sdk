@@ -51,8 +51,7 @@ describe('getComments function', () => {
   });
 
   describe('success cases', () => {
-    describe('valid data, app + record only', () => {
-      it('[RecordModule-215] should return correctly the comments of record,', () => {
+      it('[Record-215] should return correctly the comments of record once valid data, app + record only', () => {
         const data = {
           app: 1,
           record: 2
@@ -88,7 +87,7 @@ describe('getComments function', () => {
         });
       });
 
-      it('[RecordModule-216] should return the comments of record by the order of `asc`', () => {
+      it('[Record-216] should return the comments of record by the order of `asc`', () => {
         const data = {app: 1, record: 2};
         const expectedResult = {
           comments: [
@@ -153,7 +152,7 @@ describe('getComments function', () => {
         });
       });
 
-      it('[RecordModule-217] should return the comments of record by the order of `desc`', () => {
+      it('[Record-217] should return the comments of record by the order of `desc`', () => {
         const data = {app: 1, record: 2};
         const expectedResult = {
           comments: [
@@ -218,7 +217,7 @@ describe('getComments function', () => {
         });
       });
 
-      it('[RecordModule-219] should return the comments of record according to the offset value', () => {
+      it('[Record-219] should return the comments of record according to the offset value', () => {
         const data = {app: 1, record: 2};
         const expectedResult = {
           comments: [
@@ -270,7 +269,7 @@ describe('getComments function', () => {
         });
       });
 
-      it('[RecordModule-220] should return the comments of record without skipping when the offset value is 0', () => {
+      it('[Record-220] should return the comments of record without skipping when the offset value is 0', () => {
         const data = {app: 1, record: 2};
         const expectedResult = {
           comments: [
@@ -342,7 +341,7 @@ describe('getComments function', () => {
         });
       });
 
-      it('[RecordModule-222] should return the comments of record according to the limit value', () => {
+      it('[Record-222] should return the comments of record according to the limit value', () => {
         const data = {app: 1, record: 2};
         const expectedResult = {
           comments: [
@@ -389,7 +388,7 @@ describe('getComments function', () => {
         });
       });
 
-      it('[RecordModule-223] should NOT return the comments of record when the limit value is 0', () => {
+      it('[Record-223] should NOT return the comments of record when the limit value is 0', () => {
         const data = {app: 1, record: 2};
         const expectedResult = {
           comments: [],
@@ -412,11 +411,9 @@ describe('getComments function', () => {
           expect(response).toHaveProperty('comments');
           expect(response).toMatchObject(expectedResult);
         });
-      });
     });
 
-    describe('combination of order + offset + limit', () => {
-      it('[RecordModule-225] should return the comments of record when combining the three param {order, offset, limit}', () => {
+      it('[Record-225] should return the comments of record when combining the three param {order, offset, limit}', () => {
         const data = {app: 1, record: 2, order: 'desc', offset: 3, limit: 3};
         const expectedResult = {
           comments: [
@@ -455,11 +452,10 @@ describe('getComments function', () => {
           expect(response).toMatchObject(expectedResult);
         });
       });
-    });
   });
 
   describe('error case', () => {
-    it('[RecordModule-218] should return an error when the value of order is invalid', () => {
+    it('[Record-218] should return an error when the value of order is invalid', () => {
       const data = {
         app: 2,
         record: 1,
@@ -488,7 +484,7 @@ describe('getComments function', () => {
       });
     });
 
-    it('[RecordModule-221] should return an error when the value of offset is invalid', () => {
+    it('[Record-221] should return an error when the value of offset is invalid', () => {
       const data = {app: 1, record: 2};
       const OFFSET = -1;
       const expectedResult = {
@@ -517,7 +513,7 @@ describe('getComments function', () => {
       });
     });
 
-    it('[RecordModule-224] should return an error when the value of limit is greater than 10', () => {
+    it('[Record-224] should return an error when the value of limit is greater than 10', () => {
       const data = {app: 1, record: 2};
       const LIMIT = 11;
       const expectedResult = {
@@ -546,7 +542,7 @@ describe('getComments function', () => {
       });
     });
 
-    it('[RecordModule-230] should return an error when using invalid appId', () => {
+    it('[Record-230] should return an error when using invalid appId', () => {
       const data = {app: -1, record: 2};
       const expectedResult = {
         code: 'CB_VA01',
@@ -574,7 +570,7 @@ describe('getComments function', () => {
       });
     });
 
-    it('[RecordModule-231] should return an error when using invalid recordId', () => {
+    it('[Record-231] should return an error when using invalid recordId', () => {
       const data = {app: 1, record: -2};
       const expectedResult = {
         code: 'CB_VA01',
@@ -602,7 +598,7 @@ describe('getComments function', () => {
       });
     });
 
-    it('[RecordModule-232] should return an error when missing appId', () => {
+    it('[Record-232] should return an error when missing appId', () => {
       const data = {app: 1, record: 2};
       const expectedResult = {
         code: 'CB_VA01',
@@ -630,7 +626,7 @@ describe('getComments function', () => {
       });
     });
 
-    it('[RecordModule-233] should return an error when missing recordId', () => {
+    it('[Record-233] should return an error when missing recordId', () => {
       const data = {app: 1, record: 2};
       const expectedResult = {
         code: 'CB_VA01',

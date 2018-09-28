@@ -28,48 +28,46 @@ describe('[TestSuite] getAppsBySpaceIDs', () => {
   });
 
   describe('Success cases', () => {
-    describe('Valid request', () => {
-      it('[AppModule-58] should return the app information based on the list of space ID (without limit, offset)', () => {
-        const spaceIds = [1];
-        const expectResult = {
-          apps: [
-            {
-              appId: '1',
-              code: 'task',
-              name: 'My Test App',
-              description: 'Testing this app',
-              spaceId: null,
-              threadId: null,
-              createdAt: '2014-06-02T05:14:05.000Z',
-              creator: {
-                code: 'user1',
-                name: 'user1'
-              },
-              modifiedAt: '2014-06-02T05:14:05.000Z',
-              modifier: {
-                code: 'user1',
-                name: 'user1'
-              }
+    it('[App-58] should return the app information based on the list of space ID (without limit, offset)', () => {
+      const spaceIds = [1];
+      const expectResult = {
+        apps: [
+          {
+            appId: '1',
+            code: 'task',
+            name: 'My Test App',
+            description: 'Testing this app',
+            spaceId: null,
+            threadId: null,
+            createdAt: '2014-06-02T05:14:05.000Z',
+            creator: {
+              code: 'user1',
+              name: 'user1'
+            },
+            modifiedAt: '2014-06-02T05:14:05.000Z',
+            modifier: {
+              code: 'user1',
+              name: 'user1'
             }
-          ]
-        };
-        nock(URI)
-          .get(ROUTE + `?spaceIds[0]=${spaceIds[0]}`)
-          .matchHeader(common.PASSWORD_AUTH, authHeader => {
-            expect(authHeader).toBe(
-              common.getPasswordAuth(common.USERNAME, common.PASSWORD)
-            );
-            return true;
-          })
-          .reply(200, expectResult);
-        const actualResult = appModule.getAppsBySpaceIDs(spaceIds);
-        return actualResult.then(rsp => {
-          expect(rsp).toMatchObject(expectResult);
-        });
+          }
+        ]
+      };
+      nock(URI)
+        .get(ROUTE + `?spaceIds[0]=${spaceIds[0]}`)
+        .matchHeader(common.PASSWORD_AUTH, authHeader => {
+          expect(authHeader).toBe(
+            common.getPasswordAuth(common.USERNAME, common.PASSWORD)
+          );
+          return true;
+        })
+        .reply(200, expectResult);
+      const actualResult = appModule.getAppsBySpaceIDs(spaceIds);
+      return actualResult.then(rsp => {
+        expect(rsp).toMatchObject(expectResult);
       });
     });
 
-    it('[AppModule-59] should return the app information based on the list of spaceIds and the limit', () => {
+    it('[App-59] should return the app information based on the list of spaceIds and the limit', () => {
       const expectedResult = {
         apps: [
           {
@@ -132,7 +130,7 @@ describe('[TestSuite] getAppsBySpaceIDs', () => {
       });
     });
 
-    it('[AppModule-60] should return the app information based on the list of spaceIds and the offset', () => {
+    it('[App-60] should return the app information based on the list of spaceIds and the offset', () => {
       const expectedResult = {
         apps: [
           {
@@ -196,25 +194,23 @@ describe('[TestSuite] getAppsBySpaceIDs', () => {
   });
 
   describe('error case', () => {
-    describe('using API token authentication', () => {
-      it('[AppModule-57] should return error when using API token authentication ', () => {
-        const spaceIds = [1];
-        const expectResult = {
-          code: 'GAIA_NO01',
-          id: 'lzQPJ1hkW3Aj4iVebWCG',
-          message: 'Using this API token, you cannot run the specified API.'
-        };
-        nock(URI)
-          .get(ROUTE + `?spaceIds[0]=${spaceIds[0]}`)
-          .reply(403, expectResult);
-        const actualResult = appModule.getAppsBySpaceIDs(spaceIds);
-        return actualResult.catch(err => {
-          expect(err.get()).toMatchObject(expectResult);
-        });
+    it('[App-57] should return error when using API token authentication ', () => {
+      const spaceIds = [1];
+      const expectResult = {
+        code: 'GAIA_NO01',
+        id: 'lzQPJ1hkW3Aj4iVebWCG',
+        message: 'Using this API token, you cannot run the specified API.'
+      };
+      nock(URI)
+        .get(ROUTE + `?spaceIds[0]=${spaceIds[0]}`)
+        .reply(403, expectResult);
+      const actualResult = appModule.getAppsBySpaceIDs(spaceIds);
+      return actualResult.catch(err => {
+        expect(err.get()).toMatchObject(expectResult);
       });
     });
 
-    it('[AppModule-62] should return an error when the param limit has value of 0', () => {
+    it('[App-62] should return an error when the param limit has value of 0', () => {
       const spaceIds = [1, 2, 3];
       const limit = 0;
       const expectedResult = {
@@ -278,7 +274,7 @@ describe('[TestSuite] getAppsBySpaceIDs', () => {
       });
     });
 
-    it('[AppModule-64] should return an error when the param offset has value less than 0', () => {
+    it('[App-64] should return an error when the param offset has value less than 0', () => {
       const spaceIds = [1, 2, 3];
       const offset = -1;
       const expectedResult = {
@@ -310,9 +306,9 @@ describe('[TestSuite] getAppsBySpaceIDs', () => {
       });
     });
 
-    it('[AppModule-74] should return an error when the param offset has value greater than max value 2147483647', () => {
+    it('[App-74] should return an error when the param offset has value greater than max value 2147483647', () => {
       const spaceIds = [1, 2, 3];
-      const offset = 2147483647 + 1;
+      const offset = common.MAX_VALUE + 1;
       const expectedResult = {
         code: 'CB_VA01',
         id: 'RWue1TbVHvtSYABtAg6V',
@@ -342,9 +338,9 @@ describe('[TestSuite] getAppsBySpaceIDs', () => {
       });
     });
 
-    it('[AppModule-75] should return an error when the param limit has value greater than max value 2147483647', () => {
+    it('[App-75] should return an error when the param limit has value greater than max value 2147483647', () => {
       const spaceIds = [1, 2, 3];
-      const limit = 2147483647 + 1;
+      const limit = common.MAX_VALUE + 1;
       const expectedResult = {
         code: 'CB_VA01',
         id: 'ASeFDvLefehJ5IKyLmBJ',

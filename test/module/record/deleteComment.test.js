@@ -33,7 +33,7 @@ describe('deleteComment function', () => {
   });
 
   describe('success cases', () => {
-    it('[RecordModule-256] should delete comment with valid appId, recordId, commentId', () => {
+    it('[Record-256] should delete comment with valid appId, recordId, commentId', () => {
       const data = {
         app: 1,
         record: 1,
@@ -65,38 +65,36 @@ describe('deleteComment function', () => {
   });
 
   describe('error cases', () => {
-    describe('invalid comment id', () => {
-      it('[RecordModule-257] should return error when the comment is invalid', () => {
-        const data = {
-          app: 1,
-          record: 1,
-          comment: 444
-        };
-        const expectedResult = {
-          code: 'GAIA_RE02',
-          id: '3wYeQRwubqOzNISfmYSZ',
-          message:
-            '指定したコメントが存在しません。削除された可能性があります。'
-        };
-        nock(URI)
-          .intercept(ROUTE, 'DELETE', reqBody => {
-            expect(reqBody).toMatchObject(data);
-            return true;
-          })
-          .reply(520, expectedResult);
+    it('[Record-257] should return error when the comment id is invalid', () => {
+      const data = {
+        app: 1,
+        record: 1,
+        comment: 444
+      };
+      const expectedResult = {
+        code: 'GAIA_RE02',
+        id: '3wYeQRwubqOzNISfmYSZ',
+        message:
+          '指定したコメントが存在しません。削除された可能性があります。'
+      };
+      nock(URI)
+        .intercept(ROUTE, 'DELETE', reqBody => {
+          expect(reqBody).toMatchObject(data);
+          return true;
+        })
+        .reply(520, expectedResult);
 
-        const actualResult = recordModule.deleteComment(
-          data.app,
-          data.record,
-          data.comment
-        );
-        return actualResult.catch(err => {
-          expect(err.get()).toMatchObject(expectedResult);
-        });
+      const actualResult = recordModule.deleteComment(
+        data.app,
+        data.record,
+        data.comment
+      );
+      return actualResult.catch(err => {
+        expect(err.get()).toMatchObject(expectedResult);
       });
     });
 
-    it('[RecordModule-261] should return an error when using invalid appId', () => {
+    it('[Record-261] should return an error when using invalid appId', () => {
       const data = {app: -1, record: 2, comment: 3};
       const expectedResult = {};
       nock(URI)
@@ -116,7 +114,7 @@ describe('deleteComment function', () => {
       });
     });
 
-    it('[RecordModule-262] should return an error when using invalid recordId', () => {
+    it('[Record-262] should return an error when using invalid recordId', () => {
       const data = {app: 1, record: -2, comment: 3};
       const expectedResult = {};
       nock(URI)
@@ -136,7 +134,7 @@ describe('deleteComment function', () => {
       });
     });
 
-    it('[RecordModule-263] should return an error when missing appId', () => {
+    it('[Record-263] should return an error when missing appId', () => {
       const data = {app: undefined, record: 2, comment: 3};
       const expectedResult = {
         code: 'CB_VA01',
@@ -164,7 +162,7 @@ describe('deleteComment function', () => {
       });
     });
 
-    it('[RecordModule-264] should return an error when missing recordId', () => {
+    it('[Record-264] should return an error when missing recordId', () => {
       const data = {app: 1, record: undefined, comment: 3};
       const expectedResult = {
         code: 'CB_VA01',
@@ -192,7 +190,7 @@ describe('deleteComment function', () => {
       });
     });
 
-    it('[RecordModule-265] should return an error when missing commentId', () => {
+    it('[Record-265] should return an error when missing commentId', () => {
       const data = {app: 1, record: 2, comment: undefined};
       const expectedResult = {
         code: 'CB_VA01',
