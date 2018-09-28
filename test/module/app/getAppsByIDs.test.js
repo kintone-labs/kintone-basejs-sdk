@@ -12,6 +12,10 @@ const appModule = new App(conn);
 
 const URI = 'https://' + common.DOMAIN;
 const ROUTE = '/k/v1/apps.json';
+const GUEST_ROUTE = `/k/guest/${common.GUEST_SPACEID}/v1/apps.json`;
+
+const connGuestSpace = new Connection(common.DOMAIN, auth, common.GUEST_SPACEID);
+const appModuleGuestSpace = new App(connGuestSpace);
 
 describe('[TestSuite] getAppsByIDs', () => {
   describe('Common functions', () => {
@@ -28,7 +32,7 @@ describe('[TestSuite] getAppsByIDs', () => {
   });
 
   describe('Success cases', () => {
-    it('should return the app information based on the list of id (without limit, offset)', () => {
+    it('[App-22] should return the app information based on the list of id (without limit, offset)', () => {
       const appIds = [1];
       const expectedResult = {
         apps: [
@@ -67,7 +71,7 @@ describe('[TestSuite] getAppsByIDs', () => {
       });
     });
 
-    it('should return the app information based on the list of ids and the limit', () => {
+    it('[App-23-31] should return the app information based on the list of ids and the limit', () => {
       const expectedResult = {
         apps: [
           {
@@ -125,7 +129,7 @@ describe('[TestSuite] getAppsByIDs', () => {
       });
     });
 
-    it('should return the app information based on the list of ids and the offset', () => {
+    it('[App-24-30] should return the app information based on the list of ids and the offset', () => {
       const expectedResult = {
         apps: [
           {
@@ -182,10 +186,49 @@ describe('[TestSuite] getAppsByIDs', () => {
         expect(response).toMatchObject(expectedResult);
       });
     });
+
+    it('[App-25] Verify the app information of guest space is returned', () => {
+      const appIds = [1];
+      const expectedResult = {
+        apps: [
+          {
+            appId: '1',
+            code: 'task',
+            name: 'My Test App',
+            description: 'Testing this app',
+            spaceId: null,
+            threadId: null,
+            createdAt: '2014-06-02T05:14:05.000Z',
+            creator: {
+              code: 'user1',
+              name: 'user1'
+            },
+            modifiedAt: '2014-06-02T05:14:05.000Z',
+            modifier: {
+              code: 'user1',
+              name: 'user1'
+            }
+          }
+        ]
+      };
+      nock(URI)
+        .get(GUEST_ROUTE + `?ids[0]=${appIds[0]}`)
+        .matchHeader(common.PASSWORD_AUTH, authHeader => {
+          expect(authHeader).toBe(
+            common.getPasswordAuth(common.USERNAME, common.PASSWORD)
+          );
+          return true;
+        })
+        .reply(200, expectedResult);
+      const actualResult = appModuleGuestSpace.getAppsByIDs(appIds);
+      return actualResult.then(rsp => {
+        expect(rsp).toMatchObject(expectedResult);
+      });
+    });
   });
 
   describe('error case', () => {
-    it('should return error when using API token authentication ', () => {
+    it('[App-21] should return error when using API token authentication ', () => {
       const expectedResult = {
         code: 'GAIA_NO01',
         id: 'lzQPJ1hkW3Aj4iVebWCG',
@@ -199,8 +242,7 @@ describe('[TestSuite] getAppsByIDs', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
-    
-    it('should return an error when the param limit has value of 0', () => {
+    it('[App-27] should return an error when the param limit has value of 0', () => {
       const appIDs = [1, 2, 3];
       const limit = 0;
       const expectedResult = {
@@ -228,7 +270,7 @@ describe('[TestSuite] getAppsByIDs', () => {
       });
     });
 
-    it('should return an error when the param limit has value greater than 100', () => {
+    it('[App-28] should return an error when the param limit has value greater than 100', () => {
       const limit = 101;
       const appIDs = [1, 2, 3];
       const expectedResult = {
@@ -256,7 +298,7 @@ describe('[TestSuite] getAppsByIDs', () => {
       });
     });
 
-    it('should return an error when the param offset has value less than 0', () => {
+    it('[App-29] should return an error when the param offset has value less than 0', () => {
       const offset = -1;
       const appIDs = [1, 2, 3];
       const expectedResult = {
@@ -284,7 +326,7 @@ describe('[TestSuite] getAppsByIDs', () => {
       });
     });
 
-    it('should return an error when the param offset has value greater than max value 2147483647', () => {
+    it('[App-32] should return an error when the param offset has value greater than max value 2147483647', () => {
       const appIDs = [1, 2, 3];
       const expectedResult = {
         code: 'CB_VA01',
@@ -315,7 +357,7 @@ describe('[TestSuite] getAppsByIDs', () => {
       });
     });
 
-    it('should return an error when the param limit has value greater than max value 2147483647', () => {
+    it('[App-33] should return an error when the param limit has value greater than max value 2147483647', () => {
       const appIDs = [1, 2, 3];
       const expectedResult = {};
       nock(URI)
