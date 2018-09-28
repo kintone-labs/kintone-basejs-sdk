@@ -4,7 +4,7 @@
  */
 const nock = require('nock');
 const common = require('../..//utils/common');
-const {Connection, Auth, Record} = require(common.MAIN_PATH);
+const {KintoneAPIException, Connection, Auth, Record} = require(common.MAIN_PATH);
 
 const auth = new Auth().setPasswordAuth(common.USERNAME, common.PASSWORD);
 const conn = new Connection(common.DOMAIN, auth);
@@ -26,7 +26,7 @@ describe('addComment function', () => {
   });
 
   describe('success cases', () => {
-    it('[RecordModule-236] should add comment to record successfully', () => {
+    it('[Record-236] should add comment to record successfully', () => {
       const data = {
         app: 1,
         record: 1,
@@ -58,7 +58,7 @@ describe('addComment function', () => {
       });
     });
 
-    it('[RecordModule-237] should add a comment with the content containing special characters', () => {
+    it('[Record-237] should add a comment with the content containing special characters', () => {
       const data = {
         app: 1,
         record: 2,
@@ -82,7 +82,7 @@ describe('addComment function', () => {
       });
     });
 
-    it('[RecordModule-239] should add a comment with mention', () => {
+    it('[Record-239] should add a comment with mention', () => {
       const data = {
         app: 1,
         record: 2,
@@ -123,7 +123,7 @@ describe('addComment function', () => {
       });
     });
 
-    it('[RecordModule-252] should add a comment successfully when inputting string for appId', () => {
+    it('[Record-252] should add a comment successfully when inputting string for appId', () => {
       const data = {
         app: 1,
         record: 2,
@@ -151,92 +151,90 @@ describe('addComment function', () => {
   });
 
   describe('error case', () => {
-    describe('invalid comment content', () => {
-      it('[RecordModule-241] should return error when the comment text is blank', () => {
-        const data = {
-          app: 1,
-          record: 1,
-          comment: {
-            text: ''
+    it('[Record-241] should return error when the comment text is blank (invalid comment content)', () => {
+      const data = {
+        app: 1,
+        record: 1,
+        comment: {
+          text: ''
+        }
+      };
+      const expectResult = {
+        code: 'CB_VA01',
+        id: '7oiYHOZd11fTpyvY00kG',
+        message: 'Missing or invalid input.',
+        errors: {
+          'comment.text': {
+            messages: [
+              'Enter between 1 and 65,535 characters.',
+              'Required field.'
+            ]
           }
-        };
-        const expectResult = {
-          code: 'CB_VA01',
-          id: '7oiYHOZd11fTpyvY00kG',
-          message: 'Missing or invalid input.',
-          errors: {
-            'comment.text': {
-              messages: [
-                'Enter between 1 and 65,535 characters.',
-                'Required field.'
-              ]
-            }
-          }
-        };
-        nock(URI)
-          .post(ROUTE, reqBody => {
-            expect(reqBody).toEqual(data);
-            return true;
-          })
-          .reply(400, expectResult);
+        }
+      };
+      nock(URI)
+        .post(ROUTE, reqBody => {
+          expect(reqBody).toEqual(data);
+          return true;
+        })
+        .reply(400, expectResult);
 
-        const actualResult = recordModule.addComment(
-          data.app,
-          data.record,
-          data.comment
-        );
-        return actualResult.catch(err => {
-          expect(err.get()).toMatchObject(expectResult);
-        });
+      const actualResult = recordModule.addComment(
+        data.app,
+        data.record,
+        data.comment
+      );
+      return actualResult.catch(err => {
+        expect(err.get()).toMatchObject(expectResult);
       });
     });
 
-    // it("[RecordModule-242] should return an error when specifying an unexisted user in mention", () => {
-    //   const data = {
-    //     app: 1,
-    //     record: 2,
-    //     comment: {
-    //       text: "something goes here",
-    //       mention: [
-    //         {
-    //           code: "un-existed",
-    //           type: "USER"
-    //         }
-    //       ]
-    //     }
-    //   };
-    //   const expectedResult = {
-    //     code: "CB_VA01",
-    //     id: "7oiYHOZd11fTpyvY00kG",
-    //     message: "Missing or invalid input.",
-    //     errors: {
-    //       "comment.text": {
-    //         messages: [
-    //           "Enter between 1 and 65,535 characters.",
-    //           "Required field."
-    //         ]
-    //       }
-    //     }
-    //   };
-    //   nock(URI)
-    //     .post(ROUTE, reqBody => {
-    //       expect(reqBody).toHaveProperty("comment");
-    //       expect(reqBody.comment).toHaveProperty("mention");
-    //       return true;
-    //     })
-    //     .reply(400, expectedResult);
-    //   const actualResult = recordModule.addComment(
-    //     data.app,
-    //     data.record,
-    //     data.comment
-    //   );
-    //   return actualResult.catch(err => {
-    //     expect(err).toBeInstanceOf(KintoneException);
-    //     expect(err.get()).toMatchObject(expectedResult);
-    //   });
-    // });
+    it("[Record-242] should return an error when specifying an unexisted user in mention", () => {
+      const data = {
+        app: 1,
+        record: 2,
+        comment: {
+          text: "something goes here",
+          mention: [
+            {
+              code: "un-existed",
+              type: "USER"
+            }
+          ]
+        }
+      };
+      const expectedResult = {
+        code: "CB_VA01",
+        id: "7oiYHOZd11fTpyvY00kG",
+        message: "Missing or invalid input.",
+        errors: {
+          "comment.text": {
+            messages: [
+              "Enter between 1 and 65,535 characters.",
+              "Required field."
+            ]
+          }
+        }
+      };
+      nock(URI)
+        .post(ROUTE, reqBody => {
+          expect(reqBody).toHaveProperty("comment");
+          expect(reqBody.comment).toHaveProperty("mention");
+          return true;
+        })
+        .reply(400, expectedResult);
+      const actualResult = recordModule.addComment(
+        data.app,
+        data.record,
+        data.comment
+      );
+      return actualResult.catch(err => {
+        expect(err).toBeInstanceOf(KintoneAPIException);
+        expect(err.get()).toMatchObject(expectedResult);
+      });
+    });
 
-    it('[RecordModule-246] should return an error when using invalid appId', () => {
+    it('[Record-246] should return an error when using invalid appId', () => {
       const data = {
         app: -1,
         record: 2,
@@ -268,7 +266,7 @@ describe('addComment function', () => {
       });
     });
 
-    it('[RecordModule-247] should return an error when using invalid recordId', () => {
+    it('[Record-247] should return an error when using invalid recordId', () => {
       const data = {
         app: 1,
         record: -2,
@@ -300,7 +298,7 @@ describe('addComment function', () => {
       });
     });
 
-    it('[RecordModule-248] should return an error when missing appId', () => {
+    it('[Record-248] should return an error when missing appId', () => {
       const data = {
         app: undefined,
         record: 2,
@@ -333,7 +331,7 @@ describe('addComment function', () => {
       });
     });
 
-    it('[RecordModule-249] should return an error when missing recordId', () => {
+    it('[Record-249] should return an error when missing recordId', () => {
       const data = {
         app: 1,
         record: undefined,
@@ -366,7 +364,7 @@ describe('addComment function', () => {
       });
     });
 
-    it('[RecordModule-250] should return an error when missing comment', () => {
+    it('[Record-250] should return an error when missing comment', () => {
       const data = {
         app: 1,
         record: undefined,

@@ -28,182 +28,178 @@ describe('[TestSuite] getAppsByIDs', () => {
   });
 
   describe('Success cases', () => {
-    describe('Valid request', () => {
-      it('should return the app information based on the list of id (without limit, offset)', () => {
-        const appIds = [1];
-        const expectedResult = {
-          apps: [
-            {
-              appId: '1',
-              code: 'task',
-              name: 'My Test App',
-              description: 'Testing this app',
-              spaceId: null,
-              threadId: null,
-              createdAt: '2014-06-02T05:14:05.000Z',
-              creator: {
-                code: 'user1',
-                name: 'user1'
-              },
-              modifiedAt: '2014-06-02T05:14:05.000Z',
-              modifier: {
-                code: 'user1',
-                name: 'user1'
-              }
-            }
-          ]
-        };
-        nock(URI)
-          .get(ROUTE + `?ids[0]=${appIds[0]}`)
-          .matchHeader(common.PASSWORD_AUTH, authHeader => {
-            expect(authHeader).toBe(
-              common.getPasswordAuth(common.USERNAME, common.PASSWORD)
-            );
-            return true;
-          })
-          .reply(200, expectedResult);
-        const actualResult = appModule.getAppsByIDs(appIds);
-        return actualResult.then(rsp => {
-          expect(rsp).toMatchObject(expectedResult);
-        });
-      });
-
-      it('should return the app information based on the list of ids and the limit', () => {
-        const expectedResult = {
-          apps: [
-            {
-              appId: '1',
-              code: 'task',
-              name: 'My Test App',
-              description: 'Testing this app',
-              spaceId: null,
-              threadId: null,
-              createdAt: '2014-06-02T05:14:05.000Z',
-              creator: {
-                code: 'user1',
-                name: 'user1'
-              },
-              modifiedAt: '2014-06-02T05:14:05.000Z',
-              modifier: {
-                code: 'user1',
-                name: 'user1'
-              }
+    it('should return the app information based on the list of id (without limit, offset)', () => {
+      const appIds = [1];
+      const expectedResult = {
+        apps: [
+          {
+            appId: '1',
+            code: 'task',
+            name: 'My Test App',
+            description: 'Testing this app',
+            spaceId: null,
+            threadId: null,
+            createdAt: '2014-06-02T05:14:05.000Z',
+            creator: {
+              code: 'user1',
+              name: 'user1'
             },
-            {
-              appId: '2',
-              code: 'task',
-              name: 'My Test App',
-              description: 'Testing this app',
-              spaceId: null,
-              threadId: null,
-              createdAt: '2014-06-02T05:14:05.000Z',
-              creator: {
-                code: 'user1',
-                name: 'user1'
-              },
-              modifiedAt: '2014-06-02T05:14:05.000Z',
-              modifier: {
-                code: 'user1',
-                name: 'user1'
-              }
+            modifiedAt: '2014-06-02T05:14:05.000Z',
+            modifier: {
+              code: 'user1',
+              name: 'user1'
             }
-          ]
-        };
-        const limit = 2;
-        const appIDs = [1, 2, 3, 4, 5];
-        nock(URI)
-          .get(
-            ROUTE +
-              `?limit=${limit}&ids[0]=${appIDs[0]}&ids[1]=${appIDs[1]}&ids[2]=${
-                appIDs[2]
-              }&ids[3]=${appIDs[3]}&ids[4]=${appIDs[4]}`
-          )
-          .reply(200, expectedResult);
-
-        const actualResult = appModule.getAppsByIDs(appIDs, undefined, limit);
-        return actualResult.then(response => {
-          expect(response).toMatchObject(expectedResult);
-        });
+          }
+        ]
+      };
+      nock(URI)
+        .get(ROUTE + `?ids[0]=${appIds[0]}`)
+        .matchHeader(common.PASSWORD_AUTH, authHeader => {
+          expect(authHeader).toBe(
+            common.getPasswordAuth(common.USERNAME, common.PASSWORD)
+          );
+          return true;
+        })
+        .reply(200, expectedResult);
+      const actualResult = appModule.getAppsByIDs(appIds);
+      return actualResult.then(rsp => {
+        expect(rsp).toMatchObject(expectedResult);
       });
+    });
 
-      it('should return the app information based on the list of ids and the offset', () => {
-        const expectedResult = {
-          apps: [
-            {
-              appId: '1',
-              code: 'task',
-              name: 'My Test App',
-              description: 'Testing this app',
-              spaceId: null,
-              threadId: null,
-              createdAt: '2014-06-02T05:14:05.000Z',
-              creator: {
-                code: 'user1',
-                name: 'user1'
-              },
-              modifiedAt: '2014-06-02T05:14:05.000Z',
-              modifier: {
-                code: 'user1',
-                name: 'user1'
-              }
+    it('should return the app information based on the list of ids and the limit', () => {
+      const expectedResult = {
+        apps: [
+          {
+            appId: '1',
+            code: 'task',
+            name: 'My Test App',
+            description: 'Testing this app',
+            spaceId: null,
+            threadId: null,
+            createdAt: '2014-06-02T05:14:05.000Z',
+            creator: {
+              code: 'user1',
+              name: 'user1'
             },
-            {
-              appId: '3',
-              code: 'task',
-              name: 'My Test App',
-              description: 'Testing this app',
-              spaceId: null,
-              threadId: null,
-              createdAt: '2014-06-02T05:14:05.000Z',
-              creator: {
-                code: 'user1',
-                name: 'user1'
-              },
-              modifiedAt: '2014-06-02T05:14:05.000Z',
-              modifier: {
-                code: 'user1',
-                name: 'user1'
-              }
+            modifiedAt: '2014-06-02T05:14:05.000Z',
+            modifier: {
+              code: 'user1',
+              name: 'user1'
             }
-          ]
-        };
-        const offset = 2;
-        const appIDs = [1, 2, 3];
-        nock(URI)
-          .get(
-            ROUTE +
-              `?offset=${offset}&ids[0]=${appIDs[0]}&ids[1]=${
-                appIDs[1]
-              }&ids[2]=${appIDs[2]}`
-          )
-          .reply(200, expectedResult);
+          },
+          {
+            appId: '2',
+            code: 'task',
+            name: 'My Test App',
+            description: 'Testing this app',
+            spaceId: null,
+            threadId: null,
+            createdAt: '2014-06-02T05:14:05.000Z',
+            creator: {
+              code: 'user1',
+              name: 'user1'
+            },
+            modifiedAt: '2014-06-02T05:14:05.000Z',
+            modifier: {
+              code: 'user1',
+              name: 'user1'
+            }
+          }
+        ]
+      };
+      const limit = 2;
+      const appIDs = [1, 2, 3, 4, 5];
+      nock(URI)
+        .get(
+          ROUTE +
+            `?limit=${limit}&ids[0]=${appIDs[0]}&ids[1]=${appIDs[1]}&ids[2]=${
+              appIDs[2]
+            }&ids[3]=${appIDs[3]}&ids[4]=${appIDs[4]}`
+        )
+        .reply(200, expectedResult);
 
-        const actualResult = appModule.getAppsByIDs(appIDs, offset, undefined);
-        return actualResult.then(response => {
-          expect(response).toMatchObject(expectedResult);
-        });
+      const actualResult = appModule.getAppsByIDs(appIDs, undefined, limit);
+      return actualResult.then(response => {
+        expect(response).toMatchObject(expectedResult);
+      });
+    });
+
+    it('should return the app information based on the list of ids and the offset', () => {
+      const expectedResult = {
+        apps: [
+          {
+            appId: '1',
+            code: 'task',
+            name: 'My Test App',
+            description: 'Testing this app',
+            spaceId: null,
+            threadId: null,
+            createdAt: '2014-06-02T05:14:05.000Z',
+            creator: {
+              code: 'user1',
+              name: 'user1'
+            },
+            modifiedAt: '2014-06-02T05:14:05.000Z',
+            modifier: {
+              code: 'user1',
+              name: 'user1'
+            }
+          },
+          {
+            appId: '3',
+            code: 'task',
+            name: 'My Test App',
+            description: 'Testing this app',
+            spaceId: null,
+            threadId: null,
+            createdAt: '2014-06-02T05:14:05.000Z',
+            creator: {
+              code: 'user1',
+              name: 'user1'
+            },
+            modifiedAt: '2014-06-02T05:14:05.000Z',
+            modifier: {
+              code: 'user1',
+              name: 'user1'
+            }
+          }
+        ]
+      };
+      const offset = 2;
+      const appIDs = [1, 2, 3];
+      nock(URI)
+        .get(
+          ROUTE +
+            `?offset=${offset}&ids[0]=${appIDs[0]}&ids[1]=${
+              appIDs[1]
+            }&ids[2]=${appIDs[2]}`
+        )
+        .reply(200, expectedResult);
+
+      const actualResult = appModule.getAppsByIDs(appIDs, offset, undefined);
+      return actualResult.then(response => {
+        expect(response).toMatchObject(expectedResult);
       });
     });
   });
 
   describe('error case', () => {
-    describe('using API token authentication', () => {
-      it('should return error when using API token authentication ', () => {
-        const expectedResult = {
-          code: 'GAIA_NO01',
-          id: 'lzQPJ1hkW3Aj4iVebWCG',
-          message: 'Using this API token, you cannot run the specified API.'
-        };
-        nock(URI)
-          .get(ROUTE + `?ids[0]=1`)
-          .reply(403, expectedResult);
-        const getAppsResult = appModule.getAppsByIDs([1]);
-        return getAppsResult.catch(err => {
-          expect(err.get()).toMatchObject(expectedResult);
-        });
+    it('should return error when using API token authentication ', () => {
+      const expectedResult = {
+        code: 'GAIA_NO01',
+        id: 'lzQPJ1hkW3Aj4iVebWCG',
+        message: 'Using this API token, you cannot run the specified API.'
+      };
+      nock(URI)
+        .get(ROUTE + `?ids[0]=1`)
+        .reply(403, expectedResult);
+      const getAppsResult = appModule.getAppsByIDs([1]);
+      return getAppsResult.catch(err => {
+        expect(err.get()).toMatchObject(expectedResult);
       });
     });
-
+    
     it('should return an error when the param limit has value of 0', () => {
       const appIDs = [1, 2, 3];
       const limit = 0;
@@ -289,7 +285,6 @@ describe('[TestSuite] getAppsByIDs', () => {
     });
 
     it('should return an error when the param offset has value greater than max value 2147483647', () => {
-      const MAX_VALUE = 2147483647;
       const appIDs = [1, 2, 3];
       const expectedResult = {
         code: 'CB_VA01',
@@ -304,7 +299,7 @@ describe('[TestSuite] getAppsByIDs', () => {
       nock(URI)
         .get(
           ROUTE +
-            `?offset=${MAX_VALUE + 1}&ids[0]=${appIDs[0]}&ids[1]=${
+            `?offset=${common.MAX_VALUE + 1}&ids[0]=${appIDs[0]}&ids[1]=${
               appIDs[1]
             }&ids[2]=${appIDs[2]}`
         )
@@ -312,7 +307,7 @@ describe('[TestSuite] getAppsByIDs', () => {
 
       const actualResult = appModule.getAppsByIDs(
         appIDs,
-        MAX_VALUE + 1,
+        common.MAX_VALUE + 1,
         undefined
       );
       return actualResult.catch(err => {
@@ -321,13 +316,12 @@ describe('[TestSuite] getAppsByIDs', () => {
     });
 
     it('should return an error when the param limit has value greater than max value 2147483647', () => {
-      const MAX_VALUE = 2147483647;
       const appIDs = [1, 2, 3];
       const expectedResult = {};
       nock(URI)
         .get(
           ROUTE +
-            `?limit=${MAX_VALUE + 1}&ids[0]=${appIDs[0]}&ids[1]=${
+            `?limit=${common.MAX_VALUE + 1}&ids[0]=${appIDs[0]}&ids[1]=${
               appIDs[1]
             }&ids[2]=${appIDs[2]}`
         )
@@ -336,7 +330,7 @@ describe('[TestSuite] getAppsByIDs', () => {
       const actualResult = appModule.getAppsByIDs(
         appIDs,
         undefined,
-        MAX_VALUE + 1
+        common.MAX_VALUE + 1
       );
       return actualResult.catch(err => {
         expect(err.get()).toMatchObject(expectedResult);
