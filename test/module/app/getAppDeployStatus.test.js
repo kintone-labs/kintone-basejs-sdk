@@ -60,7 +60,7 @@ describe('getAppDeployStatus function', () => {
     });
   });
   describe('success case', () => {
-    it('should get successfully the app deploy status', () => {
+    it('[App module-107]should get successfully the app deploy status', () => {
       const data = {
         'apps': [1, 2]
       };
@@ -89,7 +89,7 @@ describe('getAppDeployStatus function', () => {
         expect(rsp).toMatchObject(expectedResult);
       });
     });
-    it('should get successfully the app deploy status when input 300 appID', () => {
+    it('[App module-108]should get successfully the app deploy status when input 300 appID', () => {
       const data = {
         'apps': []
       };
@@ -117,7 +117,7 @@ describe('getAppDeployStatus function', () => {
         expect(rsp).toMatchObject(expectedResult);
       });
     });
-    it('should get successfully the app deploy status in GUEST SPACE', () => {
+    it('[App module-109]should get successfully the app deploy status in GUEST SPACE', () => {
       const data = {
         'apps': [1, 2]
       };
@@ -146,7 +146,7 @@ describe('getAppDeployStatus function', () => {
         expect(rsp).toMatchObject(expectedResult);
       });
     });
-    it('should get successfully the app deploy status when input 300 appID in GUEST SPACE', () => {
+    it('[App module-110]should get successfully the app deploy status when input 300 appID in GUEST SPACE', () => {
       const data = {
         'apps': []
       };
@@ -176,7 +176,7 @@ describe('getAppDeployStatus function', () => {
     });
   });
   describe('error case', () => {
-    it('should return error when use API token', () => {
+    it('[App module-111]should return error when use API token', () => {
       const data = {
         'apps': [1, 2]
       };
@@ -199,7 +199,30 @@ describe('getAppDeployStatus function', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
-    it('should return error when input no appID', () => {
+    it('[App module-112]should return error when use API token in GUEST SPACE', () => {
+      const data = {
+        'apps': [1, 2]
+      };
+      const params = common.serializeParams(data);
+      const expectedResult = {
+        'code': 'GAIA_NO01',
+        'id': 'TQlNrvAWQSBmQf7hTBHs',
+        'message': 'Using this API token, you cannot run the specified API.'
+      };
+      nock(URI)
+        .get(`${GUEST_APP_PREVIEW_DEPLOY_ROUTE}?${params}`)
+        .matchHeader(common.API_TOKEN, (authHeader) => {
+          expect(authHeader).toBe(authAPI.getApiToken());
+          return true;
+        })
+        .reply(400, expectedResult);
+      const getAppDeployStatusResult = appModuleAPIGuestSpace.getAppDeployStatus(data.apps);
+      return getAppDeployStatusResult.catch((err) => {
+        expect(err).toBeInstanceOf(KintoneAPIException);
+        expect(err.get()).toMatchObject(expectedResult);
+      });
+    });
+    it('[App module-113]should return error when input no appID', () => {
       const expectedResult = {
         'code': 'CB_VA01',
         'id': 'b8mLxY4d96WXnfJmdoPi',
@@ -225,7 +248,7 @@ describe('getAppDeployStatus function', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
-    it('should return error when the appId is none exist', () => {
+    it('[App module-114]should return error when the appId is none exist', () => {
       const data = {
         'apps': [444444]
       };
@@ -243,9 +266,9 @@ describe('getAppDeployStatus function', () => {
         expect(err.get()).toMatchObject(expectResult);
       });
     });
-    it('should return error when input duplicated appID', () => {
+    it('[App module-115]should return error when input duplicated appID', () => {
       const data = {
-        'apps': [1, 2]
+        'apps': [1, 1]
       };
       const params = common.serializeParams(data);
       const expectedResult = {
@@ -273,7 +296,7 @@ describe('getAppDeployStatus function', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
-    it('should return error when input appID is negative', () => {
+    it('[App module-116]should return error when input appID is negative', () => {
       const data = {
         'apps': [-1, 2]
       };
@@ -303,7 +326,7 @@ describe('getAppDeployStatus function', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
-    it('should return error when input appID is zero', () => {
+    it('[App module-117]should return error when input appID is zero', () => {
       const data = {
         'apps': [0, 2]
       };
@@ -333,7 +356,7 @@ describe('getAppDeployStatus function', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
-    it('should return error when input more than 300 appID', () => {
+    it('[App module-118]should return error when input more than 300 appID', () => {
       const data = {
         'apps': []
       };
@@ -357,53 +380,7 @@ describe('getAppDeployStatus function', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
-    it('should return error permission deny', () => {
-      const data = {
-        'apps': [1, 2]
-      };
-      const params = common.serializeParams(data);
-      const expectedResult = {
-        'code': 'CB_NO02',
-        'id': 'QuohWmIy6j6L7IM0S6QP',
-        'message': 'No privilege to proceed.'
-      };
-      nock(URI)
-        .get(`${APP_PREVIEW_DEPLOY_ROUTE}?${params}`)
-        .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-          expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
-          return true;
-        })
-        .reply(403, expectedResult);
-      const getAppDeployStatusResult = appModule.getAppDeployStatus(data.apps);
-      return getAppDeployStatusResult.catch((err) => {
-        expect(err).toBeInstanceOf(KintoneAPIException);
-        expect(err.get()).toMatchObject(expectedResult);
-      });
-    });
-    it('should return error when use API token in GUEST SPACE', () => {
-      const data = {
-        'apps': [1, 2]
-      };
-      const params = common.serializeParams(data);
-      const expectedResult = {
-        'code': 'GAIA_NO01',
-        'id': 'TQlNrvAWQSBmQf7hTBHs',
-        'message': 'Using this API token, you cannot run the specified API.'
-      };
-      nock(URI)
-        .get(`${GUEST_APP_PREVIEW_DEPLOY_ROUTE}?${params}`)
-        .matchHeader(common.API_TOKEN, (authHeader) => {
-          expect(authHeader).toBe(authAPI.getApiToken());
-          return true;
-        })
-        .reply(400, expectedResult);
-      const getAppDeployStatusResult = appModuleAPIGuestSpace.getAppDeployStatus(data.apps);
-      return getAppDeployStatusResult.catch((err) => {
-        expect(err).toBeInstanceOf(KintoneAPIException);
-        expect(err.get()).toMatchObject(expectedResult);
-      });
-    });
-    it('should return error when input no appID GUEST SPACE', () => {
+    it('[App module-119]should return error when input no appID GUEST SPACE', () => {
       const expectedResult = {
         'code': 'CB_VA01',
         'id': 'b8mLxY4d96WXnfJmdoPi',
@@ -429,7 +406,7 @@ describe('getAppDeployStatus function', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
-    it('should return error when the appId is none exist GUEST SPACE', () => {
+    it('[App module-120]should return error when the appId is none exist GUEST SPACE', () => {
       const data = {
         'apps': [444444]
       };
@@ -447,9 +424,9 @@ describe('getAppDeployStatus function', () => {
         expect(err.get()).toMatchObject(expectResult);
       });
     });
-    it('should return error when input duplicated appID GUEST SPACE', () => {
+    it('[App module-121]should return error when input duplicated appID GUEST SPACE', () => {
       const data = {
-        'apps': [1, 2]
+        'apps': [1, 1]
       };
       const params = common.serializeParams(data);
       const expectedResult = {
@@ -477,7 +454,7 @@ describe('getAppDeployStatus function', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
-    it('should return error when input appID is negative GUEST SPACE', () => {
+    it('[App module-122]should return error when input appID is negative GUEST SPACE', () => {
       const data = {
         'apps': [-1, 2]
       };
@@ -507,7 +484,7 @@ describe('getAppDeployStatus function', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
-    it('should return error when input appID is zero GUEST SPACE', () => {
+    it('[App module-123]should return error when input appID is zero GUEST SPACE', () => {
       const data = {
         'apps': [0, 2]
       };
@@ -537,7 +514,7 @@ describe('getAppDeployStatus function', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
-    it('should return error when input more than 300 appID GUEST SPACE', () => {
+    it('[App module-124]should return error when input more than 300 appID GUEST SPACE', () => {
       const data = {
         'apps': []
       };
@@ -561,7 +538,30 @@ describe('getAppDeployStatus function', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
-    it('should return error permission deny GUEST SPACE', () => {
+    it('[App module-125]should return error permission deny', () => {
+      const data = {
+        'apps': [1, 2]
+      };
+      const params = common.serializeParams(data);
+      const expectedResult = {
+        'code': 'CB_NO02',
+        'id': 'QuohWmIy6j6L7IM0S6QP',
+        'message': 'No privilege to proceed.'
+      };
+      nock(URI)
+        .get(`${APP_PREVIEW_DEPLOY_ROUTE}?${params}`)
+        .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+          expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+          return true;
+        })
+        .reply(403, expectedResult);
+      const getAppDeployStatusResult = appModule.getAppDeployStatus(data.apps);
+      return getAppDeployStatusResult.catch((err) => {
+        expect(err).toBeInstanceOf(KintoneAPIException);
+        expect(err.get()).toMatchObject(expectedResult);
+      });
+    });
+    it('[App module-126]should return error permission deny GUEST SPACE', () => {
       const data = {
         'apps': [1, 2]
       };

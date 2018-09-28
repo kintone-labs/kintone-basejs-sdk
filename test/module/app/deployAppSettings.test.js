@@ -55,7 +55,7 @@ describe('deployAppSettings function', () => {
   });
 
   describe('success case', () => {
-    it('should deploy successfully the app', () => {
+    it('[App module-77]should deploy successfully the app', () => {
       const data = {
         'apps': [
           {
@@ -88,7 +88,7 @@ describe('deployAppSettings function', () => {
         expect(rsp).toMatchObject({});
       });
     });
-    it('should deploy successfully the app when input revert =  false', () => {
+    it('[App module-78]should deploy successfully the app when input revert =  false', () => {
       const data = {
         'apps': [
           {
@@ -121,7 +121,7 @@ describe('deployAppSettings function', () => {
         expect(rsp).toMatchObject({});
       });
     });
-    it('should deploy successfully the app without revert', () => {
+    it('[App module-79]should deploy successfully the app without revert', () => {
       const data = {
         'apps': [
           {
@@ -153,7 +153,7 @@ describe('deployAppSettings function', () => {
         expect(rsp).toMatchObject({});
       });
     });
-    it('should deploy successfully the app when input revision = -1', () => {
+    it('[App module-80]should deploy successfully the app when input revision = -1', () => {
       const data = {
         'apps': [
           {
@@ -186,7 +186,7 @@ describe('deployAppSettings function', () => {
         expect(rsp).toMatchObject({});
       });
     });
-    it('should deploy successfully the app without revision', () => {
+    it('[App module-81]should deploy successfully the app without revision', () => {
       const data = {
         'apps': [
           {
@@ -217,7 +217,7 @@ describe('deployAppSettings function', () => {
         expect(rsp).toMatchObject({});
       });
     });
-    it('should deploy successfully the app in GUEST SPACE', () => {
+    it('[App module-82]should deploy successfully the app in GUEST SPACE', () => {
       const data = {
         'apps': [
           {
@@ -250,7 +250,7 @@ describe('deployAppSettings function', () => {
         expect(rsp).toMatchObject({});
       });
     });
-    it('should deploy successfully the app when input revert =  false in GUEST SPACE', () => {
+    it('[App module-83]should deploy successfully the app when input revert =  false in GUEST SPACE', () => {
       const data = {
         'apps': [
           {
@@ -283,7 +283,7 @@ describe('deployAppSettings function', () => {
         expect(rsp).toMatchObject({});
       });
     });
-    it('should deploy successfully the app without revert in GUEST SPACE', () => {
+    it('[App module-84]should deploy successfully the app without revert in GUEST SPACE', () => {
       const data = {
         'apps': [
           {
@@ -315,7 +315,7 @@ describe('deployAppSettings function', () => {
         expect(rsp).toMatchObject({});
       });
     });
-    it('should deploy successfully the app when input revision = -1 in GUEST SPACE', () => {
+    it('[App module-85]should deploy successfully the app when input revision = -1 in GUEST SPACE', () => {
       const data = {
         'apps': [
           {
@@ -348,7 +348,7 @@ describe('deployAppSettings function', () => {
         expect(rsp).toMatchObject({});
       });
     });
-    it('should deploy successfully the app without revision in GUEST SPACE', () => {
+    it('[App module-86]should deploy successfully the app without revision in GUEST SPACE', () => {
       const data = {
         'apps': [
           {
@@ -382,7 +382,7 @@ describe('deployAppSettings function', () => {
   });
 
   describe('error case', () => {
-    it('should return error when use API token', () => {
+    it('[App module-87]should return error when use API token', () => {
       const data = {
         'apps': [
           {
@@ -421,347 +421,7 @@ describe('deployAppSettings function', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
-    it('should return error when the appId is none exist', () => {
-      const data = {
-        'apps': [
-          {
-            'app': 444444
-          }
-        ]
-      };
-      const expectResult = {
-        'code': 'GAIA_AP01',
-        'id': 'K45k0CEPV5802MKyPcu1',
-        'message': 'The app (ID: 444444) not found. The app may have been deleted.'
-      };
-
-      nock(URI)
-        .post(APP_PREVIEW_DEPLOY_ROUTE, (rqBody) => {
-          expect(rqBody).toEqual(data);
-          return true;
-        })
-        .reply(404, expectResult);
-      const deployAppSettingsResult = appModule.deployAppSettings(data.apps);
-      return deployAppSettingsResult.catch((err) => {
-        expect(err).toBeInstanceOf(KintoneAPIException);
-        expect(err.get()).toMatchObject(expectResult);
-      });
-    });
-    it('should return error when input revision is incorrectly', () => {
-      const data = {
-        'apps': [
-          {
-            'app': 1,
-            'revision': 9999999999
-          },
-        ],
-        'revert': true
-      };
-      const expectedResult = {
-        'code': 'GAIA_CO03',
-        'id': 'WI3yLUgRs3C9mhAkVDZZ',
-        'message': 'The revision is not the latest. Someone may update the app settings (ID: 1).'
-      };
-      nock(URI)
-        .post(APP_PREVIEW_DEPLOY_ROUTE, (rqBody) => {
-          expect(rqBody).toEqual(data);
-          return true;
-        })
-        .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-          expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
-          return true;
-        })
-        .matchHeader('Content-Type', (type) => {
-          expect(type).toBe('application/json;charset=utf-8');
-          return true;
-        })
-        .reply(409, expectedResult);
-      const deployAppSettingsResult = appModule.deployAppSettings(data.apps, data.revert);
-      return deployAppSettingsResult.catch((err) => {
-        expect(err).toBeInstanceOf(KintoneAPIException);
-        expect(err.get()).toMatchObject(expectedResult);
-      });
-    });
-    it('should return error when input revision is invalid', () => {
-      const data = {
-        'apps': [
-          {
-            'app': 1,
-            'revision': 'testInvalidRevision'
-          },
-        ],
-        'revert': true
-      };
-      const expectedResult = {
-        'code': 'CB_VA01',
-        'id': 'uxntJCN4bHwC91IRNcAr',
-        'message': 'Missing or invalid input.',
-        'errors': {
-          'apps[0].revision': {
-            'messages': [
-              'Enter an integer value.'
-            ]
-          }
-        }
-      };
-      nock(URI)
-        .post(APP_PREVIEW_DEPLOY_ROUTE, (rqBody) => {
-          expect(rqBody).toEqual(data);
-          return true;
-        })
-        .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-          expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
-          return true;
-        })
-        .matchHeader('Content-Type', (type) => {
-          expect(type).toBe('application/json;charset=utf-8');
-          return true;
-        })
-        .reply(400, expectedResult);
-      const deployAppSettingsResult = appModule.deployAppSettings(data.apps, data.revert);
-      return deployAppSettingsResult.catch((err) => {
-        expect(err).toBeInstanceOf(KintoneAPIException);
-        expect(err.get()).toMatchObject(expectedResult);
-      });
-    });
-    it('should return error when input no appID', () => {
-      const data = {
-        'apps': [
-          {
-          },
-        ],
-      };
-      const expectedResult = {
-        'code': 'CB_VA01',
-        'id': 'ZD42Oyn994arW3csc2E9',
-        'message': 'Missing or invalid input.',
-        'errors': {
-          'apps[0].app': {
-            'messages': [
-              'Required field.'
-            ]
-          }
-        }
-      };
-      nock(URI)
-        .post(APP_PREVIEW_DEPLOY_ROUTE, (rqBody) => {
-          expect(rqBody).toEqual(data);
-          return true;
-        })
-        .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-          expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
-          return true;
-        })
-        .matchHeader('Content-Type', (type) => {
-          expect(type).toBe('application/json;charset=utf-8');
-          return true;
-        })
-        .reply(400, expectedResult);
-      const deployAppSettingsResult = appModule.deployAppSettings(data.apps, data.revert);
-      return deployAppSettingsResult.catch((err) => {
-        expect(err).toBeInstanceOf(KintoneAPIException);
-        expect(err.get()).toMatchObject(expectedResult);
-      });
-    });
-    it('should return error when the appID is none exist', () => {
-      const data = {
-        'apps': [
-          {
-            'app': 99999999999
-          },
-        ],
-      };
-      const expectedResult = {
-        'code': 'CB_NO02',
-        'id': 'aXzlDsMdnPX4ADL5ZSJU',
-        'message': 'No privilege to proceed.'
-      };
-      nock(URI)
-        .post(APP_PREVIEW_DEPLOY_ROUTE, (rqBody) => {
-          expect(rqBody).toEqual(data);
-          return true;
-        })
-        .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-          expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
-          return true;
-        })
-        .matchHeader('Content-Type', (type) => {
-          expect(type).toBe('application/json;charset=utf-8');
-          return true;
-        })
-        .reply(403, expectedResult);
-      const deployAppSettingsResult = appModule.deployAppSettings(data.apps, data.revert);
-      return deployAppSettingsResult.catch((err) => {
-        expect(err).toBeInstanceOf(KintoneAPIException);
-        expect(err.get()).toMatchObject(expectedResult);
-      });
-    });
-    it('should return error when the appID is zero', () => {
-      const data = {
-        'apps': [
-          {
-            'app': 0
-          },
-        ],
-      };
-      const expectedResult = {
-        'code': 'CB_VA01',
-        'id': 'KyfR3L70T39EP2pBHm6a',
-        'message': 'Missing or invalid input.',
-        'errors': {
-          'apps[0].app': {
-            'messages': [
-              'must be greater than or equal to 1'
-            ]
-          }
-        }
-      };
-      nock(URI)
-        .post(APP_PREVIEW_DEPLOY_ROUTE, (rqBody) => {
-          expect(rqBody).toEqual(data);
-          return true;
-        })
-        .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-          expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
-          return true;
-        })
-        .matchHeader('Content-Type', (type) => {
-          expect(type).toBe('application/json;charset=utf-8');
-          return true;
-        })
-        .reply(400, expectedResult);
-      const deployAppSettingsResult = appModule.deployAppSettings(data.apps, data.revert);
-      return deployAppSettingsResult.catch((err) => {
-        expect(err).toBeInstanceOf(KintoneAPIException);
-        expect(err.get()).toMatchObject(expectedResult);
-      });
-    });
-    it('should return error when the appID is negative', () => {
-      const data = {
-        'apps': [
-          {
-            'app': -1
-          },
-        ],
-      };
-      const expectedResult = {
-        'code': 'CB_VA01',
-        'id': 'KyfR3L70T39EP2pBHm6a',
-        'message': 'Missing or invalid input.',
-        'errors': {
-          'apps[0].app': {
-            'messages': [
-              'must be greater than or equal to 1'
-            ]
-          }
-        }
-      };
-      nock(URI)
-        .post(APP_PREVIEW_DEPLOY_ROUTE, (rqBody) => {
-          expect(rqBody).toEqual(data);
-          return true;
-        })
-        .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-          expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
-          return true;
-        })
-        .matchHeader('Content-Type', (type) => {
-          expect(type).toBe('application/json;charset=utf-8');
-          return true;
-        })
-        .reply(400, expectedResult);
-      const deployAppSettingsResult = appModule.deployAppSettings(data.apps, data.revert);
-      return deployAppSettingsResult.catch((err) => {
-        expect(err).toBeInstanceOf(KintoneAPIException);
-        expect(err.get()).toMatchObject(expectedResult);
-      });
-    });
-    it('should return error when input invalid revert', () => {
-      const data = {
-        'apps': [
-          {
-            'app': 1,
-            'revision': 57
-          },
-          {
-            'app': 1001,
-            'revision': 22
-          }
-        ],
-        'revert': 'testInvalidRevert'
-      };
-      const expectedResult = {
-        'code': 'CB_VA01',
-        'id': 'ebMGFHrvJHhFlo5EoJZK',
-        'message': 'Missing or invalid input.',
-        'errors': {
-          'revert': {
-            'messages': [
-              'must be boolean.'
-            ]
-          }
-        }
-      };
-      nock(URI)
-        .post(APP_PREVIEW_DEPLOY_ROUTE, (rqBody) => {
-          expect(rqBody).toEqual(data);
-          return true;
-        })
-        .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-          expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
-          return true;
-        })
-        .matchHeader('Content-Type', (type) => {
-          expect(type).toBe('application/json;charset=utf-8');
-          return true;
-        })
-        .reply(400, expectedResult);
-      const deployAppSettingsResult = appModule.deployAppSettings(data.apps, data.revert);
-      return deployAppSettingsResult.catch((err) => {
-        expect(err).toBeInstanceOf(KintoneAPIException);
-        expect(err.get()).toMatchObject(expectedResult);
-      });
-    });
-    it('should return error permission deny', () => {
-      const data = {
-        'apps': [
-          {
-            'app': 1,
-            'revision': 57
-          },
-          {
-            'app': 1001,
-            'revision': 22
-          }
-        ],
-        'revert': true
-      };
-      const expectedResult = {
-        'code': 'CB_NO02',
-        'id': 'QuohWmIy6j6L7IM0S6QP',
-        'message': 'No privilege to proceed.'
-      };
-      nock(URI)
-        .post(APP_PREVIEW_DEPLOY_ROUTE, (rqBody) => {
-          expect(rqBody).toEqual(data);
-          return true;
-        })
-        .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-          expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
-          return true;
-        })
-        .matchHeader('Content-Type', (type) => {
-          expect(type).toBe('application/json;charset=utf-8');
-          return true;
-        })
-        .reply(403, expectedResult);
-      const deployAppSettingsResult = appModule.deployAppSettings(data.apps, data.revert);
-      return deployAppSettingsResult.catch((err) => {
-        expect(err).toBeInstanceOf(KintoneAPIException);
-        expect(err.get()).toMatchObject(expectedResult);
-      });
-    });
-    it('should return error when use API token in GUEST SPACE', () => {
+    it('[App module-88]should return error when use API token in GUEST SPACE', () => {
       const data = {
         'apps': [
           {
@@ -800,7 +460,308 @@ describe('deployAppSettings function', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
-    it('should return error when the appId is none exist in GUEST SPACE', () => {
+    it('[App module-89]should return error when the appId is none exist', () => {
+      const data = {
+        'apps': [
+          {
+            'app': 444444
+          }
+        ]
+      };
+      const expectResult = {
+        'code': 'GAIA_AP01',
+        'id': 'K45k0CEPV5802MKyPcu1',
+        'message': 'The app (ID: 444444) not found. The app may have been deleted.'
+      };
+
+      nock(URI)
+        .post(APP_PREVIEW_DEPLOY_ROUTE, (rqBody) => {
+          expect(rqBody).toEqual(data);
+          return true;
+        })
+        .reply(404, expectResult);
+      const deployAppSettingsResult = appModule.deployAppSettings(data.apps);
+      return deployAppSettingsResult.catch((err) => {
+        expect(err).toBeInstanceOf(KintoneAPIException);
+        expect(err.get()).toMatchObject(expectResult);
+      });
+    });
+    it('[App module-90]should return error when input revision is incorrectly', () => {
+      const data = {
+        'apps': [
+          {
+            'app': 1,
+            'revision': 9999999999
+          },
+        ],
+        'revert': true
+      };
+      const expectedResult = {
+        'code': 'GAIA_CO03',
+        'id': 'WI3yLUgRs3C9mhAkVDZZ',
+        'message': 'The revision is not the latest. Someone may update the app settings (ID: 1).'
+      };
+      nock(URI)
+        .post(APP_PREVIEW_DEPLOY_ROUTE, (rqBody) => {
+          expect(rqBody).toEqual(data);
+          return true;
+        })
+        .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+          expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+          return true;
+        })
+        .matchHeader('Content-Type', (type) => {
+          expect(type).toBe('application/json;charset=utf-8');
+          return true;
+        })
+        .reply(409, expectedResult);
+      const deployAppSettingsResult = appModule.deployAppSettings(data.apps, data.revert);
+      return deployAppSettingsResult.catch((err) => {
+        expect(err).toBeInstanceOf(KintoneAPIException);
+        expect(err.get()).toMatchObject(expectedResult);
+      });
+    });
+    it('[App module-91]should return error when input revision is invalid', () => {
+      const data = {
+        'apps': [
+          {
+            'app': 1,
+            'revision': 'testInvalidRevision'
+          },
+        ],
+        'revert': true
+      };
+      const expectedResult = {
+        'code': 'CB_VA01',
+        'id': 'uxntJCN4bHwC91IRNcAr',
+        'message': 'Missing or invalid input.',
+        'errors': {
+          'apps[0].revision': {
+            'messages': [
+              'Enter an integer value.'
+            ]
+          }
+        }
+      };
+      nock(URI)
+        .post(APP_PREVIEW_DEPLOY_ROUTE, (rqBody) => {
+          expect(rqBody).toEqual(data);
+          return true;
+        })
+        .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+          expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+          return true;
+        })
+        .matchHeader('Content-Type', (type) => {
+          expect(type).toBe('application/json;charset=utf-8');
+          return true;
+        })
+        .reply(400, expectedResult);
+      const deployAppSettingsResult = appModule.deployAppSettings(data.apps, data.revert);
+      return deployAppSettingsResult.catch((err) => {
+        expect(err).toBeInstanceOf(KintoneAPIException);
+        expect(err.get()).toMatchObject(expectedResult);
+      });
+    });
+    it('[App module-92]should return error when input no appID', () => {
+      const data = {
+        'apps': [
+          {
+          },
+        ],
+      };
+      const expectedResult = {
+        'code': 'CB_VA01',
+        'id': 'ZD42Oyn994arW3csc2E9',
+        'message': 'Missing or invalid input.',
+        'errors': {
+          'apps[0].app': {
+            'messages': [
+              'Required field.'
+            ]
+          }
+        }
+      };
+      nock(URI)
+        .post(APP_PREVIEW_DEPLOY_ROUTE, (rqBody) => {
+          expect(rqBody).toEqual(data);
+          return true;
+        })
+        .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+          expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+          return true;
+        })
+        .matchHeader('Content-Type', (type) => {
+          expect(type).toBe('application/json;charset=utf-8');
+          return true;
+        })
+        .reply(400, expectedResult);
+      const deployAppSettingsResult = appModule.deployAppSettings(data.apps, data.revert);
+      return deployAppSettingsResult.catch((err) => {
+        expect(err).toBeInstanceOf(KintoneAPIException);
+        expect(err.get()).toMatchObject(expectedResult);
+      });
+    });
+    it('[App module-93]should return error when the appID is none exist', () => {
+      const data = {
+        'apps': [
+          {
+            'app': 99999999999
+          },
+        ],
+      };
+      const expectedResult = {
+        'code': 'CB_NO02',
+        'id': 'aXzlDsMdnPX4ADL5ZSJU',
+        'message': 'No privilege to proceed.'
+      };
+      nock(URI)
+        .post(APP_PREVIEW_DEPLOY_ROUTE, (rqBody) => {
+          expect(rqBody).toEqual(data);
+          return true;
+        })
+        .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+          expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+          return true;
+        })
+        .matchHeader('Content-Type', (type) => {
+          expect(type).toBe('application/json;charset=utf-8');
+          return true;
+        })
+        .reply(403, expectedResult);
+      const deployAppSettingsResult = appModule.deployAppSettings(data.apps, data.revert);
+      return deployAppSettingsResult.catch((err) => {
+        expect(err).toBeInstanceOf(KintoneAPIException);
+        expect(err.get()).toMatchObject(expectedResult);
+      });
+    });
+    it('[App module-94]should return error when the appID is zero', () => {
+      const data = {
+        'apps': [
+          {
+            'app': 0
+          },
+        ],
+      };
+      const expectedResult = {
+        'code': 'CB_VA01',
+        'id': 'KyfR3L70T39EP2pBHm6a',
+        'message': 'Missing or invalid input.',
+        'errors': {
+          'apps[0].app': {
+            'messages': [
+              'must be greater than or equal to 1'
+            ]
+          }
+        }
+      };
+      nock(URI)
+        .post(APP_PREVIEW_DEPLOY_ROUTE, (rqBody) => {
+          expect(rqBody).toEqual(data);
+          return true;
+        })
+        .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+          expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+          return true;
+        })
+        .matchHeader('Content-Type', (type) => {
+          expect(type).toBe('application/json;charset=utf-8');
+          return true;
+        })
+        .reply(400, expectedResult);
+      const deployAppSettingsResult = appModule.deployAppSettings(data.apps, data.revert);
+      return deployAppSettingsResult.catch((err) => {
+        expect(err).toBeInstanceOf(KintoneAPIException);
+        expect(err.get()).toMatchObject(expectedResult);
+      });
+    });
+    it('[App module-95]should return error when the appID is negative', () => {
+      const data = {
+        'apps': [
+          {
+            'app': -1
+          },
+        ],
+      };
+      const expectedResult = {
+        'code': 'CB_VA01',
+        'id': 'KyfR3L70T39EP2pBHm6a',
+        'message': 'Missing or invalid input.',
+        'errors': {
+          'apps[0].app': {
+            'messages': [
+              'must be greater than or equal to 1'
+            ]
+          }
+        }
+      };
+      nock(URI)
+        .post(APP_PREVIEW_DEPLOY_ROUTE, (rqBody) => {
+          expect(rqBody).toEqual(data);
+          return true;
+        })
+        .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+          expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+          return true;
+        })
+        .matchHeader('Content-Type', (type) => {
+          expect(type).toBe('application/json;charset=utf-8');
+          return true;
+        })
+        .reply(400, expectedResult);
+      const deployAppSettingsResult = appModule.deployAppSettings(data.apps, data.revert);
+      return deployAppSettingsResult.catch((err) => {
+        expect(err).toBeInstanceOf(KintoneAPIException);
+        expect(err.get()).toMatchObject(expectedResult);
+      });
+    });
+    it('[App module-96]should return error when input invalid revert', () => {
+      const data = {
+        'apps': [
+          {
+            'app': 1,
+            'revision': 57
+          },
+          {
+            'app': 1001,
+            'revision': 22
+          }
+        ],
+        'revert': 'testInvalidRevert'
+      };
+      const expectedResult = {
+        'code': 'CB_VA01',
+        'id': 'ebMGFHrvJHhFlo5EoJZK',
+        'message': 'Missing or invalid input.',
+        'errors': {
+          'revert': {
+            'messages': [
+              'must be boolean.'
+            ]
+          }
+        }
+      };
+      nock(URI)
+        .post(APP_PREVIEW_DEPLOY_ROUTE, (rqBody) => {
+          expect(rqBody).toEqual(data);
+          return true;
+        })
+        .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+          expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+          return true;
+        })
+        .matchHeader('Content-Type', (type) => {
+          expect(type).toBe('application/json;charset=utf-8');
+          return true;
+        })
+        .reply(400, expectedResult);
+      const deployAppSettingsResult = appModule.deployAppSettings(data.apps, data.revert);
+      return deployAppSettingsResult.catch((err) => {
+        expect(err).toBeInstanceOf(KintoneAPIException);
+        expect(err.get()).toMatchObject(expectedResult);
+      });
+    });
+    it('[App module-97]should return error when the appId is none exist in GUEST SPACE', () => {
       const data = {
         'apps': [
           {
@@ -826,7 +787,7 @@ describe('deployAppSettings function', () => {
         expect(err.get()).toMatchObject(expectResult);
       });
     });
-    it('should return error when input revision is incorrectly in GUEST SPACE', () => {
+    it('[App module-98]should return error when input revision is incorrectly in GUEST SPACE', () => {
       const data = {
         'apps': [
           {
@@ -861,7 +822,7 @@ describe('deployAppSettings function', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
-    it('should return error when input revision is invalid in GUEST SPACE', () => {
+    it('[App module-99]should return error when input revision is invalid in GUEST SPACE', () => {
       const data = {
         'apps': [
           {
@@ -903,7 +864,7 @@ describe('deployAppSettings function', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
-    it('should return error when input no appID in GUEST SPACE', () => {
+    it('[App module-100]should return error when input no appID in GUEST SPACE', () => {
       const data = {
         'apps': [
           {
@@ -942,7 +903,7 @@ describe('deployAppSettings function', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
-    it('should return error when the appID is none exist in GUEST SPACE', () => {
+    it('[App module-101]should return error when the appID is none exist in GUEST SPACE', () => {
       const data = {
         'apps': [
           {
@@ -975,7 +936,7 @@ describe('deployAppSettings function', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
-    it('should return error when the appID is zero in GUEST SPACE', () => {
+    it('[App module-102]should return error when the appID is zero in GUEST SPACE', () => {
       const data = {
         'apps': [
           {
@@ -1015,7 +976,7 @@ describe('deployAppSettings function', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
-    it('should return error when the appID is negative in GUEST SPACE', () => {
+    it('[App module-103]should return error when the appID is negative in GUEST SPACE', () => {
       const data = {
         'apps': [
           {
@@ -1055,7 +1016,7 @@ describe('deployAppSettings function', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
-    it('should return error when input invalid revert in GUEST SPACE', () => {
+    it('[App module-104]should return error when input invalid revert in GUEST SPACE', () => {
       const data = {
         'apps': [
           {
@@ -1101,7 +1062,46 @@ describe('deployAppSettings function', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
-    it('should return error permission deny in GUEST SPACE', () => {
+    it('[App module-105]should return error permission deny', () => {
+      const data = {
+        'apps': [
+          {
+            'app': 1,
+            'revision': 57
+          },
+          {
+            'app': 1001,
+            'revision': 22
+          }
+        ],
+        'revert': true
+      };
+      const expectedResult = {
+        'code': 'CB_NO02',
+        'id': 'QuohWmIy6j6L7IM0S6QP',
+        'message': 'No privilege to proceed.'
+      };
+      nock(URI)
+        .post(APP_PREVIEW_DEPLOY_ROUTE, (rqBody) => {
+          expect(rqBody).toEqual(data);
+          return true;
+        })
+        .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+          expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+          return true;
+        })
+        .matchHeader('Content-Type', (type) => {
+          expect(type).toBe('application/json;charset=utf-8');
+          return true;
+        })
+        .reply(403, expectedResult);
+      const deployAppSettingsResult = appModule.deployAppSettings(data.apps, data.revert);
+      return deployAppSettingsResult.catch((err) => {
+        expect(err).toBeInstanceOf(KintoneAPIException);
+        expect(err.get()).toMatchObject(expectedResult);
+      });
+    });
+    it('[App module-106]should return error permission deny in GUEST SPACE', () => {
       const data = {
         'apps': [
           {
