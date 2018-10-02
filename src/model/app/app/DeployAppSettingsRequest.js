@@ -5,7 +5,7 @@ class DeployAppSettingsRequest {
   /**
      * constructor for DeployAppSettingsRequest
      * @param {Array} apps
-     * @param {HashTable<String, FieldValue>} recordHashTableData
+     * @param {Boolean} revert
      */
   constructor(apps, revert) {
     this.apps = apps;
@@ -20,7 +20,7 @@ class DeployAppSettingsRequest {
   }
   /**
      * @param {Array} apps
-     * @return {this} DeployAppSettingsRequestrdsRequest
+     * @return {this} DeployAppSettingsRequest
      */
   setApps(apps) {
     this.apps = apps;
@@ -34,8 +34,8 @@ class DeployAppSettingsRequest {
     return this.revert;
   }
   /**
-     * @param {Boolean>} revert
-     * @return {this} DeployAppSettingsRequestrdsRequest
+     * @param {Boolean} revert
+     * @return {this} DeployAppSettingsRequest
      */
   setRevert(revert) {
     this.revert = revert;

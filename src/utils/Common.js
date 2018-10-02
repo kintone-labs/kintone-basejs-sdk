@@ -2,7 +2,7 @@
  * kintone api - nodejs client
  * Common function
  */
-const KintoneExeption = require('../exception/KintoneAPIException');
+const KintoneAPIException = require('../exception/KintoneAPIException');
 
 class Common {
   /**
@@ -18,7 +18,7 @@ class Common {
       .then((result) => {
         return result;
       }).catch((err) => {
-        throw new KintoneExeption(err);
+        throw new KintoneAPIException(err);
       });
   }
 

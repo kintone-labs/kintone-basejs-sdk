@@ -4,8 +4,8 @@
 class AddCommentRequest {
   /**
      * constructor
-     * @param {Initeger} appID
-     * @param {Initeger} recordID
+     * @param {Integer} appID
+     * @param {Integer} recordID
      * @param {String} commentContent
      */
   constructor(appID, recordID, commentContent) {

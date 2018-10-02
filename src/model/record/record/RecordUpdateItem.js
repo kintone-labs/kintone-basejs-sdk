@@ -52,7 +52,7 @@ class RecordUpdateItem {
   }
   /**
      * Get JSON struct of this model
-     * @return {integer}
+     * @return {Object}
      */
   toJSON() {
     const updateKeyPriv = this.updateKey;

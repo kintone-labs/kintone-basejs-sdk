@@ -17,7 +17,7 @@ class UpdateRecordAssigneesRequest {
   }
   /**
      * Get JSON struct of this model
-     * @return {integer}
+     * @return {Object}
      */
   toJSON() {
     return {

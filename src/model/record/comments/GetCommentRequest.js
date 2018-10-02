@@ -4,8 +4,8 @@
 class GetCommentRequest {
   /**
      * constructor
-     * @param {Initeger} appID
-     * @param {Initeger} recordID
+     * @param {Integer} appID
+     * @param {Integer} recordID
      * @param {String} order
      * @param {Integer} offset
      * @param {Integer} limit

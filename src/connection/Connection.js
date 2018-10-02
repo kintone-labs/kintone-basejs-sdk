@@ -33,22 +33,22 @@ class Connection {
    * request to URL
    * @param {String} methodName
    * @param {String} restAPIName
-   * @param {String} body
+   * @param {Object} body
    * @return {Promise}
    */
   request(methodName, restAPIName, body) {
     // Set Header
-    const headersRequet = {};
+    const headersRequest = {};
     // set header with credentials
     this.auth.createHeaderCredentials().forEach((httpHeaderObj) => {
-      headersRequet[httpHeaderObj.getKey()] = httpHeaderObj.getValue();
+      headersRequest[httpHeaderObj.getKey()] = httpHeaderObj.getValue();
     });
     this.headers.forEach((httpHeaderObj) => {
       const headerKey = httpHeaderObj.getKey();
-      if (headersRequet.hasOwnProperty(headerKey) && headerKey === CONNECTION_CONST.BASE.USER_AGENT) {
-        headersRequet[headerKey] += ' ' + httpHeaderObj.getValue();
+      if (headersRequest.hasOwnProperty(headerKey) && headerKey === CONNECTION_CONST.BASE.USER_AGENT) {
+        headersRequest[headerKey] += ' ' + httpHeaderObj.getValue();
       } else {
-        headersRequet[headerKey] = httpHeaderObj.getValue();
+        headersRequest[headerKey] = httpHeaderObj.getValue();
       }
     });
 
@@ -56,7 +56,7 @@ class Connection {
     const requestOptions = this.options;
     requestOptions.method = String(methodName).toUpperCase();
     requestOptions.url = this.getUri(restAPIName);
-    requestOptions.headers = headersRequet;
+    requestOptions.headers = headersRequest;
     // set data to param if using GET method
     if (requestOptions.method === 'GET') {
       requestOptions.params = body;
@@ -78,17 +78,17 @@ class Connection {
    */
   requestFile(methodName, restAPIName, body) {
     // Set Header
-    const headersRequet = {};
+    const headersRequest = {};
     // set header with credentials
     this.auth.createHeaderCredentials().forEach((httpHeaderObj) => {
-      headersRequet[httpHeaderObj.getKey()] = httpHeaderObj.getValue();
+      headersRequest[httpHeaderObj.getKey()] = httpHeaderObj.getValue();
     });
     this.headers.forEach((httpHeaderObj) => {
       const headerKey = httpHeaderObj.getKey();
-      if (headersRequet.hasOwnProperty(headerKey) && headerKey === CONNECTION_CONST.BASE.USER_AGENT) {
-        headersRequet[headerKey] += ' ' + httpHeaderObj.getValue();
+      if (headersRequest.hasOwnProperty(headerKey) && headerKey === CONNECTION_CONST.BASE.USER_AGENT) {
+        headersRequest[headerKey] += ' ' + httpHeaderObj.getValue();
       } else {
-        headersRequet[headerKey] = httpHeaderObj.getValue();
+        headersRequest[headerKey] = httpHeaderObj.getValue();
       }
     });
 
@@ -96,7 +96,7 @@ class Connection {
     const requestOptions = this.options;
     requestOptions.method = String(methodName).toUpperCase();
     requestOptions.url = this.getUri(restAPIName);
-    requestOptions.headers = headersRequet;
+    requestOptions.headers = headersRequest;
     // set data to param if using GET method
     if (requestOptions.method === 'GET') {
       requestOptions.params = body;
@@ -192,7 +192,7 @@ class Connection {
   /**
    * Add option for request
    * @param {String} key
-   * @param {String} value
+   * @param {*} value refer: https://www.npmjs.com/package/axios
    * @return {this}
    */
   addRequestOption(key, value) {

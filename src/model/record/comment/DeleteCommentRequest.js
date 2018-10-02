@@ -4,9 +4,9 @@
 class DeleteCommentRequest {
   /**
      * constructor
-     * @param {Initeger} appID
-     * @param {Initeger} recordID
-     * @param {Initeger} commentID
+     * @param {Integer} appID
+     * @param {Integer} recordID
+     * @param {Integer} commentID
      */
   constructor(appID, recordID, commentID) {
     this.appID = appID;

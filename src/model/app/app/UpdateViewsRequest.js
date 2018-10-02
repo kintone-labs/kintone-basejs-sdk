@@ -4,7 +4,7 @@
 class UpdateViewsRequest {
   /**
      * @param {Integer} app
-     * @param {<HashTable<String, View>} views
+     * @param {HashTable<String, View>} views
      * @param {Integer} revision
      */
   constructor(app, views, revision) {

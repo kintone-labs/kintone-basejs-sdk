@@ -171,7 +171,7 @@ class BulkRequest {
 
   /**
    * Execute the BulkRequest and get data which is returned from kintone.
-   * @return {promise}
+   * @return {Promise}
    */
   execute() {
     return this.connection.addRequestOption('json', true)

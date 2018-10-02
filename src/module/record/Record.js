@@ -165,7 +165,7 @@ class Record {
      * Delete records at the specific revision
      * @param {Number} app
      * @param {Object} idsWithRevision
-     * @return {this}
+     * @return {Promise}
      */
   deleteRecordsWithRevision(app, idsWithRevision) {
     const deleteRecordsRequest = new RecordModel.DeleteRecordsRequest(app);

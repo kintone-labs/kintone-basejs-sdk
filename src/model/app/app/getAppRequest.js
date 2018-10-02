@@ -16,7 +16,7 @@ class GetAppRequest {
     return this.appID;
   }
   /**
-     * @param {Array} apps
+     * @param {Number} appID
      * @return {this}
      */
   setAppID(appID) {

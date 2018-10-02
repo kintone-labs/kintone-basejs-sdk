@@ -13,7 +13,7 @@ class UpdateRecordRequest extends RecordUpdateItem {
   }
   /**
      * Get JSON struct of this model
-     * @return {JSON}
+     * @return {Object}
      */
   toJSON() {
     const data = super.toJSON();

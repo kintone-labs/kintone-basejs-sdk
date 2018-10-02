@@ -4,8 +4,6 @@
 class GetAppDeployStatusRequest {
   /**
      * @param {Array} apps
-     * @param {Array<HashTable<String, Field>>} fields
-     * @param {Integer} revision
      */
   constructor(apps) {
     this.apps = apps;

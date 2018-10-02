@@ -4,8 +4,9 @@
 class AddPreviewAppRequest {
   /**
      * constructor for AddPreviewAppRequest
-     * @param {integer} appID
-     * @param {HashTable<String, FieldValue>} recordHashTableData
+     * @param {String} name
+     * @param {Number} space
+     * @param {Number} thread
      */
   constructor(name, space, thread) {
     this.name = name;
@@ -21,6 +22,7 @@ class AddPreviewAppRequest {
   }
   /**
      * Set app name
+     * @param {String} name
      * @return {this} AddPreviewAppRequest
      */
   setAppName(name) {
@@ -36,6 +38,7 @@ class AddPreviewAppRequest {
   }
   /**
      * Set space of app
+     * @param {Number} space
      * @return {this} AddPreviewAppRequest
      */
   setSpace(space) {
@@ -51,6 +54,7 @@ class AddPreviewAppRequest {
   }
   /**
      * Set Thread of app
+     * @param {Number} thread
      * @return {this} AddPreviewAppRequest
      */
   setThread(thread) {

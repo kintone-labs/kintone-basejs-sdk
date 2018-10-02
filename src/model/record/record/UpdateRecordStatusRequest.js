@@ -6,11 +6,11 @@ const UpdateRecordStatusItem = require('./UpdateRecordStatusItem');
 class UpdateRecordStatusRequest extends UpdateRecordStatusItem {
   /**
      * constructor
-     * @param {String} appID
+     * @param {Number} appID
      * @param {String} recordID
      * @param {String} actionName
      * @param {String} assigneeID
-     * @param {String} revisionID
+     * @param {Number} revisionID
      */
   constructor(appID, recordID, actionName, assigneeID, revisionID) {
     super(recordID, actionName, assigneeID, revisionID);
@@ -18,7 +18,7 @@ class UpdateRecordStatusRequest extends UpdateRecordStatusItem {
   }
   /**
      * Get JSON struct of this model
-     * @return {integer}
+     * @return {Object}
      */
   toJSON() {
     const data = super.toJSON();
