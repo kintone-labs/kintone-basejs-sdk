@@ -66,6 +66,9 @@ class Connection {
     }
     // Execute request
     return axios(requestOptions).then(response => {
+      // reset header
+      this.resetHeader();
+
       return response.data;
     });
   }
@@ -105,6 +108,7 @@ class Connection {
     }
     // Execute request
     return axios(requestOptions).then(response => {
+      this.resetHeader();
       return response.data;
     }).catch(err => {
       throw new KintoneAPIException(err);
@@ -233,6 +237,10 @@ class Connection {
     });
     this.addRequestOption(CONNECTION_CONST.BASE.HTTPS_AGENT, httpsAgent);
     return this;
+  }
+
+  resetHeader() {
+    this.headers = [];
   }
 }
 module.exports = Connection;
