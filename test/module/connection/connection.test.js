@@ -51,7 +51,7 @@ describe('Connection module', () => {
   });
 
   describe('setProxy function - Valid request', () => {
-    it(`[setProxy - 1] Set proxy to request when using setProxy function`, () => {
+    it(`[setProxy-1] Set proxy to request when using setProxy function`, () => {
       nock(URI)
         .get(`API_ROUTE.RECORD_GET?app=1`)
         .reply(400, {});
@@ -69,7 +69,7 @@ describe('Connection module', () => {
   });
 
   describe('setProxy function - Error case', () => {
-    it(`[setProxy - 2] Should return error when inputting invalid proxyHost (unexisted)`, () => {
+    it(`[setProxy-2] Should return error when inputting invalid proxyHost (unexisted)`, () => {
       nock(URI)
         .get(`API_ROUTE.RECORD_GET?app=1`)
         .reply(400, {});
@@ -86,7 +86,7 @@ describe('Connection module', () => {
       });
     });
 
-    it(`[setProxy - 3] Should return error when inputting invalid proxyHost (negative value)`, () => {
+    it(`[setProxy-3] Should return error when inputting invalid proxyHost (negative value)`, () => {
       nock(URI)
         .get(`API_ROUTE.RECORD_GET?app=1`)
         .reply(400, {});
@@ -103,7 +103,7 @@ describe('Connection module', () => {
       });
     });
 
-    it(`[setProxy - 4] Should return error when inputting invalid proxyHost (unexisted)`, () => {
+    it(`[setProxy-4] Should return error when inputting invalid proxyHost (unexisted)`, () => {
       nock(URI)
         .get(`API_ROUTE.RECORD_GET?app=1`)
         .reply(400, {});
@@ -120,7 +120,7 @@ describe('Connection module', () => {
       });
     });
 
-    it(`[setProxy - 5] Should return error when inputting invalid proxyHost (negative value)`, () => {
+    it(`[setProxy-5] Should return error when inputting invalid proxyHost (negative value)`, () => {
       nock(URI)
         .get(`API_ROUTE.RECORD_GET?app=1`)
         .reply(400, {});
@@ -137,7 +137,7 @@ describe('Connection module', () => {
       });
     });
 
-    it(`[setProxy - 6] Should return error when inputting method without proxyHost`, () => {
+    it(`[setProxy-6] Should return error when inputting method without proxyHost`, () => {
       nock(URI)
         .get(`API_ROUTE.RECORD_GET?app=1`)
         .reply(400, {});
@@ -153,7 +153,7 @@ describe('Connection module', () => {
       });
     });
 
-    it(`[setProxy - 7] Should return error when inputting method without proxyPort`, () => {
+    it(`[setProxy-7] Should return error when inputting method without proxyPort`, () => {
       nock(URI)
         .get(`API_ROUTE.RECORD_GET?app=1`)
         .reply(400, {});

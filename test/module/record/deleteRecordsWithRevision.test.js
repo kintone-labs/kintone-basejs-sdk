@@ -104,6 +104,44 @@ describe('deleteRecordsWithRevision function', () => {
       });
     });
 
+    it('[Record-152] Records are deleted successfully when executing with interger as string type (input string for interger and vice versa) ', () => {
+      const data = {
+        appID: "1",
+        idsWithRevision: {
+          '1': 1,
+          '2': 4
+        }
+      };
+
+      const expectBody = {
+        'app': "1",
+        'ids': ['1', '2'],
+        'revisions': [1, 4]
+      };
+
+      const connGuestSpace = new Connection(common.DOMAIN, auth, common.GUEST_SPACEID);
+      const recordInGuestSpace = new Record(connGuestSpace);
+      nock(URI)
+        .intercept(API_ROUTE.GUEST_RECORDS, 'DELETE', (rqBody) => {
+          expect(rqBody).toEqual(expectBody);
+          return true;
+        })
+        .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+          expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+          return true;
+        })
+        .matchHeader('Content-Type', (type) => {
+          expect(type).toEqual(expect.stringContaining('application/json'));
+          return true;
+        })
+        .reply(200, {});
+
+      const deleteRecordsWithRevisionResult = recordInGuestSpace.deleteRecordsWithRevision(data.appID, data.idsWithRevision);
+      return deleteRecordsWithRevisionResult.then((rsp) => {
+        expect(rsp).toEqual({});
+      });
+    });
+
     it('[Record-141] Records are deleted when specifying array of ids+revisions', () => {
       const data = {
         appID: 1,
