@@ -706,5 +706,40 @@ describe('updateRecordStatus function', () => {
         expect(err.get()).toMatchObject(expectResult);
       });
     });
+    it('[Record-190-191-192] Error happens when user does not have View permission for app/field/record', () => {
+      const data = {
+        app: 1,
+        id: 1,
+        action: 'Submit',
+        assignee: 'user1',
+        revision: -1
+      };
+
+      const expectResult = {
+        'code': 'CB_NO02',
+        'id': '46babHd1VN5DSm4vAOZU',
+        'message': 'No privilege to proceed.'
+      };
+
+      nock(URI)
+        .put(RECORD_STATUS_ROUTE, (rqBody) => {
+          expect(rqBody).toEqual(data);
+          return true;
+        })
+        .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+          expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+          return true;
+        })
+        .matchHeader('Content-Type', (type) => {
+          expect(type).toEqual(expect.stringContaining('application/json'));
+          return true;
+        })
+        .reply(400, expectResult);
+      const updateRecordStatusResult = recordModule.updateRecordStatus(data.app, data.id, data.action, data.assignee, data.revision);
+      return updateRecordStatusResult.catch((err) => {
+        expect(err).toBeInstanceOf(KintoneAPIException);
+        expect(err.get()).toMatchObject(expectResult);
+      });
+    });
   });
 });
