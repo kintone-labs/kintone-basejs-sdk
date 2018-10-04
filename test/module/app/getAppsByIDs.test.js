@@ -117,9 +117,9 @@ describe('[TestSuite] getAppsByIDs', () => {
       nock(URI)
         .get(
           ROUTE +
-            `?limit=${limit}&ids[0]=${appIDs[0]}&ids[1]=${appIDs[1]}&ids[2]=${
-              appIDs[2]
-            }&ids[3]=${appIDs[3]}&ids[4]=${appIDs[4]}`
+          `?limit=${limit}&ids[0]=${appIDs[0]}&ids[1]=${appIDs[1]}&ids[2]=${
+            appIDs[2]
+          }&ids[3]=${appIDs[3]}&ids[4]=${appIDs[4]}`
         )
         .reply(200, expectedResult);
 
@@ -175,9 +175,9 @@ describe('[TestSuite] getAppsByIDs', () => {
       nock(URI)
         .get(
           ROUTE +
-            `?offset=${offset}&ids[0]=${appIDs[0]}&ids[1]=${
-              appIDs[1]
-            }&ids[2]=${appIDs[2]}`
+          `?offset=${offset}&ids[0]=${appIDs[0]}&ids[1]=${
+            appIDs[1]
+          }&ids[2]=${appIDs[2]}`
         )
         .reply(200, expectedResult);
 
@@ -187,7 +187,7 @@ describe('[TestSuite] getAppsByIDs', () => {
       });
     });
 
-    it('[App-25] Verify the app information of guest space is returned', () => {
+    it('[App-26] Verify the app information of guest space is returned', () => {
       const appIds = [1];
       const expectedResult = {
         apps: [
@@ -225,6 +225,61 @@ describe('[TestSuite] getAppsByIDs', () => {
         expect(rsp).toMatchObject(expectedResult);
       });
     });
+
+    it('[App-25] should get maximum 100 apps for the limit value', () => {
+      const limit = 100;
+      const appIDs = [1, 2, 3, 4, 5];
+      const expectedResult = {
+        apps: [
+          {
+            appId: '1',
+            code: 'task',
+            name: 'My Test App',
+            description: 'Testing this app',
+            spaceId: null,
+            threadId: null,
+            createdAt: '2014-06-02T05:14:05.000Z',
+            creator: {
+              code: 'user1',
+              name: 'user1'
+            },
+            modifiedAt: '2014-06-02T05:14:05.000Z',
+            modifier: {
+              code: 'user1',
+              name: 'user1'
+            }
+          },
+          {
+            appId: '2',
+            code: 'task',
+            name: 'My Test App',
+            description: 'Testing this app',
+            spaceId: null,
+            threadId: null,
+            createdAt: '2014-06-02T05:14:05.000Z',
+            creator: {
+              code: 'user1',
+              name: 'user1'
+            },
+            modifiedAt: '2014-06-02T05:14:05.000Z',
+            modifier: {
+              code: 'user1',
+              name: 'user1'
+            }
+          }
+        ]
+      };
+      nock(URI)
+        .get(
+          ROUTE +
+          `?limit=${limit}&ids[0]=${appIDs[0]}&ids[1]=${appIDs[1]}&ids[2]=${appIDs[2]}&ids[3]=${appIDs[3]}&ids[4]=${appIDs[4]}`
+        )
+        .reply(200, expectedResult);
+      const actualResult = appModule.getAppsByIDs(appIDs, undefined, limit);
+      return actualResult.then((rsp) => {
+        expect(rsp).toEqual(expectedResult);
+      });
+    });
   });
 
   describe('error case', () => {
@@ -258,9 +313,9 @@ describe('[TestSuite] getAppsByIDs', () => {
       nock(URI)
         .get(
           ROUTE +
-            `?limit=${limit}&ids[0]=${appIDs[0]}&ids[1]=${appIDs[1]}&ids[2]=${
-              appIDs[2]
-            }`
+          `?limit=${limit}&ids[0]=${appIDs[0]}&ids[1]=${appIDs[1]}&ids[2]=${
+            appIDs[2]
+          }`
         )
         .reply(400, expectedResult);
 
@@ -286,9 +341,9 @@ describe('[TestSuite] getAppsByIDs', () => {
       nock(URI)
         .get(
           ROUTE +
-            `?limit=${limit}&ids[0]=${appIDs[0]}&ids[1]=${appIDs[1]}&ids[2]=${
-              appIDs[2]
-            }`
+          `?limit=${limit}&ids[0]=${appIDs[0]}&ids[1]=${appIDs[1]}&ids[2]=${
+            appIDs[2]
+          }`
         )
         .reply(400, expectedResult);
 
@@ -314,9 +369,9 @@ describe('[TestSuite] getAppsByIDs', () => {
       nock(URI)
         .get(
           ROUTE +
-            `?offset=${offset}&ids[0]=${appIDs[0]}&ids[1]=${appIDs[1]}&ids[2]=${
-              appIDs[2]
-            }`
+          `?offset=${offset}&ids[0]=${appIDs[0]}&ids[1]=${appIDs[1]}&ids[2]=${
+            appIDs[2]
+          }`
         )
         .reply(400, expectedResult);
 
@@ -341,9 +396,9 @@ describe('[TestSuite] getAppsByIDs', () => {
       nock(URI)
         .get(
           ROUTE +
-            `?offset=${common.MAX_VALUE + 1}&ids[0]=${appIDs[0]}&ids[1]=${
-              appIDs[1]
-            }&ids[2]=${appIDs[2]}`
+          `?offset=${common.MAX_VALUE + 1}&ids[0]=${appIDs[0]}&ids[1]=${
+            appIDs[1]
+          }&ids[2]=${appIDs[2]}`
         )
         .reply(400, expectedResult);
 
@@ -363,9 +418,9 @@ describe('[TestSuite] getAppsByIDs', () => {
       nock(URI)
         .get(
           ROUTE +
-            `?limit=${common.MAX_VALUE + 1}&ids[0]=${appIDs[0]}&ids[1]=${
-              appIDs[1]
-            }&ids[2]=${appIDs[2]}`
+          `?limit=${common.MAX_VALUE + 1}&ids[0]=${appIDs[0]}&ids[1]=${
+            appIDs[1]
+          }&ids[2]=${appIDs[2]}`
         )
         .reply(400, expectedResult);
 
