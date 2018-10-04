@@ -51,7 +51,6 @@ class Connection {
         headersRequest[headerKey] = httpHeaderObj.getValue();
       }
     });
-
     // Set request options
     const requestOptions = this.options;
     requestOptions.method = String(methodName).toUpperCase();
@@ -65,12 +64,12 @@ class Connection {
       requestOptions.data = body;
     }
     // Execute request
-    return axios(requestOptions).then(response => {
-      // reset header
-      this.resetHeader();
-
+    const request = axios(requestOptions).then(response => {
       return response.data;
     });
+    // reset header
+    this.resetHeader();
+    return request;
   }
   /**
    * request to URL
@@ -107,12 +106,13 @@ class Connection {
       requestOptions.data = body;
     }
     // Execute request
-    return axios(requestOptions).then(response => {
-      this.resetHeader();
+    const request = axios(requestOptions).then(response => {
       return response.data;
     }).catch(err => {
       throw new KintoneAPIException(err);
     });
+    this.resetHeader();
+    return request;
   }
 
   /**
