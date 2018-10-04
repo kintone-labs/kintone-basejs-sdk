@@ -11,13 +11,16 @@ const {
 } = require(common.MAIN_PATH);
 const auth = new Auth().setPasswordAuth(common.USERNAME, common.PASSWORD);
 const conn = new Connection(common.DOMAIN, auth);
+const connGuest = new Connection(common.DOMAIN, auth, common.GUEST_SPACEID);
 if (common.hasOwnProperty('proxy') && common.proxy) {
   conn.addRequestOption('proxy', common.proxy);
 }
 
 const URI = 'https://' + common.DOMAIN;
 const ROUTE = '/k/v1/record/comment.json';
+const ROUTE_GUEST = '/k/guest/1/v1/record/comment.json';
 const recordModule = new Record(conn);
+const recordModuleGuest = new Record(connGuest);
 
 describe('deleteComment function', () => {
   describe('common cases', () => {
@@ -54,6 +57,96 @@ describe('deleteComment function', () => {
         .reply(200, {});
 
       const actualResult = recordModule.deleteComment(
+        data.app,
+        data.record,
+        data.comment
+      );
+      return actualResult.then(response => {
+        expect(response).toMatchObject({});
+      });
+    });
+
+    it('[Record-260] should delete comment when user does not have View permission for a field', () => {
+      const data = {
+        app: 1,
+        record: 1,
+        comment: 1
+      };
+
+      nock(URI)
+        .intercept(ROUTE, 'DELETE', reqBody => {
+          expect(reqBody).toHaveProperty('app');
+          return true;
+        })
+        .matchHeader(common.PASSWORD_AUTH, authHeader => {
+          expect(authHeader).toBe(
+            common.getPasswordAuth(common.USERNAME, common.PASSWORD)
+          );
+          return true;
+        })
+        .reply(200, {});
+
+      const actualResult = recordModule.deleteComment(
+        data.app,
+        data.record,
+        data.comment
+      );
+      return actualResult.then(response => {
+        expect(response).toMatchObject({});
+      });
+    });
+
+    it('[Record-266] should delete comment for app in guest space', () => {
+      const data = {
+        app: 1,
+        record: 1,
+        comment: 1
+      };
+
+      nock(URI)
+        .intercept(ROUTE_GUEST, 'DELETE', reqBody => {
+          expect(reqBody).toHaveProperty('app');
+          return true;
+        })
+        .matchHeader(common.PASSWORD_AUTH, authHeader => {
+          expect(authHeader).toBe(
+            common.getPasswordAuth(common.USERNAME, common.PASSWORD)
+          );
+          return true;
+        })
+        .reply(200, {});
+
+      const actualResult = recordModuleGuest.deleteComment(
+        data.app,
+        data.record,
+        data.comment
+      );
+      return actualResult.then(response => {
+        expect(response).toMatchObject({});
+      });
+    });
+
+    it('[Record-267] should delete comment when executing with interger as string type (input string for interger and vice versa)', () => {
+      const data = {
+        app: '1',
+        record: '1',
+        comment: '1'
+      };
+
+      nock(URI)
+        .intercept(ROUTE_GUEST, 'DELETE', reqBody => {
+          expect(reqBody).toHaveProperty('app');
+          return true;
+        })
+        .matchHeader(common.PASSWORD_AUTH, authHeader => {
+          expect(authHeader).toBe(
+            common.getPasswordAuth(common.USERNAME, common.PASSWORD)
+          );
+          return true;
+        })
+        .reply(200, {});
+
+      const actualResult = recordModuleGuest.deleteComment(
         data.app,
         data.record,
         data.comment
@@ -217,5 +310,94 @@ describe('deleteComment function', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
+
+    it('[Record-258] should return an error when user does not have View permission for app', () => {
+      const data = {app: 1, record: 2, comment: 3};
+      const expectedResult = {
+        'code': 'CB_NO02',
+        'id': 'f8HbJ4gFiEhhOLm7wR9Q',
+        'message': 'No privilege to proceed.'
+      };
+      nock(URI)
+        .delete(ROUTE, reqBody => {
+          return true;
+        })
+        .reply(403, expectedResult);
+      const actualResult = recordModule.deleteComment(
+        data.app,
+        data.record,
+        data.comment
+      );
+      return actualResult.catch(err => {
+        expect(err.get()).toMatchObject(expectedResult);
+      });
+    });
+
+    it('[Record-259] should return an error when user does not have View permission for record', () => {
+      const data = {app: 1, record: 2, comment: 3};
+      const expectedResult = {
+        'code': 'CB_NO02',
+        'id': 'f8HbJ4gFiEhhOLm7wR9Q',
+        'message': 'No privilege to proceed.'
+      };
+      nock(URI)
+        .delete(ROUTE, reqBody => {
+          return true;
+        })
+        .reply(403, expectedResult);
+      const actualResult = recordModule.deleteComment(
+        data.app,
+        data.record,
+        data.comment
+      );
+      return actualResult.catch(err => {
+        expect(err.get()).toMatchObject(expectedResult);
+      });
+    });
+
+    it('[Record-268] should return an error when the comment featured is disabled', () => {
+      const data = {app: 1, record: 2, comment: 3};
+      const expectedResult = {
+        'code': 'GAIA_RE12',
+        'id': 'Q7SZZmx4HJdwC03zGs6O',
+        'message': 'Comment feature is disabled.'
+      };
+      nock(URI)
+        .delete(ROUTE, reqBody => {
+          return true;
+        })
+        .reply(403, expectedResult);
+      const actualResult = recordModule.deleteComment(
+        data.app,
+        data.record,
+        data.comment
+      );
+      return actualResult.catch(err => {
+        expect(err.get()).toMatchObject(expectedResult);
+      });
+    });
+
+    it('[Record-269] should return an error when deleting comment of other users', () => {
+      const data = {app: 1, record: 2, comment: 3};
+      const expectedResult = {
+        'code': 'GAIA_RE03',
+        'id': '7T0m9UkLKcQkevRrni0H',
+        'message': 'Cannot delete the comment (ID: 10). The comment was posted by someone other than you.'
+      };
+      nock(URI)
+        .delete(ROUTE, reqBody => {
+          return true;
+        })
+        .reply(403, expectedResult);
+      const actualResult = recordModule.deleteComment(
+        data.app,
+        data.record,
+        data.comment
+      );
+      return actualResult.catch(err => {
+        expect(err.get()).toMatchObject(expectedResult);
+      });
+    });
+
   });
 });
