@@ -177,6 +177,39 @@ describe('getFormLayout function', () => {
         expect(rsp).toMatchObject(expectResult);
       });
     });
+    it('[Form-23] Verify the app formfield base on full data returned when setting isPreview invalid', () => {
+      const app = 10;
+      const isPreview = 'abc';
+      const expectResult = {
+        'revision': '2',
+        'layout': [
+          {
+            'type': 'ROW',
+            'fields': [
+              {
+                'type': 'SINGLE_LINE_TEXT',
+                'code': 'Text__single_line_',
+                'size': {
+                  'width': '200'
+                }
+              }
+            ]
+          }
+        ]
+      };
+      nock(URI)
+        .get(`${APP_FORM_LAYOUT}?app=${app}`)
+        .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+          expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+          return true;
+        })
+        .reply(200, expectResult);
+
+      const getFormLayoutResult = recordModule.getFormLayout(app, isPreview);
+      return getFormLayoutResult.then((rsp) => {
+        expect(rsp).toMatchObject(expectResult);
+      });
+    });
     it('[Form-24] Verify the app of Guest Space is returned', () => {
       const app = 1;
       const isPreview = false;
@@ -272,7 +305,7 @@ describe('getFormLayout function', () => {
         expect(err.get()).toMatchObject(expectResult);
       });
     });
-    it('[Form-26] Error will be displayed when using this method with pre-live settings with user does not have Permission to manage the App', () => {
+    it('[Form-25] Error will be displayed when using this method with live app when does not have Permission to manage the App', () => {
       const app = 1;
       const isPreview = false;
       const expectResult = {
@@ -282,6 +315,28 @@ describe('getFormLayout function', () => {
       };
       nock(URI)
         .get(`${APP_FORM_LAYOUT}?app=${app}`)
+        .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+          expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+          return true;
+        })
+        .reply(400, expectResult);
+
+      const getFormLayoutResult = recordModule.getFormLayout(app, isPreview);
+      return getFormLayoutResult.catch((err) => {
+        expect(err).toBeInstanceOf(KintoneAPIException);
+        expect(err.get()).toMatchObject(expectResult);
+      });
+    });
+    it('[Form-26] Error will be displayed when using this method with pre-live settings with user does not have Permission to manage the App', () => {
+      const app = 1;
+      const isPreview = true;
+      const expectResult = {
+        'code': 'CB_NO02',
+        'id': '7sqH5vh2McTqtFz0o0LB',
+        'message': 'No privilege to proceed.'
+      };
+      nock(URI)
+        .get(`${APP_FORM_LAYOUT_PREVIEW}?app=${app}`)
         .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
           expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
           return true;

@@ -16,7 +16,7 @@ nock('https://' + common.DOMAIN)
   .reply(400, expectResult);
 
 const request = axios({
-  url: 'https://' + common.DOMAIN + '/k/v1/records.json',
+  url: 'https://' + common.DOMAIN + ':443/k/v1/records.json',
   method: 'GET',
   headers: {
     [common.PASSWORD_AUTH]: common.getPasswordAuth(common.USERNAME, common.PASSWORD),
@@ -25,6 +25,7 @@ const request = axios({
   params: {
     app: -2
   },
+  proxy:false,
   json: true
 }).catch((err) => {
   throw new KintoneAPIException(err);
@@ -32,7 +33,7 @@ const request = axios({
 describe('kintoneAPIException module', () => {
   describe('get function', () => {
     it('should return kintone error response', () => {
-      return request.catch(err => {
+        return request.catch(err => {
         expect(err.get()).toMatchObject(expectResult);
       });
     });
