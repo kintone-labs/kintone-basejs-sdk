@@ -17,7 +17,8 @@ class UpdateGeneralSettingsRequest {
      * @return {JSON}
      */
   toJSON() {
-    const data = this.generalSettings ? this.generalSettings : {};
+    const settings = JSON.stringify(this.generalSettings);
+    const data = this.generalSettings && typeof this.generalSettings === 'object' ? JSON.parse(settings) : {};
     data.app = this.app;
     data.revision = this.revision;
     return data;
