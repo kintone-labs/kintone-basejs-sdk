@@ -119,10 +119,8 @@ describe('deleteRecordsWithRevision function', () => {
         'revisions': [1, 4]
       };
 
-      const connGuestSpace = new Connection(common.DOMAIN, auth, common.GUEST_SPACEID);
-      const recordInGuestSpace = new Record(connGuestSpace);
       nock(URI)
-        .intercept(API_ROUTE.GUEST_RECORDS, 'DELETE', (rqBody) => {
+        .intercept(API_ROUTE.RECORDS, 'DELETE', (rqBody) => {
           expect(rqBody).toEqual(expectBody);
           return true;
         })
@@ -131,12 +129,12 @@ describe('deleteRecordsWithRevision function', () => {
           return true;
         })
         .matchHeader('Content-Type', (type) => {
-          expect(type).toEqual(expect.stringContaining('application/json'));
+          expect(type).toEqual(expect.stringContaining('applicgit ation/json'));
           return true;
         })
         .reply(200, {});
 
-      const deleteRecordsWithRevisionResult = recordInGuestSpace.deleteRecordsWithRevision(data.appID, data.idsWithRevision);
+      const deleteRecordsWithRevisionResult = recordModule.deleteRecordsWithRevision(data.appID, data.idsWithRevision);
       return deleteRecordsWithRevisionResult.then((rsp) => {
         expect(rsp).toEqual({});
       });
