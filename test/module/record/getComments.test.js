@@ -12,12 +12,16 @@ const {
 
 const auth = new Auth().setPasswordAuth(common.USERNAME, common.PASSWORD);
 const conn = new Connection(common.DOMAIN, auth);
+const conn_guest = new Connection(common.DOMAIN, auth, common.GUEST_SPACEID);
+
 if (common.hasOwnProperty('proxy') && common.proxy) {
   conn.addRequestOption('proxy', common.proxy);
 }
 const recordModule = new Record(conn);
+const recordModule_guest = new Record(conn_guest);
 const URI = 'https://' + common.DOMAIN;
 const ROUTE = '/k/v1/record/comments.json';
+const ROUTE_GUEST = '/k/guest/1/v1/record/comments.json';
 
 describe('getComments function', () => {
   describe('common cases', () => {
@@ -51,407 +55,643 @@ describe('getComments function', () => {
   });
 
   describe('success cases', () => {
-      it('[Record-215] should return correctly the comments of record once valid data, app + record only', () => {
-        const data = {
-          app: 1,
-          record: 2
-        };
+    it('[Record-215] should return correctly the comments of record once valid data, app + record only', () => {
+      const data = {
+        app: 1,
+        record: 2
+      };
 
-        nock(URI)
-          .get(ROUTE + `?app=${data.app}&record=${data.record}`)
-          .matchHeader('X-Cybozu-Authorization', authHeader => {
-            expect(authHeader).toBe(
-              common.getPasswordAuth(common.USERNAME, common.PASSWORD)
-            );
-            return true;
-          })
-          .reply(200, {
-            comments: [
-              {
-                id: '2',
-                text:
+      nock(URI)
+        .get(ROUTE + `?app=${data.app}&record=${data.record}`)
+        .matchHeader('X-Cybozu-Authorization', authHeader => {
+          expect(authHeader).toBe(
+            common.getPasswordAuth(common.USERNAME, common.PASSWORD)
+          );
+          return true;
+        })
+        .reply(200, {
+          comments: [
+            {
+              id: '2',
+              text:
                   'user13 Global Sales APAC Taskforce \nHere is today\'s report.',
-                createdAt: '2016-05-09T18:27:54Z',
-                creator: {
-                  code: 'user14',
-                  name: 'user14'
-                }
+              createdAt: '2016-05-09T18:27:54Z',
+              creator: {
+                code: 'user14',
+                name: 'user14'
               }
-            ],
-            older: false,
-            newer: false
-          });
-        const actualResult = recordModule.getComments(data.app, data.record);
-        return actualResult.then(response => {
-          expect(response).toHaveProperty('comments');
-        });
-      });
-
-      it('[Record-216] should return the comments of record by the order of `asc`', () => {
-        const data = {app: 1, record: 2};
-        const expectedResult = {
-          comments: [
-            {
-              id: '1',
-              text: 'asd',
-              createdAt: '2018-09-07T07:47:07Z',
-              creator: {
-                code: 'cybozu',
-                name: 'cybozu'
-              },
-              mentions: []
-            },
-            {
-              id: '2',
-              text: 'bnm',
-              createdAt: '2018-09-07T07:47:14Z',
-              creator: {
-                code: 'cybozu',
-                name: 'cybozu'
-              },
-              mentions: []
-            },
-            {
-              id: '3',
-              text: 'qwe',
-              createdAt: '2018-09-07T07:49:27Z',
-              creator: {
-                code: 'cybozu',
-                name: 'cybozu'
-              },
-              mentions: []
-            },
-            {
-              id: '4',
-              text: 'cvb',
-              createdAt: '2018-09-07T07:49:37Z',
-              creator: {
-                code: 'cybozu',
-                name: 'cybozu'
-              },
-              mentions: []
             }
           ],
           older: false,
           newer: false
-        };
-        nock(URI)
-          .get(ROUTE + `?app=${data.app}&record=${data.record}&order=asc`)
-          .reply(200, expectedResult);
-
-        const actualResult = recordModule.getComments(
-          data.app,
-          data.record,
-          'asc',
-          undefined,
-          undefined
-        );
-        return actualResult.then(response => {
-          expect(response).toHaveProperty('comments');
-          expect(response).toMatchObject(expectedResult);
         });
+      const actualResult = recordModule.getComments(data.app, data.record);
+      return actualResult.then(response => {
+        expect(response).toHaveProperty('comments');
       });
+    });
 
-      it('[Record-217] should return the comments of record by the order of `desc`', () => {
-        const data = {app: 1, record: 2};
-        const expectedResult = {
-          comments: [
-            {
-              id: '4',
-              text: 'cvb',
-              createdAt: '2018-09-07T07:49:37Z',
-              creator: {
-                code: 'cybozu',
-                name: 'cybozu'
-              },
-              mentions: []
+    it('[Record-216] should return the comments of record by the order of `asc`', () => {
+      const data = {app: 1, record: 2};
+      const expectedResult = {
+        comments: [
+          {
+            id: '1',
+            text: 'asd',
+            createdAt: '2018-09-07T07:47:07Z',
+            creator: {
+              code: 'cybozu',
+              name: 'cybozu'
             },
-            {
-              id: '3',
-              text: 'qwe',
-              createdAt: '2018-09-07T07:49:27Z',
-              creator: {
-                code: 'cybozu',
-                name: 'cybozu'
-              },
-              mentions: []
+            mentions: []
+          },
+          {
+            id: '2',
+            text: 'bnm',
+            createdAt: '2018-09-07T07:47:14Z',
+            creator: {
+              code: 'cybozu',
+              name: 'cybozu'
             },
-            {
-              id: '2',
-              text: 'bnm',
-              createdAt: '2018-09-07T07:47:14Z',
-              creator: {
-                code: 'cybozu',
-                name: 'cybozu'
-              },
-              mentions: []
+            mentions: []
+          },
+          {
+            id: '3',
+            text: 'qwe',
+            createdAt: '2018-09-07T07:49:27Z',
+            creator: {
+              code: 'cybozu',
+              name: 'cybozu'
             },
-            {
-              id: '1',
-              text: 'asd',
-              createdAt: '2018-09-07T07:47:07Z',
-              creator: {
-                code: 'cybozu',
-                name: 'cybozu'
-              },
-              mentions: []
-            }
-          ],
-          older: false,
-          newer: false
-        };
-        nock(URI)
-          .get(ROUTE + `?app=${data.app}&record=${data.record}&order=desc`)
-          .reply(200, expectedResult);
+            mentions: []
+          },
+          {
+            id: '4',
+            text: 'cvb',
+            createdAt: '2018-09-07T07:49:37Z',
+            creator: {
+              code: 'cybozu',
+              name: 'cybozu'
+            },
+            mentions: []
+          }
+        ],
+        older: false,
+        newer: false
+      };
+      nock(URI)
+        .get(ROUTE + `?app=${data.app}&record=${data.record}&order=asc`)
+        .reply(200, expectedResult);
 
-        const actualResult = recordModule.getComments(
-          data.app,
-          data.record,
-          'desc',
-          undefined,
-          undefined
-        );
-        return actualResult.then(response => {
-          expect(response).toHaveProperty('comments');
-          expect(response).toMatchObject(expectedResult);
-        });
+      const actualResult = recordModule.getComments(
+        data.app,
+        data.record,
+        'asc',
+        undefined,
+        undefined
+      );
+      return actualResult.then(response => {
+        expect(response).toHaveProperty('comments');
+        expect(response).toMatchObject(expectedResult);
       });
+    });
 
-      it('[Record-219] should return the comments of record according to the offset value', () => {
-        const data = {app: 1, record: 2};
-        const expectedResult = {
-          comments: [
-            {
-              id: '3',
-              text: 'qwe',
-              createdAt: '2018-09-07T07:49:27Z',
-              creator: {
-                code: 'cybozu',
-                name: 'cybozu'
-              },
-              mentions: []
+    it('[Record-217] should return the comments of record by the order of `desc`', () => {
+      const data = {app: 1, record: 2};
+      const expectedResult = {
+        comments: [
+          {
+            id: '4',
+            text: 'cvb',
+            createdAt: '2018-09-07T07:49:37Z',
+            creator: {
+              code: 'cybozu',
+              name: 'cybozu'
             },
-            {
-              id: '4',
-              text: 'cvb',
-              createdAt: '2018-09-07T07:49:37Z',
-              creator: {
-                code: 'cybozu',
-                name: 'cybozu'
-              },
-              mentions: []
-            }
-          ],
-          older: true,
-          newer: false
-        };
-        const OFFSET = 2;
+            mentions: []
+          },
+          {
+            id: '3',
+            text: 'qwe',
+            createdAt: '2018-09-07T07:49:27Z',
+            creator: {
+              code: 'cybozu',
+              name: 'cybozu'
+            },
+            mentions: []
+          },
+          {
+            id: '2',
+            text: 'bnm',
+            createdAt: '2018-09-07T07:47:14Z',
+            creator: {
+              code: 'cybozu',
+              name: 'cybozu'
+            },
+            mentions: []
+          },
+          {
+            id: '1',
+            text: 'asd',
+            createdAt: '2018-09-07T07:47:07Z',
+            creator: {
+              code: 'cybozu',
+              name: 'cybozu'
+            },
+            mentions: []
+          }
+        ],
+        older: false,
+        newer: false
+      };
+      nock(URI)
+        .get(ROUTE + `?app=${data.app}&record=${data.record}&order=desc`)
+        .reply(200, expectedResult);
 
-        nock(URI)
-          .get(
-            ROUTE +
+      const actualResult = recordModule.getComments(
+        data.app,
+        data.record,
+        'desc',
+        undefined,
+        undefined
+      );
+      return actualResult.then(response => {
+        expect(response).toHaveProperty('comments');
+        expect(response).toMatchObject(expectedResult);
+      });
+    });
+
+    it('[Record-219] should return the comments of record according to the offset value', () => {
+      const data = {app: 1, record: 2};
+      const expectedResult = {
+        comments: [
+          {
+            id: '3',
+            text: 'qwe',
+            createdAt: '2018-09-07T07:49:27Z',
+            creator: {
+              code: 'cybozu',
+              name: 'cybozu'
+            },
+            mentions: []
+          },
+          {
+            id: '4',
+            text: 'cvb',
+            createdAt: '2018-09-07T07:49:37Z',
+            creator: {
+              code: 'cybozu',
+              name: 'cybozu'
+            },
+            mentions: []
+          }
+        ],
+        older: true,
+        newer: false
+      };
+      const OFFSET = 2;
+
+      nock(URI)
+        .get(
+          ROUTE +
               `?app=${data.app}&record=${
                 data.record
               }&order=asc&offset=${OFFSET}`
-          )
-          .reply(200, expectedResult);
+        )
+        .reply(200, expectedResult);
 
-        const actualResult = recordModule.getComments(
-          data.app,
-          data.record,
-          'asc',
-          OFFSET,
-          undefined
-        );
-        return actualResult.then(response => {
-          expect(response).toHaveProperty('comments');
-          expect(response).toMatchObject(expectedResult);
-        });
+      const actualResult = recordModule.getComments(
+        data.app,
+        data.record,
+        'asc',
+        OFFSET,
+        undefined
+      );
+      return actualResult.then(response => {
+        expect(response).toHaveProperty('comments');
+        expect(response).toMatchObject(expectedResult);
       });
+    });
 
-      it('[Record-220] should return the comments of record without skipping when the offset value is 0', () => {
-        const data = {app: 1, record: 2};
-        const expectedResult = {
-          comments: [
-            {
-              id: '4',
-              text: 'cvb',
-              createdAt: '2018-09-07T07:49:37Z',
-              creator: {
-                code: 'cybozu',
-                name: 'cybozu'
-              },
-              mentions: []
+    it('[Record-220] should return the comments of record without skipping when the offset value is 0', () => {
+      const data = {app: 1, record: 2};
+      const expectedResult = {
+        comments: [
+          {
+            id: '4',
+            text: 'cvb',
+            createdAt: '2018-09-07T07:49:37Z',
+            creator: {
+              code: 'cybozu',
+              name: 'cybozu'
             },
-            {
-              id: '3',
-              text: 'qwe',
-              createdAt: '2018-09-07T07:49:27Z',
-              creator: {
-                code: 'cybozu',
-                name: 'cybozu'
-              },
-              mentions: []
+            mentions: []
+          },
+          {
+            id: '3',
+            text: 'qwe',
+            createdAt: '2018-09-07T07:49:27Z',
+            creator: {
+              code: 'cybozu',
+              name: 'cybozu'
             },
-            {
-              id: '2',
-              text: 'bnm',
-              createdAt: '2018-09-07T07:47:14Z',
-              creator: {
-                code: 'cybozu',
-                name: 'cybozu'
-              },
-              mentions: []
+            mentions: []
+          },
+          {
+            id: '2',
+            text: 'bnm',
+            createdAt: '2018-09-07T07:47:14Z',
+            creator: {
+              code: 'cybozu',
+              name: 'cybozu'
             },
-            {
-              id: '1',
-              text: 'asd',
-              createdAt: '2018-09-07T07:47:07Z',
-              creator: {
-                code: 'cybozu',
-                name: 'cybozu'
-              },
-              mentions: []
-            }
-          ],
-          older: false,
-          newer: false
-        };
-        const OFFSET = 0;
+            mentions: []
+          },
+          {
+            id: '1',
+            text: 'asd',
+            createdAt: '2018-09-07T07:47:07Z',
+            creator: {
+              code: 'cybozu',
+              name: 'cybozu'
+            },
+            mentions: []
+          }
+        ],
+        older: false,
+        newer: false
+      };
+      const OFFSET = 0;
 
-        nock(URI)
-          .get(
-            ROUTE +
+      nock(URI)
+        .get(
+          ROUTE +
               `?app=${data.app}&record=${
                 data.record
               }&order=desc&offset=${OFFSET}`
-          )
-          .reply(200, expectedResult);
+        )
+        .reply(200, expectedResult);
 
-        const actualResult = recordModule.getComments(
-          data.app,
-          data.record,
-          'desc',
-          OFFSET,
-          undefined
-        );
-        return actualResult.then(response => {
-          expect(response).toHaveProperty('comments');
-          expect(response).toMatchObject(expectedResult);
-        });
+      const actualResult = recordModule.getComments(
+        data.app,
+        data.record,
+        'desc',
+        OFFSET,
+        undefined
+      );
+      return actualResult.then(response => {
+        expect(response).toHaveProperty('comments');
+        expect(response).toMatchObject(expectedResult);
       });
-
-      it('[Record-222] should return the comments of record according to the limit value', () => {
-        const data = {app: 1, record: 2};
-        const expectedResult = {
-          comments: [
-            {
-              id: '4',
-              text: 'cvb',
-              createdAt: '2018-09-07T07:49:37Z',
-              creator: {
-                code: 'cybozu',
-                name: 'cybozu'
-              },
-              mentions: []
-            },
-            {
-              id: '3',
-              text: 'qwe',
-              createdAt: '2018-09-07T07:49:27Z',
-              creator: {
-                code: 'cybozu',
-                name: 'cybozu'
-              },
-              mentions: []
-            }
-          ],
-          older: true,
-          newer: false
-        };
-        const LIMIT = 2;
-
-        nock(URI)
-          .get(ROUTE + `?app=${data.app}&record=${data.record}&limit=${LIMIT}`)
-          .reply(200, expectedResult);
-
-        const actualResult = recordModule.getComments(
-          data.app,
-          data.record,
-          undefined,
-          undefined,
-          LIMIT
-        );
-        return actualResult.then(response => {
-          expect(response).toHaveProperty('comments');
-          expect(response).toMatchObject(expectedResult);
-        });
-      });
-
-      it('[Record-223] should NOT return the comments of record when the limit value is 0', () => {
-        const data = {app: 1, record: 2};
-        const expectedResult = {
-          comments: [],
-          older: true,
-          newer: false
-        };
-        const LIMIT = 0;
-        nock(URI)
-          .get(ROUTE + `?app=${data.app}&record=${data.record}&limit=${LIMIT}`)
-          .reply(200, expectedResult);
-
-        const actualResult = recordModule.getComments(
-          data.app,
-          data.record,
-          undefined,
-          undefined,
-          LIMIT
-        );
-        return actualResult.then(response => {
-          expect(response).toHaveProperty('comments');
-          expect(response).toMatchObject(expectedResult);
-        });
     });
 
-      it('[Record-225] should return the comments of record when combining the three param {order, offset, limit}', () => {
-        const data = {app: 1, record: 2, order: 'desc', offset: 3, limit: 3};
-        const expectedResult = {
-          comments: [
-            {
-              id: '1',
-              text: 'asd',
-              createdAt: '2018-09-07T07:47:07Z',
-              creator: {
-                code: 'cybozu',
-                name: 'cybozu'
-              },
-              mentions: []
-            }
-          ],
-          older: false,
-          newer: true
-        };
+    it('[Record-222] should return the comments of record according to the limit value', () => {
+      const data = {app: 1, record: 2};
+      const expectedResult = {
+        comments: [
+          {
+            id: '4',
+            text: 'cvb',
+            createdAt: '2018-09-07T07:49:37Z',
+            creator: {
+              code: 'cybozu',
+              name: 'cybozu'
+            },
+            mentions: []
+          },
+          {
+            id: '3',
+            text: 'qwe',
+            createdAt: '2018-09-07T07:49:27Z',
+            creator: {
+              code: 'cybozu',
+              name: 'cybozu'
+            },
+            mentions: []
+          }
+        ],
+        older: true,
+        newer: false
+      };
+      const LIMIT = 2;
 
-        nock(URI)
-          .get(
-            ROUTE +
+      nock(URI)
+        .get(ROUTE + `?app=${data.app}&record=${data.record}&limit=${LIMIT}`)
+        .reply(200, expectedResult);
+
+      const actualResult = recordModule.getComments(
+        data.app,
+        data.record,
+        undefined,
+        undefined,
+        LIMIT
+      );
+      return actualResult.then(response => {
+        expect(response).toHaveProperty('comments');
+        expect(response).toMatchObject(expectedResult);
+      });
+    });
+
+    it('[Record-223] should NOT return the comments of record when the limit value is 0', () => {
+      const data = {app: 1, record: 2};
+      const expectedResult = {
+        comments: [],
+        older: true,
+        newer: false
+      };
+      const LIMIT = 0;
+      nock(URI)
+        .get(ROUTE + `?app=${data.app}&record=${data.record}&limit=${LIMIT}`)
+        .reply(200, expectedResult);
+
+      const actualResult = recordModule.getComments(
+        data.app,
+        data.record,
+        undefined,
+        undefined,
+        LIMIT
+      );
+      return actualResult.then(response => {
+        expect(response).toHaveProperty('comments');
+        expect(response).toMatchObject(expectedResult);
+      });
+    });
+
+    it('[Record-225] should return the comments of record when combining the three param {order, offset, limit}', () => {
+      const data = {app: 1, record: 2, order: 'desc', offset: 3, limit: 3};
+      const expectedResult = {
+        comments: [
+          {
+            id: '1',
+            text: 'asd',
+            createdAt: '2018-09-07T07:47:07Z',
+            creator: {
+              code: 'cybozu',
+              name: 'cybozu'
+            },
+            mentions: []
+          }
+        ],
+        older: false,
+        newer: true
+      };
+
+      nock(URI)
+        .get(
+          ROUTE +
               `?app=${data.app}&record=${data.record}&order=${
                 data.order
               }&offset=${data.offset}&limit=${data.limit}`
-          )
-          .reply(200, expectedResult);
-        const actualResult = recordModule.getComments(
-          data.app,
-          data.record,
-          data.order,
-          data.offset,
-          data.limit
-        );
-        return actualResult.then(response => {
-          expect(response).toHaveProperty('comments');
-          expect(response).toMatchObject(expectedResult);
-        });
+        )
+        .reply(200, expectedResult);
+      const actualResult = recordModule.getComments(
+        data.app,
+        data.record,
+        data.order,
+        data.offset,
+        data.limit
+      );
+      return actualResult.then(response => {
+        expect(response).toHaveProperty('comments');
+        expect(response).toMatchObject(expectedResult);
       });
+    });
+
+    it('[Record-229] should return the comments when user does not have View permission for a field', () => {
+      const data = {app: 1, record: 2};
+      const expectedResult = {
+        comments: [
+          {
+            id: '1',
+            text: 'asd',
+            createdAt: '2018-09-07T07:47:07Z',
+            creator: {
+              code: 'cybozu',
+              name: 'cybozu'
+            },
+            mentions: []
+          },
+          {
+            id: '2',
+            text: 'bnm',
+            createdAt: '2018-09-07T07:47:14Z',
+            creator: {
+              code: 'cybozu',
+              name: 'cybozu'
+            },
+            mentions: []
+          },
+          {
+            id: '3',
+            text: 'qwe',
+            createdAt: '2018-09-07T07:49:27Z',
+            creator: {
+              code: 'cybozu',
+              name: 'cybozu'
+            },
+            mentions: []
+          },
+          {
+            id: '4',
+            text: 'cvb',
+            createdAt: '2018-09-07T07:49:37Z',
+            creator: {
+              code: 'cybozu',
+              name: 'cybozu'
+            },
+            mentions: []
+          }
+        ],
+        older: false,
+        newer: false
+      };
+      nock(URI)
+        .get(ROUTE + `?app=${data.app}&record=${data.record}`)
+        .reply(200, expectedResult);
+
+      const actualResult = recordModule.getComments(
+        data.app,
+        data.record,
+        undefined,
+        undefined,
+        undefined
+      );
+      return actualResult.then(response => {
+        expect(response).toHaveProperty('comments');
+        expect(response).toMatchObject(expectedResult);
+      });
+    });
+
+    it('[Record-225] should return the comments of record when combining the three param {order, offset, limit}', () => {
+      const data = {app: 1, record: 2, order: 'desc', offset: 3, limit: 3};
+      const expectedResult = {
+        comments: [
+          {
+            id: '1',
+            text: 'asd',
+            createdAt: '2018-09-07T07:47:07Z',
+            creator: {
+              code: 'cybozu',
+              name: 'cybozu'
+            },
+            mentions: []
+          }
+        ],
+        older: false,
+        newer: true
+      };
+
+      nock(URI)
+        .get(
+          ROUTE +
+              `?app=${data.app}&record=${data.record}&order=${
+                data.order
+              }&offset=${data.offset}&limit=${data.limit}`
+        )
+        .reply(200, expectedResult);
+      const actualResult = recordModule.getComments(
+        data.app,
+        data.record,
+        data.order,
+        data.offset,
+        data.limit
+      );
+      return actualResult.then(response => {
+        expect(response).toHaveProperty('comments');
+        expect(response).toMatchObject(expectedResult);
+      });
+    });
+
+    it('[Record-234] should added successfully for app in guest space', () => {
+      const data = {app: 1, record: 2};
+      const expectedResult = {
+        comments: [
+          {
+            id: '1',
+            text: 'asd',
+            createdAt: '2018-09-07T07:47:07Z',
+            creator: {
+              code: 'cybozu',
+              name: 'cybozu'
+            },
+            mentions: []
+          },
+          {
+            id: '2',
+            text: 'bnm',
+            createdAt: '2018-09-07T07:47:14Z',
+            creator: {
+              code: 'cybozu',
+              name: 'cybozu'
+            },
+            mentions: []
+          },
+          {
+            id: '3',
+            text: 'qwe',
+            createdAt: '2018-09-07T07:49:27Z',
+            creator: {
+              code: 'cybozu',
+              name: 'cybozu'
+            },
+            mentions: []
+          },
+          {
+            id: '4',
+            text: 'cvb',
+            createdAt: '2018-09-07T07:49:37Z',
+            creator: {
+              code: 'cybozu',
+              name: 'cybozu'
+            },
+            mentions: []
+          }
+        ],
+        older: false,
+        newer: false
+      };
+      nock(URI)
+        .get(ROUTE_GUEST + `?app=${data.app}&record=${data.record}`)
+        .reply(200, expectedResult);
+
+      const actualResult = recordModule_guest.getComments(
+        data.app,
+        data.record,
+        undefined,
+        undefined,
+        undefined
+      );
+      return actualResult.then(response => {
+        expect(response).toHaveProperty('comments');
+        expect(response).toMatchObject(expectedResult);
+      });
+    });
+
+    it('[Record-235] should working when executing with interger as string type (input string for interger and vice versa) ', () => {
+      const data = {app: '1', record: '2'};
+      const expectedResult = {
+        comments: [
+          {
+            id: '1',
+            text: 'asd',
+            createdAt: '2018-09-07T07:47:07Z',
+            creator: {
+              code: 'cybozu',
+              name: 'cybozu'
+            },
+            mentions: []
+          },
+          {
+            id: '2',
+            text: 'bnm',
+            createdAt: '2018-09-07T07:47:14Z',
+            creator: {
+              code: 'cybozu',
+              name: 'cybozu'
+            },
+            mentions: []
+          },
+          {
+            id: '3',
+            text: 'qwe',
+            createdAt: '2018-09-07T07:49:27Z',
+            creator: {
+              code: 'cybozu',
+              name: 'cybozu'
+            },
+            mentions: []
+          },
+          {
+            id: '4',
+            text: 'cvb',
+            createdAt: '2018-09-07T07:49:37Z',
+            creator: {
+              code: 'cybozu',
+              name: 'cybozu'
+            },
+            mentions: []
+          }
+        ],
+        older: false,
+        newer: false
+      };
+      nock(URI)
+        .get(ROUTE + `?app=${data.app}&record=${data.record}`)
+        .reply(200, expectedResult);
+
+      const actualResult = recordModule.getComments(
+        data.app,
+        data.record,
+        undefined,
+        undefined,
+        undefined
+      );
+      return actualResult.then(response => {
+        expect(response).toHaveProperty('comments');
+        expect(response).toMatchObject(expectedResult);
+      });
+    });
+
   });
 
   describe('error case', () => {
@@ -653,5 +893,75 @@ describe('getComments function', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
+
+    it('[Record-226] should return an error when comment feature is disabled', () => {
+      const data = {app: 1, record: 2};
+      const expectedResult = {
+        'code': 'GAIA_RE12',
+        'id': 'Q7SZZmx4HJdwC03zGs6O',
+        'message': 'Comment feature is disabled.'
+      };
+      nock(URI)
+        .get(ROUTE + `?app=${data.app}&record=${data.record}`)
+        .reply(520, expectedResult);
+
+      const actualResult = recordModule.getComments(
+        data.app,
+        data.record,
+        undefined,
+        undefined,
+        undefined
+      );
+      return actualResult.catch(err => {
+        expect(err.get()).toMatchObject(expectedResult);
+      });
+    });
+
+    it('[Record-227] should return an error when user does not have View permission for app', () => {
+      const data = {app: 1, record: 2};
+      const expectedResult = {
+        'code': 'CB_NO02',
+        'id': '2f7SaUZmazhZPZzdkSI1',
+        'message': 'No privilege to proceed.'
+      };
+      nock(URI)
+        .get(ROUTE + `?app=${data.app}&record=${data.record}`)
+        .reply(403, expectedResult);
+
+      const actualResult = recordModule.getComments(
+        data.app,
+        data.record,
+        undefined,
+        undefined,
+        undefined
+      );
+      return actualResult.catch(err => {
+        expect(err.get()).toMatchObject(expectedResult);
+      });
+    });
+
+    it('[Record-228] should return an error when user does not have View permission for record', () => {
+      const data = {app: 1, record: 2};
+      const expectedResult = {
+        'code': 'CB_NO02',
+        'id': '2f7SaUZmazhZPZzdkSI1',
+        'message': 'No privilege to proceed.'
+      };
+      nock(URI)
+        .get(ROUTE + `?app=${data.app}&record=${data.record}`)
+        .reply(403, expectedResult);
+
+      const actualResult = recordModule.getComments(
+        data.app,
+        data.record,
+        undefined,
+        undefined,
+        undefined
+      );
+      return actualResult.catch(err => {
+        expect(err.get()).toMatchObject(expectedResult);
+      });
+    });
+
   });
 });

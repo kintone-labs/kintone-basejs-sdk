@@ -55,7 +55,7 @@ describe('deployAppSettings function', () => {
   });
 
   describe('success case', () => {
-    it('[App module-77]should deploy successfully the app', () => {
+    it('[App-77]should deploy successfully the app', () => {
       const data = {
         'apps': [
           {
@@ -88,7 +88,7 @@ describe('deployAppSettings function', () => {
         expect(rsp).toMatchObject({});
       });
     });
-    it('[App module-78]should deploy successfully the app when input revert =  false', () => {
+    it('[App-78]should deploy successfully the app when input revert =  false', () => {
       const data = {
         'apps': [
           {
@@ -121,7 +121,7 @@ describe('deployAppSettings function', () => {
         expect(rsp).toMatchObject({});
       });
     });
-    it('[App module-79]should deploy successfully the app without revert', () => {
+    it('[App-79]should deploy successfully the app without revert', () => {
       const data = {
         'apps': [
           {
@@ -153,7 +153,7 @@ describe('deployAppSettings function', () => {
         expect(rsp).toMatchObject({});
       });
     });
-    it('[App module-80]should deploy successfully the app when input revision = -1', () => {
+    it('[App-80]should deploy successfully the app when input revision = -1', () => {
       const data = {
         'apps': [
           {
@@ -186,7 +186,7 @@ describe('deployAppSettings function', () => {
         expect(rsp).toMatchObject({});
       });
     });
-    it('[App module-81]should deploy successfully the app without revision', () => {
+    it('[App-81]should deploy successfully the app without revision', () => {
       const data = {
         'apps': [
           {
@@ -217,7 +217,7 @@ describe('deployAppSettings function', () => {
         expect(rsp).toMatchObject({});
       });
     });
-    it('[App module-82]should deploy successfully the app in GUEST SPACE', () => {
+    it('[App-82]should deploy successfully the app in GUEST SPACE', () => {
       const data = {
         'apps': [
           {
@@ -250,7 +250,7 @@ describe('deployAppSettings function', () => {
         expect(rsp).toMatchObject({});
       });
     });
-    it('[App module-83]should deploy successfully the app when input revert =  false in GUEST SPACE', () => {
+    it('[App-83]should deploy successfully the app when input revert =  false in GUEST SPACE', () => {
       const data = {
         'apps': [
           {
@@ -283,7 +283,7 @@ describe('deployAppSettings function', () => {
         expect(rsp).toMatchObject({});
       });
     });
-    it('[App module-84]should deploy successfully the app without revert in GUEST SPACE', () => {
+    it('[App-84]should deploy successfully the app without revert in GUEST SPACE', () => {
       const data = {
         'apps': [
           {
@@ -315,7 +315,7 @@ describe('deployAppSettings function', () => {
         expect(rsp).toMatchObject({});
       });
     });
-    it('[App module-85]should deploy successfully the app when input revision = -1 in GUEST SPACE', () => {
+    it('[App-85]should deploy successfully the app when input revision = -1 in GUEST SPACE', () => {
       const data = {
         'apps': [
           {
@@ -348,7 +348,7 @@ describe('deployAppSettings function', () => {
         expect(rsp).toMatchObject({});
       });
     });
-    it('[App module-86]should deploy successfully the app without revision in GUEST SPACE', () => {
+    it('[App-86]should deploy successfully the app without revision in GUEST SPACE', () => {
       const data = {
         'apps': [
           {
@@ -382,7 +382,7 @@ describe('deployAppSettings function', () => {
   });
 
   describe('error case', () => {
-    it('[App module-87]should return error when use API token', () => {
+    it('[App-87]should return error when use API token', () => {
       const data = {
         'apps': [
           {
@@ -421,7 +421,7 @@ describe('deployAppSettings function', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
-    it('[App module-88]should return error when use API token in GUEST SPACE', () => {
+    it('[App-88]should return error when use API token in GUEST SPACE', () => {
       const data = {
         'apps': [
           {
@@ -460,7 +460,7 @@ describe('deployAppSettings function', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
-    it('[App module-89]should return error when the appId is none exist', () => {
+    it('[App-89]should return error when the appId is none exist', () => {
       const data = {
         'apps': [
           {
@@ -486,7 +486,7 @@ describe('deployAppSettings function', () => {
         expect(err.get()).toMatchObject(expectResult);
       });
     });
-    it('[App module-90]should return error when input revision is incorrectly', () => {
+    it('[App-90]should return error when input revision is incorrectly', () => {
       const data = {
         'apps': [
           {
@@ -521,7 +521,7 @@ describe('deployAppSettings function', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
-    it('[App module-91]should return error when input revision is invalid', () => {
+    it('[App-91]should return error when input revision is invalid', () => {
       const data = {
         'apps': [
           {
@@ -563,7 +563,7 @@ describe('deployAppSettings function', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
-    it('[App module-92]should return error when input no appID', () => {
+    it('[App-92]should return error when input no appID', () => {
       const data = {
         'apps': [
           {
@@ -602,7 +602,7 @@ describe('deployAppSettings function', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
-    it('[App module-93]should return error when the appID is none exist', () => {
+    it('[App-93]should return error when the appID is none exist', () => {
       const data = {
         'apps': [
           {
@@ -635,7 +635,7 @@ describe('deployAppSettings function', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
-    it('[App module-94]should return error when the appID is zero', () => {
+    it('[App-94]should return error when the appID is zero', () => {
       const data = {
         'apps': [
           {
@@ -675,7 +675,7 @@ describe('deployAppSettings function', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
-    it('[App module-95]should return error when the appID is negative', () => {
+    it('[App-95]should return error when the appID is negative', () => {
       const data = {
         'apps': [
           {
@@ -715,7 +715,7 @@ describe('deployAppSettings function', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
-    it('[App module-96]should return error when input invalid revert', () => {
+    it('[App-96]should return error when input invalid revert', () => {
       const data = {
         'apps': [
           {
@@ -761,7 +761,7 @@ describe('deployAppSettings function', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
-    it('[App module-97]should return error when the appId is none exist in GUEST SPACE', () => {
+    it('[App-97]should return error when the appId is none exist in GUEST SPACE', () => {
       const data = {
         'apps': [
           {
@@ -787,7 +787,7 @@ describe('deployAppSettings function', () => {
         expect(err.get()).toMatchObject(expectResult);
       });
     });
-    it('[App module-98]should return error when input revision is incorrectly in GUEST SPACE', () => {
+    it('[App-98]should return error when input revision is incorrectly in GUEST SPACE', () => {
       const data = {
         'apps': [
           {
@@ -822,7 +822,7 @@ describe('deployAppSettings function', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
-    it('[App module-99]should return error when input revision is invalid in GUEST SPACE', () => {
+    it('[App-99]should return error when input revision is invalid in GUEST SPACE', () => {
       const data = {
         'apps': [
           {
@@ -864,7 +864,7 @@ describe('deployAppSettings function', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
-    it('[App module-100]should return error when input no appID in GUEST SPACE', () => {
+    it('[App-100]should return error when input no appID in GUEST SPACE', () => {
       const data = {
         'apps': [
           {
@@ -903,7 +903,7 @@ describe('deployAppSettings function', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
-    it('[App module-101]should return error when the appID is none exist in GUEST SPACE', () => {
+    it('[App-101]should return error when the appID is none exist in GUEST SPACE', () => {
       const data = {
         'apps': [
           {
@@ -936,7 +936,7 @@ describe('deployAppSettings function', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
-    it('[App module-102]should return error when the appID is zero in GUEST SPACE', () => {
+    it('[App-102]should return error when the appID is zero in GUEST SPACE', () => {
       const data = {
         'apps': [
           {
@@ -976,7 +976,7 @@ describe('deployAppSettings function', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
-    it('[App module-103]should return error when the appID is negative in GUEST SPACE', () => {
+    it('[App-103]should return error when the appID is negative in GUEST SPACE', () => {
       const data = {
         'apps': [
           {
@@ -1016,7 +1016,7 @@ describe('deployAppSettings function', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
-    it('[App module-104]should return error when input invalid revert in GUEST SPACE', () => {
+    it('[App-104]should return error when input invalid revert in GUEST SPACE', () => {
       const data = {
         'apps': [
           {
@@ -1062,7 +1062,7 @@ describe('deployAppSettings function', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
-    it('[App module-105]should return error permission deny', () => {
+    it('[App-105]should return error permission deny', () => {
       const data = {
         'apps': [
           {
@@ -1101,7 +1101,7 @@ describe('deployAppSettings function', () => {
         expect(err.get()).toMatchObject(expectedResult);
       });
     });
-    it('[App module-106]should return error permission deny in GUEST SPACE', () => {
+    it('[App-106]should return error permission deny in GUEST SPACE', () => {
       const data = {
         'apps': [
           {
