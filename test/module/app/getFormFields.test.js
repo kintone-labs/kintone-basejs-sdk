@@ -454,6 +454,29 @@ describe('getFormFields function', () => {
         expect(err.get()).toMatchObject(expectResult);
       });
     });
+    it('[Form-13] Error will be displayed with live app with user who does not have Permission to manage the App', () => {
+      const app = 1;
+      const lang = 'en';
+      const isPreview = false;
+      const expectResult = {
+        'code': 'CB_NO02',
+        'id': '7sqH5vh2McTqtFz0o0LB',
+        'message': 'No privilege to proceed.'
+      };
+      nock(URI)
+        .get(`${APP_FORM_FIELD_ROUTE}?app=${app}&lang=${lang}`)
+        .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+          expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+          return true;
+        })
+        .reply(403, expectResult);
+
+      const getFormFieldsResult = recordModule.getFormFields(app, lang, isPreview);
+      return getFormFieldsResult.catch((err) => {
+        expect(err).toBeInstanceOf(KintoneAPIException);
+        expect(err.get()).toMatchObject(expectResult);
+      });
+    });
     it('[Form-14] Error will be displayed with pre-live settings with user who does not have Permission to manage the App', () => {
       const app = 1;
       const lang = 'en';

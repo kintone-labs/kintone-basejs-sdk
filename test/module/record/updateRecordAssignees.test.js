@@ -222,6 +222,35 @@ describe('UpdateRecordAssignees function', () => {
         expect(rsp).toMatchObject(expectResult);
       });
     });
+    it('[Record-162] Ignore the revision and the assignee is updated correctly', () => {
+      const data = {
+        app: 1,
+        id: 1,
+        assignees: ['user1', 'user3', 'user4'],
+        revision: -1
+      };
+
+      const expectResult = {'revision': '3'};
+
+      nock(URI)
+        .put(`${RECORDS_ASSIGNEES_ROUTE}`, (rqBody) => {
+          expect(rqBody).toEqual(data);
+          return true;
+        })
+        .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+          expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+          return true;
+        })
+        .matchHeader('Content-Type', (type) => {
+          expect(type).toEqual(expect.stringContaining('application/json'));
+          return true;
+        })
+        .reply(200, expectResult);
+      const updateRecordAssigneesResult = recordModule.updateRecordAssignees(data.app, data.id, data.assignees, data.revision);
+      return updateRecordAssigneesResult.then((rsp) => {
+        expect(rsp).toMatchObject(expectResult);
+      });
+    });
   });
 
   describe('Error case', () => {
@@ -456,7 +485,7 @@ describe('UpdateRecordAssignees function', () => {
         expect(err.get()).toMatchObject(expectResult);
       });
     });
-    it('[Record-165] Error happens when user does not have Edit permission for app/record/fields', () => {
+    it('[Record-165-166-167] Error happens when user does not have Edit permission for app/record/fields', () => {
       const data = {
         app: 2,
         id: 2,
