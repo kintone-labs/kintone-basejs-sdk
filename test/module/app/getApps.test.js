@@ -98,6 +98,120 @@ describe('getApps function', () => {
         expect(rsp).toMatchObject(expectResult);
       });
     });
+
+    it('[App-9] - should return the app information based on the offset', () => {
+      const limit = 1;
+      const offset = 3;
+      const expectResult = {
+        'apps': [
+          {
+            'appId': '5',
+            'code': '',
+            'name': 'Calendar Application',
+            'description': '',
+            'createdAt': '2018-05-30T04:04:25.000Z',
+            'creator': {
+              'code': 'cybozu',
+              'name': 'cybozu'
+            },
+            'modifiedAt': '2018-07-31T10:49:49.000Z',
+            'modifier': {
+              'code': 'cybozu',
+              'name': 'cybozu'
+            },
+            'spaceId': '1',
+            'threadId': '1'
+          },
+          {
+            'appId': '6',
+            'code': '',
+            'name': 'Calendar uses Start-End Date - Time',
+            'description': '',
+            'createdAt': '2018-05-30T06:24:35.000Z',
+            'creator': {
+              'code': 'cybozu',
+              'name': 'cybozu'
+            },
+            'modifiedAt': '2018-08-01T12:23:15.000Z',
+            'modifier': {
+              'code': 'cybozu',
+              'name': 'cybozu'
+            },
+            'spaceId': '1',
+            'threadId': '1'
+          },
+          {
+            'appId': '7',
+            'code': '',
+            'name': 'New App',
+            'description': '',
+            'createdAt': '2018-06-04T09:44:59.000Z',
+            'creator': {
+              'code': 'cybozu',
+              'name': 'cybozu'
+            },
+            'modifiedAt': '2018-06-06T08:00:07.000Z',
+            'modifier': {
+              'code': 'cybozu',
+              'name': 'cybozu'
+            },
+            'spaceId': null,
+            'threadId': null
+          }
+        ]
+      };
+      nock(URI)
+        .get(API_ROUTE.APPS + `?offset=${offset}&limit=${limit}`)
+        .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+          expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+          return true;
+        })
+        .reply(200, expectResult);
+      const getAppsResult = appModule.getApps(offset, limit);
+      return getAppsResult.then((rsp) => {
+        expect(rsp).toMatchObject(expectResult);
+      });
+    });
+
+    it('[App-10] should get maximum 100 apps for the limit value', () => {
+      const limit = 100;
+      const offset = 1;
+      const numberOfApps = 100;
+      const app = {
+        'appId': '1',
+        'code': 'task',
+        'APP_NAME': 'My Test App',
+        'description': 'Testing this app',
+        'spaceId': null,
+        'threadId': null,
+        'createdAt': '2014-06-02T05:14:05.000Z',
+        'creator': {
+          'code': 'user1',
+          'APP_NAME': 'user1'
+        },
+        'modifiedAt': '2014-06-02T05:14:05.000Z',
+        'modifier': {
+          'code': 'user1',
+          'APP_NAME': 'user1'
+        }
+      };
+      const expectResult = {
+        apps: common.generateRecord(numberOfApps, app)
+      };
+      nock(URI)
+        .get(API_ROUTE.APPS + `?offset=${offset}&limit=${limit}`)
+        .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+          expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+          return true;
+        })
+        .reply(200, expectResult);
+      const getAppsResult = appModule.getApps(offset, limit);
+      return getAppsResult.then((rsp) => {
+        expect(rsp).toEqual(expectResult);
+      });
+    });
+
+
     /**
    * Guest space app
    */
@@ -183,7 +297,7 @@ describe('getApps function', () => {
     /**
     * Verify when not specifying the offset, the default offset value is 0
     */
-    it('[App-17] - should return the app information when not specifying the limit, the default limit value is 100', () => {
+    it('[App-17] - should return the app information when not specifying the offset, the default offset value is 100', () => {
       const limit = 10;
       const offset = null;
       const expectResult = {

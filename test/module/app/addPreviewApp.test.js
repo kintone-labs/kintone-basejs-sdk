@@ -63,7 +63,7 @@ describe('addPreviewApp function', () => {
   });
 
   describe('success case', () => {
-    it('[App module-127]should add successfully a new app', () => {
+    it('[App-127]should add successfully a new app', () => {
       const data = {
         name: 'app 1',
         space: 1,
@@ -92,7 +92,7 @@ describe('addPreviewApp function', () => {
         expect(rsp).toMatchObject(expectResult);
       });
     });
-    it('[App module-128]should add successfully a new app without space and thread', () => {
+    it('[App-128]should add successfully a new app without space and thread', () => {
       const data = {
         name: 'app 1'
       };
@@ -119,7 +119,7 @@ describe('addPreviewApp function', () => {
         expect(rsp).toMatchObject(expectResult);
       });
     });
-    it('[App module-129]should add successfully a new app when input name 64 characters', () => {
+    it('[App-129]should add successfully a new app when input name 64 characters', () => {
       const data = {
         name: generateCharacters(64),
         space: 1,
@@ -148,7 +148,7 @@ describe('addPreviewApp function', () => {
         expect(rsp).toMatchObject(expectResult);
       });
     });
-    it('[App module-130]should add successfully a new app in GUEST SPACE', () => {
+    it('[App-130]should add successfully a new app in GUEST SPACE', () => {
       const data = {
         name: 'app 1',
         space: 1,
@@ -177,7 +177,7 @@ describe('addPreviewApp function', () => {
         expect(rsp).toMatchObject(expectResult);
       });
     });
-    it('[App module-131]should add successfully a new app without space and thread in GUEST SPACE', () => {
+    it('[App-131]should add successfully a new app without space and thread in GUEST SPACE', () => {
       const data = {
         name: 'app 1'
       };
@@ -204,7 +204,7 @@ describe('addPreviewApp function', () => {
         expect(rsp).toMatchObject(expectResult);
       });
     });
-    it('[App module-132]should add successfully a new app when input name 64 characters in GUEST SPACE', () => {
+    it('[App-132]should add successfully a new app when input name 64 characters in GUEST SPACE', () => {
       const data = {
         name: generateCharacters(64),
         space: 1,
@@ -236,7 +236,7 @@ describe('addPreviewApp function', () => {
   });
 
   describe('error case', () => {
-    it('[App module-133]should return error when use API Token', () => {
+    it('[App-133]should return error when use API Token', () => {
       const data = {
         name: 'app 1',
         space: 1,
@@ -267,7 +267,7 @@ describe('addPreviewApp function', () => {
         expect(err.get()).toMatchObject(expectResult);
       });
     });
-    it('[App module-134]should return error when use API Token in GUEST SPACE', () => {
+    it('[App-134]should return error when use API Token in GUEST SPACE', () => {
       const data = {
         name: 'app 1',
         space: 1,
@@ -298,7 +298,7 @@ describe('addPreviewApp function', () => {
         expect(err.get()).toMatchObject(expectResult);
       });
     });
-    it('[App module-135]should return error when do not specify app name', () => {
+    it('[App-135]should return error when do not specify app name', () => {
       const expectResult = {
         'code': 'CB_VA01',
         'id': '0maHPzr1u2yaaWTzN3V3',
@@ -324,7 +324,7 @@ describe('addPreviewApp function', () => {
         expect(err.get()).toMatchObject(expectResult);
       });
     });
-    it('[App module-136]should return error when input name more than 64 characters', () => {
+    it('[App-136]should return error when input name more than 64 characters', () => {
       const data = {
         name: generateCharacters(65),
         space: 1,
@@ -362,7 +362,7 @@ describe('addPreviewApp function', () => {
         expect(err.get()).toMatchObject(expectResult);
       });
     });
-    it('[App module-137]should return error when do not specify space', () => {
+    it('[App-137]should return error when do not specify space', () => {
       const data = {
         name: 'app 1',
         thread: 1
@@ -399,7 +399,7 @@ describe('addPreviewApp function', () => {
         expect(err.get()).toMatchObject(expectResult);
       });
     });
-    it('[App module-138]should return error when input space is none exist ', () => {
+    it('[App-138]should return error when input space is none exist ', () => {
       const data = {
         name: 'app 1',
         space: 9999999999,
@@ -430,7 +430,7 @@ describe('addPreviewApp function', () => {
         expect(err.get()).toMatchObject(expectResult);
       });
     });
-    it('[App module-139]should return error when input space negative', () => {
+    it('[App-139]should return error when input space negative', () => {
       const data = {
         name: 'app 1',
         space: -1,
@@ -468,7 +468,7 @@ describe('addPreviewApp function', () => {
         expect(err.get()).toMatchObject(expectResult);
       });
     });
-    it('[App module-140]should return error when do not specify thread', () => {
+    it('[App-140]should return error when do not specify thread', () => {
       const data = {
         name: 'app 1',
         space: 1
@@ -505,7 +505,7 @@ describe('addPreviewApp function', () => {
         expect(err.get()).toMatchObject(expectResult);
       });
     });
-    it('[App module-141]should return error when input thread is none exist', () => {
+    it('[App-141]should return error when input thread is none exist', () => {
       const data = {
         name: 'app 1',
         space: 1,
@@ -536,7 +536,7 @@ describe('addPreviewApp function', () => {
         expect(err.get()).toMatchObject(expectResult);
       });
     });
-    it('[App module-142]should return error when input thread negative', () => {
+    it('[App-142]should return error when input thread negative', () => {
       const data = {
         name: 'app 1',
         space: 1,
@@ -574,7 +574,7 @@ describe('addPreviewApp function', () => {
         expect(err.get()).toMatchObject(expectResult);
       });
     });
-    it('[App module-143]should return error when do not specify app name in GUEST SPACE', () => {
+    it('[App-143]should return error when do not specify app name in GUEST SPACE', () => {
       const expectResult = {
         'code': 'CB_VA01',
         'id': '0maHPzr1u2yaaWTzN3V3',
@@ -600,7 +600,7 @@ describe('addPreviewApp function', () => {
         expect(err.get()).toMatchObject(expectResult);
       });
     });
-    it('[App module-144]should return error when input name more than 64 characters in GUEST SPACE', () => {
+    it('[App-144]should return error when input name more than 64 characters in GUEST SPACE', () => {
       const data = {
         name: generateCharacters(65),
         space: 1,
@@ -638,7 +638,7 @@ describe('addPreviewApp function', () => {
         expect(err.get()).toMatchObject(expectResult);
       });
     });
-    it('[App module-145]should return error when do not specify space in GUEST SPACE', () => {
+    it('[App-145]should return error when do not specify space in GUEST SPACE', () => {
       const data = {
         name: 'app 1',
         thread: 1
@@ -675,7 +675,7 @@ describe('addPreviewApp function', () => {
         expect(err.get()).toMatchObject(expectResult);
       });
     });
-    it('[App module-146]should return error when input space is none exist in GUEST SPACE', () => {
+    it('[App-146]should return error when input space is none exist in GUEST SPACE', () => {
       const data = {
         name: 'app 1',
         space: 9999999999,
@@ -706,7 +706,7 @@ describe('addPreviewApp function', () => {
         expect(err.get()).toMatchObject(expectResult);
       });
     });
-    it('[App module-147]should return error when input space negative in GUEST SPACE', () => {
+    it('[App-147]should return error when input space negative in GUEST SPACE', () => {
       const data = {
         name: 'app 1',
         space: -1,
@@ -744,7 +744,7 @@ describe('addPreviewApp function', () => {
         expect(err.get()).toMatchObject(expectResult);
       });
     });
-    it('[App module-148]should return error when do not specify thread in GUEST SPACE', () => {
+    it('[App-148]should return error when do not specify thread in GUEST SPACE', () => {
       const data = {
         name: 'app 1',
         space: 1
@@ -781,7 +781,7 @@ describe('addPreviewApp function', () => {
         expect(err.get()).toMatchObject(expectResult);
       });
     });
-    it('[App module-149]should return error when input thread is none exist in GUEST SPACE', () => {
+    it('[App-149]should return error when input thread is none exist in GUEST SPACE', () => {
       const data = {
         name: 'app 1',
         space: 1,
@@ -812,7 +812,7 @@ describe('addPreviewApp function', () => {
         expect(err.get()).toMatchObject(expectResult);
       });
     });
-    it('[App module-150]should return error when input thread negative in GUEST SPACE', () => {
+    it('[App-150]should return error when input thread negative in GUEST SPACE', () => {
       const data = {
         name: 'app 1',
         space: 1,
@@ -850,7 +850,7 @@ describe('addPreviewApp function', () => {
         expect(err.get()).toMatchObject(expectResult);
       });
     });
-    it('[App module-151]should return error permission deny ', () => {
+    it('[App-151]should return error permission deny ', () => {
       const data = {
         name: 'app 1',
         space: 1,
@@ -881,7 +881,7 @@ describe('addPreviewApp function', () => {
         expect(err.get()).toMatchObject(expectResult);
       });
     });
-    it('[App module-152]should return error permission deny in GUEST SPACE', () => {
+    it('[App-152]should return error permission deny in GUEST SPACE', () => {
       const data = {
         name: 'app 1',
         space: 1,

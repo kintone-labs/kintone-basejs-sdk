@@ -43,7 +43,7 @@ describe('deleteFormFields function', () => {
   });
 
   describe('success case', () => {
-    it('[Form-40] Valid request - should update successfully the app formfield', () => {
+    it('[Form-40] Valid request - should update successfully the app form field', () => {
       const data = {
         'app': 1,
         'fields': [
@@ -235,7 +235,7 @@ describe('deleteFormFields function', () => {
   });
 
   describe('error case', () => {
-    it('[Form-41] Should return error when using API token authentication ', () => {
+    it('[Form-39] Should return error when using API token authentication ', () => {
       const expectResult = {
         'code': 'GAIA_NO01',
         'id': 'lzQPJ1hkW3Aj4iVebWCG',

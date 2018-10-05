@@ -100,9 +100,9 @@ describe('getApp function', () => {
 
   describe('error case', () => {
     /**
- * API Token Authentication
- * Error happens when running the command with API token as it is not supported yet
- */
+   * API Token Authentication
+   * Error happens when running the command with API token as it is not supported yet
+   */
     it('[App-2] - should return error when using API token authentication ', () => {
       const appID = 31;
       const expectResult = {
