@@ -55,7 +55,7 @@ describe('deleteRecordsWithRevision function', () => {
           return true;
         })
         .matchHeader('Content-Type', (type) => {
-          expect(type).toEqual(expect.stringContaining('application/json'));
+          expect(type).toEqual(expect.stringContaining('application/json;charset=utf-8'));
           return true;
         })
         .reply(200, {});
@@ -93,7 +93,7 @@ describe('deleteRecordsWithRevision function', () => {
           return true;
         })
         .matchHeader('Content-Type', (type) => {
-          expect(type).toEqual(expect.stringContaining('application/json'));
+          expect(type).toEqual(expect.stringContaining('application/json;charset=utf-8'));
           return true;
         })
         .reply(200, {});
@@ -129,7 +129,7 @@ describe('deleteRecordsWithRevision function', () => {
           return true;
         })
         .matchHeader('Content-Type', (type) => {
-          expect(type).toEqual(expect.stringContaining('applicgit ation/json'));
+          expect(type).toEqual(expect.stringContaining('application/json;charset=utf-8'));
           return true;
         })
         .reply(200, {});
@@ -166,7 +166,7 @@ describe('deleteRecordsWithRevision function', () => {
           return true;
         })
         .matchHeader('Content-Type', (type) => {
-          expect(type).toEqual(expect.stringContaining('application/json'));
+          expect(type).toEqual(expect.stringContaining('application/json;charset=utf-8'));
           return true;
         })
         .reply(200, {});
@@ -220,7 +220,7 @@ describe('deleteRecordsWithRevision function', () => {
           return true;
         })
         .matchHeader('Content-Type', (type) => {
-          expect(type).toEqual(expect.stringContaining('application/json'));
+          expect(type).toEqual(expect.stringContaining('application/json;charset=utf-8'));
           return true;
         })
         .reply(200, {});
@@ -520,7 +520,7 @@ describe('deleteRecordsWithRevision function', () => {
           return true;
         })
         .matchHeader('Content-Type', (type) => {
-          expect(type).toEqual(expect.stringContaining('application/json'));
+          expect(type).toEqual(expect.stringContaining('application/json;charset=utf-8'));
           return true;
         })
         .reply(400, expectResult);
