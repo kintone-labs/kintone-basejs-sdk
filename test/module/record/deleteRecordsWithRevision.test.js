@@ -104,9 +104,9 @@ describe('deleteRecordsWithRevision function', () => {
       });
     });
 
-    it('[Record-152] Records are deleted successfully when executing with interger as string type (input string for interger and vice versa) ', () => {
+    it('[Record-152] Records are deleted successfully when use with interger as string type (input string for interger and vice versa) ', () => {
       const data = {
-        appID: "1",
+        appID: '1',
         idsWithRevision: {
           '1': 1,
           '2': 4
@@ -114,7 +114,7 @@ describe('deleteRecordsWithRevision function', () => {
       };
 
       const expectBody = {
-        'app': "1",
+        'app': '1',
         'ids': ['1', '2'],
         'revisions': [1, 4]
       };
