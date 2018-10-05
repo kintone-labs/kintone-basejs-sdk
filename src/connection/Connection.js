@@ -60,6 +60,7 @@ class Connection {
     if (requestOptions.method === 'GET') {
       requestOptions.params = body;
       requestOptions.paramsSerializer = this.serializeParams;
+      delete requestOptions.data;
     } else {
       requestOptions.data = body;
     }
