@@ -297,6 +297,7 @@ describe('deleteFormFields function', () => {
     it('[Form-46] Verify error will be displayed when using method without fields properties', () => {
       const data = {
         'app': 1,
+        'fields': [],
         revision: -1,
       };
       const expectResult = {
