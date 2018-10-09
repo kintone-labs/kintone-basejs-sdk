@@ -9,7 +9,7 @@ class DeleteFormFieldsRequest {
      */
   constructor(app, fields, revision) {
     this.app = app;
-    this.fields = fields;
+    this.fields = fields === undefined ? [] : fields;
     this.revision = revision;
   }
   /**
