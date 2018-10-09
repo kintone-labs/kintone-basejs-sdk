@@ -104,8 +104,10 @@ class Record {
   updateRecordByUpdateKey(app, updateKey, record, revision) {
     const updateRecordRequest = new RecordModel.UpdateRecordRequest(app);
 
+    const fieldKey = updateKey ? updateKey.field : undefined;
+    const fieldValue = updateKey ? updateKey.value : undefined;
     updateRecordRequest
-      .setUpdateKey(updateKey.field, updateKey.value)
+      .setUpdateKey(fieldKey, fieldValue)
       .setRecord(record)
       .setRevision(revision || 0);
 
