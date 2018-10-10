@@ -180,7 +180,7 @@ class BulkRequest {
         return result;
       })
       .catch((err) => {
-        if (!err.hasOwnProperty('response') || err.response === undefined) {
+        if (!err || !err.response || !err.response.data || err.response.data.code) {
           throw new KintoneAPIException(err);
         }
         const errors = err.response.data.results;
