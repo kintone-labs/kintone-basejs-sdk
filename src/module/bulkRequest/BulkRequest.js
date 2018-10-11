@@ -74,8 +74,11 @@ class BulkRequest {
    * @return {this}
    */
   updateRecordByUpdateKey(app, updateKey, record, revision) {
+    const fieldKey = updateKey ? updateKey.field : undefined;
+    const fieldValue = updateKey ? updateKey.value : undefined;
+
     const updateRecordRequest = new RecordModel.UpdateRecordRequest(app);
-    updateRecordRequest.setUpdateKey(updateKey.field, updateKey.value).setRecord(record).setRevision(revision || 0);
+    updateRecordRequest.setUpdateKey(fieldKey, fieldValue).setRecord(record).setRevision(revision || 0);
 
     const bulkRequestItem = new BulkRequestItemModel('PUT', this.connection.getPathURI('RECORD'), updateRecordRequest);
     this.bulkRequests.addRequest(bulkRequestItem);
