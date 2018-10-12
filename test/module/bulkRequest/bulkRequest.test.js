@@ -250,7 +250,7 @@ describe('BulkRequest module', () => {
         'results': [
           {},
           {
-            'message': 'Record(id:33)NotFound.',
+            'message': 'Only numbers are allowed.',
             'id': '1505999166-1721668264',
             'code': 'GAIA_RE01',
           },
