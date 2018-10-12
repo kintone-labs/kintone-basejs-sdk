@@ -247,14 +247,14 @@ describe('BulkRequest module', () => {
         ]
       };
       const expectResult = {
-        'results':
-          [{
-            'message': 'Only numbers are allowed.',
+        'results': [
+          {},
+          {
+            'message': 'Record(id:33)NotFound.',
             'id': '1505999166-1721668264',
-            'code': 'GAIA_RE01'
+            'code': 'GAIA_RE01',
           },
-          {}
-          ]
+        ]
       };
       nock(URI)
         .post(BULK_REQUEST_API_ROUTE, (rqBody) => {
@@ -267,9 +267,11 @@ describe('BulkRequest module', () => {
       bulkRequest.addRecord(addRecordData.app, addRecordData.record);
       bulkRequest.addRecord(addRecordData.app, addRecordInvalidData.record);
 
-      return bulkRequest.execute().catch((err) => {
-        expect(err.get().errors).toMatchObject(expectResult);
-      });
+      return bulkRequest.execute()
+        .catch(err => {
+          expect(err[0]).toEqual(expectResult.results[0]);
+          expect(err[1].get()).toMatchObject(expectResult.results[1]);
+        });
     });
 
     it('[BulkRequest-4] Error returns when there is invalid record data on addRecords', () => {
@@ -312,7 +314,8 @@ describe('BulkRequest module', () => {
       bulkRequest.addRecords(addRecordData.app, addRecordsInvalidData.records);
 
       return bulkRequest.execute().catch((err) => {
-        expect(err.get().errors).toMatchObject(expectResult);
+        expect(err[0]).toEqual(expectResult.results[0]);
+        expect(err[1].get()).toMatchObject(expectResult.results[1]);
       });
     });
 
@@ -355,7 +358,8 @@ describe('BulkRequest module', () => {
       bulkRequest.addRecord(addRecordData.app, addRecordData.record);
       bulkRequest.updateRecordByID(updateRecordByIdData.app, updateRecordByIdData.id, updateRecordByIdData.record);
       return bulkRequest.execute().catch((err) => {
-        expect(err.get().errors).toMatchObject(expectResult);
+        expect(err[0]).toEqual(expectResult.results[0]);
+        expect(err[1].get()).toMatchObject(expectResult.results[1]);
       });
     });
 
@@ -386,9 +390,9 @@ describe('BulkRequest module', () => {
           [
             {},
             {
-              'message': 'The record to be updated must be specified by one of the parameters "id" and "updateKey".',
+              'message': 'Specified field (invalid_key_field) not found.',
               'id': '1505999166-1721668264',
-              'code': 'GAIA_RE01'
+              'code': 'GAIA_IQ11',
             }
           ]
       };
@@ -403,7 +407,8 @@ describe('BulkRequest module', () => {
       bulkRequest.addRecord(addRecordData.app, addRecordData.record)
         .updateRecordByUpdateKey(updateRecordByUpdateKeyData.app, updateRecordByUpdateKeyData.updateKey, updateRecordByUpdateKeyData.record);
       return bulkRequest.execute().catch((err) => {
-        expect(err.get().errors).toMatchObject(expectResult);
+        expect(err[0]).toEqual(expectResult.results[0]);
+        expect(err[1].get()).toMatchObject(expectResult.results[1]);
       });
     });
 
@@ -432,7 +437,7 @@ describe('BulkRequest module', () => {
           [
             {},
             {
-              'message': '数字でなければなりません。',
+              'message': 'Only numbers are allowed.',
               'id': '1505999166-1721668264',
               'code': 'GAIA_RE01'
             }
@@ -449,7 +454,8 @@ describe('BulkRequest module', () => {
       bulkRequest.addRecord(addRecordData.app, addRecordData.record)
         .updateRecords(updateRecordsData.app, updateRecordsData.records);
       return bulkRequest.execute().catch((err) => {
-        expect(err.get().errors).toMatchObject(expectResult);
+        expect(err[0]).toEqual(expectResult.results[0]);
+        expect(err[1].get()).toMatchObject(expectResult.results[1]);
       });
     });
 
@@ -495,7 +501,8 @@ describe('BulkRequest module', () => {
       bulkRequest.addRecord(addRecordData.app, addRecordData.record)
         .updateRecords(updateRecordsData.app, updateRecordsData.records);
       return bulkRequest.execute().catch((err) => {
-        expect(err.get().errors).toMatchObject(expectResult);
+        expect(err[0]).toEqual(expectResult.results[0]);
+        expect(err[1].get()).toMatchObject(expectResult.results[1]);
       });
     });
 
@@ -521,7 +528,7 @@ describe('BulkRequest module', () => {
           [
             {},
             {
-              'message': 'The record (ID: 99999) not found. The record may have been deleted',
+              'message': 'The specified record (ID: 9999999999) is not found.',
               'id': '1505999166-1721668264',
               'code': 'GAIA_RE01'
             }
@@ -538,7 +545,8 @@ describe('BulkRequest module', () => {
       bulkRequest.addRecord(addRecordData.app, addRecordData.record)
         .deleteRecords(deleteRecordsData.app, deleteRecordsData.ids);
       return bulkRequest.execute().catch((err) => {
-        expect(err.get().errors).toMatchObject(expectResult);
+        expect(err[0]).toEqual(expectResult.results[0]);
+        expect(err[1].get()).toMatchObject(expectResult.results[1]);
       });
     });
 
@@ -567,7 +575,7 @@ describe('BulkRequest module', () => {
             {
               'message': 'The revision is not the latest. Someone may update a record.',
               'id': '1505999166-1721668264',
-              'code': 'GAIA_RE01'
+              'code': 'GAIA_CO02'
             }
           ]
       };
@@ -582,7 +590,8 @@ describe('BulkRequest module', () => {
       bulkRequest.addRecord(addRecordData.app, addRecordData.record)
         .deleteRecordsWithRevision(deleteRecordsWithRevisionData.app, deleteRecordsWithRevisionData.idsWithRevision);
       return bulkRequest.execute().catch((err) => {
-        expect(err.get().errors).toMatchObject(expectResult);
+        expect(err[0]).toEqual(expectResult.results[0]);
+        expect(err[1].get()).toMatchObject(expectResult.results[1]);
       });
     });
 
@@ -613,7 +622,7 @@ describe('BulkRequest module', () => {
             {
               'message': 'The revision is not the latest. Someone may update a record.',
               'id': '1505999166-1721668264',
-              'code': 'GAIA_RE01'
+              'code': 'GAIA_CO02'
             }
           ]
       };
@@ -628,7 +637,8 @@ describe('BulkRequest module', () => {
       bulkRequest.addRecord(addRecordData.app, addRecordData.record)
         .updateRecords(updateRecordsData.app, updateRecordsData.records);
       return bulkRequest.execute().catch((err) => {
-        expect(err.get().errors).toMatchObject(expectResult);
+        expect(err[0]).toEqual(expectResult.results[0]);
+        expect(err[1].get()).toMatchObject(expectResult.results[1]);
       });
     });
 
@@ -656,7 +666,7 @@ describe('BulkRequest module', () => {
             {
               'message': 'The specified user (code：user_notexist) not found.',
               'id': '1505999166-1721668264',
-              'code': 'GAIA_RE01'
+              'code': 'GAIA_IL26'
             }
           ]
       };
@@ -671,13 +681,14 @@ describe('BulkRequest module', () => {
       bulkRequest.addRecord(addRecordData.app, addRecordData.record)
         .updateRecordAssignees(updateRecordAssigneesData.app, updateRecordAssigneesData.id, updateRecordAssigneesData.assignees);
       return bulkRequest.execute().catch((err) => {
-        expect(err.get().errors).toMatchObject(expectResult);
+        expect(err[0]).toEqual(expectResult.results[0]);
+        expect(err[1].get()).toMatchObject(expectResult.results[1]);
       });
     });
 
     it('[BulkRequest-15] Error returns when there is invalid record on updateAssigneesRecord', () => {
       const addRecordData = {app: 1, record: {Number: {value: 5}}};
-      const updateRecordAssigneesData = {'app': 1, 'id': 99999, 'assignees': ['user_1'], 'revision': null};
+      const updateRecordAssigneesData = {'app': 1, 'id': 9999999999, 'assignees': ['user_1'], 'revision': null};
       const expectBody = {
         'requests': [
           {
@@ -697,7 +708,7 @@ describe('BulkRequest module', () => {
           [
             {},
             {
-              'message': 'The record (ID: 99999) not found. The record may have been deleted',
+              'message': 'The specified record (ID: 9999999999) is not found.',
               'id': '1505999166-1721668264',
               'code': 'GAIA_RE01'
             }
@@ -714,7 +725,8 @@ describe('BulkRequest module', () => {
       bulkRequest.addRecord(addRecordData.app, addRecordData.record)
         .updateRecordAssignees(updateRecordAssigneesData.app, updateRecordAssigneesData.id, updateRecordAssigneesData.assignees);
       return bulkRequest.execute().catch((err) => {
-        expect(err.get().errors).toMatchObject(expectResult);
+        expect(err[0]).toEqual(expectResult.results[0]);
+        expect(err[1].get()).toMatchObject(expectResult.results[1]);
       });
     });
 
@@ -742,7 +754,7 @@ describe('BulkRequest module', () => {
             {
               'message': 'The revision is not the latest. Someone may update a record.',
               'id': '1505999166-1721668264',
-              'code': 'GAIA_RE01'
+              'code': 'GAIA_CO02'
             }
           ]
       };
@@ -758,7 +770,8 @@ describe('BulkRequest module', () => {
         .updateRecordAssignees(updateRecordAssigneesData.app, updateRecordAssigneesData.id,
           updateRecordAssigneesData.assignees, updateRecordAssigneesData.revision);
       return bulkRequest.execute().catch((err) => {
-        expect(err.get().errors).toMatchObject(expectResult);
+        expect(err[0]).toEqual(expectResult.results[0]);
+        expect(err[1].get()).toMatchObject(expectResult.results[1]);
       });
     });
 
@@ -802,7 +815,8 @@ describe('BulkRequest module', () => {
         .updateRecordStatus(updateRecordStatusData.app, updateRecordStatusData.id,
           updateRecordStatusData.action, updateRecordStatusData.assignee, updateRecordStatusData.revision);
       return bulkRequest.execute().catch((err) => {
-        expect(err.get().errors).toMatchObject(expectResult);
+        expect(err[0]).toEqual(expectResult.results[0]);
+        expect(err[1].get()).toMatchObject(expectResult.results[1]);
       });
     });
 
@@ -846,7 +860,8 @@ describe('BulkRequest module', () => {
         .updateRecordStatus(updateRecordStatusData.app, updateRecordStatusData.id,
           updateRecordStatusData.action, updateRecordStatusData.assignee, updateRecordStatusData.revision);
       return bulkRequest.execute().catch((err) => {
-        expect(err.get().errors).toMatchObject(expectResult);
+        expect(err[0]).toEqual(expectResult.results[0]);
+        expect(err[1].get()).toMatchObject(expectResult.results[1]);
       });
     });
 
@@ -890,7 +905,8 @@ describe('BulkRequest module', () => {
         .updateRecordStatus(updateRecordStatusData.app, updateRecordStatusData.id,
           updateRecordStatusData.action, updateRecordStatusData.assignee, updateRecordStatusData.revision);
       return bulkRequest.execute().catch((err) => {
-        expect(err.get().errors).toMatchObject(expectResult);
+        expect(err[0]).toEqual(expectResult.results[0]);
+        expect(err[1].get()).toMatchObject(expectResult.results[1]);
       });
     });
 
@@ -934,7 +950,8 @@ describe('BulkRequest module', () => {
         .updateRecordStatus(updateRecordStatusData.app, updateRecordStatusData.id,
           updateRecordStatusData.action, updateRecordStatusData.assignee, updateRecordStatusData.revision);
       return bulkRequest.execute().catch((err) => {
-        expect(err.get().errors).toMatchObject(expectResult);
+        expect(err[0]).toEqual(expectResult.results[0]);
+        expect(err[1].get()).toMatchObject(expectResult.results[1]);
       });
     });
 
@@ -996,7 +1013,8 @@ describe('BulkRequest module', () => {
       bulkRequest.addRecord(addRecordData.app, addRecordData.record)
         .updateRecordsStatus(updateRecordsStatusData.app, updateRecordsStatusData.records);
       return bulkRequest.execute().catch((err) => {
-        expect(err.get().errors).toMatchObject(expectResult);
+        expect(err[0]).toEqual(expectResult.results[0]);
+        expect(err[1].get()).toMatchObject(expectResult.results[1]);
       });
     });
 
@@ -1058,7 +1076,8 @@ describe('BulkRequest module', () => {
       bulkRequest.addRecord(addRecordData.app, addRecordData.record)
         .updateRecordsStatus(updateRecordsStatusData.app, updateRecordsStatusData.records);
       return bulkRequest.execute().catch((err) => {
-        expect(err.get().errors).toMatchObject(expectResult);
+        expect(err[0]).toEqual(expectResult.results[0]);
+        expect(err[1].get()).toMatchObject(expectResult.results[1]);
       });
     });
 
@@ -1120,7 +1139,8 @@ describe('BulkRequest module', () => {
       bulkRequest.addRecord(addRecordData.app, addRecordData.record)
         .updateRecordsStatus(updateRecordsStatusData.app, updateRecordsStatusData.records);
       return bulkRequest.execute().catch((err) => {
-        expect(err.get().errors).toMatchObject(expectResult);
+        expect(err[0]).toEqual(expectResult.results[0]);
+        expect(err[1].get()).toMatchObject(expectResult.results[1]);
       });
     });
 
@@ -1182,7 +1202,8 @@ describe('BulkRequest module', () => {
       bulkRequest.addRecord(addRecordData.app, addRecordData.record)
         .updateRecordsStatus(updateRecordsStatusData.app, updateRecordsStatusData.records);
       return bulkRequest.execute().catch((err) => {
-        expect(err.get().errors).toMatchObject(expectResult);
+        expect(err[0]).toEqual(expectResult.results[0]);
+        expect(err[1].get()).toMatchObject(expectResult.results[1]);
       });
     });
   });
