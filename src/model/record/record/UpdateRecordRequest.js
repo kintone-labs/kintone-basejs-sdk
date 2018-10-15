@@ -17,7 +17,9 @@ class UpdateRecordRequest extends RecordUpdateItem {
      */
   toJSON() {
     const data = super.toJSON();
-    data.app = this.app;
+    if (this.app) {
+      data.app = this.app;
+    }
     return data;
   }
   /**
