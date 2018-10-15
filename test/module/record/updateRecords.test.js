@@ -379,6 +379,38 @@ describe('updateRecords function', () => {
         expect(rsp.revision).toEqual('4');
       });
     });
+    /**
+    * Missing required field
+    * Revision is increased by 1, no data is updated when using method without records data
+    */
+    it('[Record-117] - should return revision and increased by 1, no data updated', () => {
+      const appID = 22;
+      const recordDataUpdate = {
+        'app': appID,
+        'records': [
+        ]
+      };
+      const recordsData = [recordDataUpdate];
+      nock(URI)
+        .put(API_ROUTE.RECORDS, (rqBody) => {
+          expect(rqBody.records).toEqual(recordsData);
+          return true;
+        })
+        .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
+          expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
+          return true;
+        })
+        .matchHeader('Content-Type', (type) => {
+          expect(type).toBe('application/json;charset=utf-8');
+          return true;
+        })
+        .reply(200, {'revision': '7'});
+
+      const updateRecordByIdResult = recordModule.updateRecords(appID, recordsData);
+      return updateRecordByIdResult.then((rsp) => {
+        expect(rsp.revision).toEqual('7');
+      });
+    });
   });
 
   describe('error case', () => {
@@ -723,7 +755,7 @@ describe('updateRecords function', () => {
     * Missing required field
     * The error will be displayed when using method without app ID
     */
-    it('[Record-116] - should return error when using invalid record ID (unexisted, negative number, 0)', () => {
+    it('[Record-116] - should return error when using method without app ID', () => {
       const appID = null;
       const recordDataUpdate = {
         'app': appID,
@@ -750,9 +782,16 @@ describe('updateRecords function', () => {
       };
       const recordsData = [recordDataUpdate];
       const expectResult = {
-        'code': 'CB_IJ01',
-        'id': '2EvqyBpppiTZP4wQfPtx',
-        'message': 'Invalid JSON string.'
+        'id': 'JkEZZDZMRe3ZkrfCWRaq',
+        'code': 'CB_VA01',
+        'message': 'Missing or invalid input.',
+        'errors': {
+          'app': {
+            'messages': [
+              'Required field.'
+            ]
+          }
+        }
       };
       nock(URI)
         .put(API_ROUTE.RECORDS, (rqBody) => {
@@ -775,38 +814,7 @@ describe('updateRecords function', () => {
         expect(err.get()).toMatchObject(expectResult);
       });
     });
-    /**
-    * Missing required field
-    * Revision is increased by 1, no data is updated when using method without records data
-    */
-    it('[Record-117] - should return revision and increased by 1, no data updated', () => {
-      const appID = 22;
-      const recordDataUpdate = {
-        'app': appID,
-        'records': [
-        ]
-      };
-      const recordsData = [recordDataUpdate];
-      nock(URI)
-        .put(API_ROUTE.RECORDS, (rqBody) => {
-          expect(rqBody.records).toEqual(recordsData);
-          return true;
-        })
-        .matchHeader(common.PASSWORD_AUTH, (authHeader) => {
-          expect(authHeader).toBe(common.getPasswordAuth(common.USERNAME, common.PASSWORD));
-          return true;
-        })
-        .matchHeader('Content-Type', (type) => {
-          expect(type).toBe('application/json;charset=utf-8');
-          return true;
-        })
-        .reply(200, {'revision': '7'});
 
-      const updateRecordByIdResult = recordModule.updateRecords(appID, recordsData);
-      return updateRecordByIdResult.then((rsp) => {
-        expect(rsp.revision).toEqual('7');
-      });
-    });
     /**
     * Required data
     * Error will be displayed when there is record without data for required field in the records arrray
@@ -817,8 +825,8 @@ describe('updateRecords function', () => {
         'app': appID,
         'records': [
           {
-            'id': 1,
-            'revision': 4,
+            'id': null,
+            'revision': null,
             'record': {
               'string_1': {
                 'value': 'Silver plates'
@@ -826,8 +834,8 @@ describe('updateRecords function', () => {
             }
           },
           {
-            'id': 2,
-            'revision': 1,
+            'id': null,
+            'revision': null,
             'record': {
               'string_multi': {
                 'value': 'The quick brown fox.'

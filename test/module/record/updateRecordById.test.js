@@ -588,8 +588,8 @@ describe('updateRecordById function', () => {
      * Missing required field
      * The error will be displayed when using method without app ID
      */
-    it('[Record-74] - should return the error in the result when using invalid record ID (unexisted, negative number, 0)', () => {
-      const recordID = -9500;
+    it('[Record-74] - should return the error in the result when using method without app ID', () => {
+      const recordID = 9500;
       const appID = null;
       const recordDataUpdate = {
         'app': appID,
@@ -603,9 +603,16 @@ describe('updateRecordById function', () => {
       };
       const recordsData = [recordDataUpdate];
       const expectedResult = {
-        'code': 'CB_IJ01',
-        'id': '2EvqyBpppiTZP4wQfPtx',
-        'message': 'Invalid JSON string.'
+        'code': 'CB_VA01',
+        'id': 'hqggA13Y4xhrBcBQ7UAn',
+        'message': 'Missing or invalid input.',
+        'errors': {
+          'app': {
+            'messages': [
+              'Required field.'
+            ]
+          }
+        }
       };
       nock(URI)
         .put(API_ROUTE.RECORD, (rqBody) => {
