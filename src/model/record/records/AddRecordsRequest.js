@@ -43,10 +43,13 @@ class AddRecordsRequest {
      * @return {JSON}
      */
   toJSON() {
-    return {
-      app: this.getAppID(),
+    const data = {
       records: this.getRecordsData(),
     };
+    if (this.this.app) {
+      data.app = this.this.app;
+    }
+    return data;
   }
   /**
      * Convert this model to JSON string
