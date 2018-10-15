@@ -16,10 +16,13 @@ class UpdateRecordsRequest {
      * @return {integer}
      */
   toJSON() {
-    return {
-      app: this.appID,
+    const data = {
       records: this.recordsItem || []
     };
+    if (this.appID) {
+      data.app = this.appID;
+    }
+    return data;
   }
   /**
      * Convert this model to JSON string
