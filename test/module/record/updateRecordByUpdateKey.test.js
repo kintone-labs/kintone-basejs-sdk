@@ -590,7 +590,7 @@ describe('updateRecordByUpdateKey function', () => {
      */
     it('[Record-95] should return the error when using invalid app ID (unexisted, negative number, 0)', () => {
       const recordUpdate = {
-        'app': 777,
+        'app': 220,
         'updateKey': {
           'field': 'unique_key',
           'value': 'CODE123'
@@ -631,9 +631,9 @@ describe('updateRecordByUpdateKey function', () => {
      * Missing required field
      * The error will be displayed when using method without app ID
      */
-    it('[Record-96] - should return the error when using invalid record ID (unexisted, negative number, 0)', () => {
+    it('[Record-96] - should return the error when using method without app ID', () => {
       const recordUpdate = {
-        'app': null,
+        'app': 'null',
         'updateKey': {
           'field': 'unique_key',
           'value': 'CODE123'
@@ -646,9 +646,16 @@ describe('updateRecordByUpdateKey function', () => {
         }
       };
       const expectResult = {
-        'code': 'CB_IJ01',
-        'id': '2EvqyBpppiTZP4wQfPtx',
-        'message': 'Invalid JSON string.'
+        'code': 'CB_VA01',
+        'id': 'hqggA13Y4xhrBcBQ7UAn',
+        'message': 'Missing or invalid input.',
+        'errors': {
+          'app': {
+            'messages': [
+              'Required field.'
+            ]
+          }
+        }
       };
       nock(URI)
         .put(API_ROUTE.RECORD, (rqBody) => {
@@ -676,7 +683,7 @@ describe('updateRecordByUpdateKey function', () => {
      */
     it('[Record-97] - should return revision and increased by 1, no data updated', () => {
       const recordUpdate = {
-        'app': null,
+        'app': 1,
         'updateKey': {
           'field': 'unique_key',
           'value': 'CODE123'
@@ -710,25 +717,13 @@ describe('updateRecordByUpdateKey function', () => {
      */
     it('[Record-98] - should return the error when there is record without data for required field in the records arrray', () => {
       const recordUpdate = {
-        'app': null,
+        'app': 1,
         'updateKey': {
           'field': 'unique_key',
           'value': 'CODE123'
         },
         'revision': 7,
         'record': {
-        }
-      };
-      const expectResult = {
-        'code': 'CB_VA01',
-        'id': 'VQQnxMBZrLPuu8c3mso5',
-        'message': 'Missing or invalid input.',
-        'errors': {
-          'record.RequiredField.value': {
-            'messages': [
-              'Required.'
-            ]
-          }
         }
       };
       nock(URI)
@@ -744,11 +739,10 @@ describe('updateRecordByUpdateKey function', () => {
           expect(type).toBe('application/json;charset=utf-8');
           return true;
         })
-        .reply(400, expectResult);
+        .reply(200, {'revision': '7'});
       return recordModule.updateRecordByUpdateKey(recordUpdate.app, recordUpdate.updateKey, recordUpdate.record, recordUpdate.revision)
-        .catch((err) => {
-          expect(err).toBeInstanceOf(KintoneAPIException);
-          expect(err.get()).toMatchObject(expectResult);
+        .then((rsp) => {
+          expect(rsp.revision).toEqual('7');
         });
     });
     /**
@@ -757,7 +751,7 @@ describe('updateRecordByUpdateKey function', () => {
      */
     it('[Record-99] - should update record and skipped invalid field in the records array', () => {
       const recordUpdate = {
-        'app': null,
+        'app': 1,
         'updateKey': {
           'field': 'unique_key',
           'value': 'CODE123'
