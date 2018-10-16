@@ -46,8 +46,8 @@ class AddRecordsRequest {
     const data = {
       records: this.getRecordsData(),
     };
-    if (this.this.app) {
-      data.app = this.this.app;
+    if (this.app) {
+      data.app = this.app;
     }
     return data;
   }
