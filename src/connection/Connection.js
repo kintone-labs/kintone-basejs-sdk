@@ -5,6 +5,7 @@ const FormData = require('form-data');
 const Auth = require('../authentication/Auth');
 const HTTPHeader = require('../model/http/HTTPHeader');
 const KintoneAPIException = require('../exception/KintoneAPIException');
+const packageFile = require('../../package.json');
 
 const CONNECTION_CONST = require('./constant');
 const DEFAULT_PORT = '443';
@@ -27,6 +28,16 @@ class Connection {
 
     this.setAuth(auth);
     this.addRequestOption(CONNECTION_CONST.BASE.PROXY, false);
+    this.USER_AGENT = '';
+
+    this.setHeader(
+      CONNECTION_CONST.BASE.USER_AGENT,
+      CONNECTION_CONST.BASE.USER_AGENT_BASE_VALUE
+        .replace('{name}',
+          packageFile.name || 'kintone-basejs-sdk')
+        .replace('{version}', packageFile.version || '(none)')
+    );
+
   }
 
   /**
@@ -50,6 +61,7 @@ class Connection {
       } else {
         headersRequest[headerKey] = httpHeaderObj.getValue();
       }
+      this.USER_AGENT = headersRequest[CONNECTION_CONST.BASE.USER_AGENT];
     });
     // Set request options
     const requestOptions = this.options;
@@ -69,7 +81,7 @@ class Connection {
       return response.data;
     });
     // reset header
-    this.resetHeader();
+    this.refreshHeader();
     return request;
   }
   /**
@@ -93,6 +105,7 @@ class Connection {
       } else {
         headersRequest[headerKey] = httpHeaderObj.getValue();
       }
+      this.USER_AGENT = headersRequest[CONNECTION_CONST.BASE.USER_AGENT];
     });
 
     // Set request options
@@ -112,7 +125,7 @@ class Connection {
     }).catch(err => {
       throw new KintoneAPIException(err);
     });
-    this.resetHeader();
+    this.refreshHeader();
     return request;
   }
 
@@ -240,8 +253,10 @@ class Connection {
     return this;
   }
 
-  resetHeader() {
-    this.headers = [];
+  refreshHeader() {
+    const header = [];
+    header.push(new HTTPHeader(CONNECTION_CONST.BASE.USER_AGENT, this.USER_AGENT));
+    this.headers = header;
   }
 }
 module.exports = Connection;

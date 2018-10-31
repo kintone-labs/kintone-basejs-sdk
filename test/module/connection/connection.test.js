@@ -48,6 +48,19 @@ describe('Connection module', () => {
       expect(conn.request('GET', '/page-not-found')).toHaveProperty('then');
       expect(conn.request('GET', '/page-not-found')).toHaveProperty('catch');
     });
+
+    it(`Should have valid user-agent`, () => {
+      nock(URI)
+        .get(`API_ROUTE.RECORD_GET?app=1`)
+        .reply(400, {});
+
+      conn.setProxy(common.PROXY_HOST, common.PROXY_PORT);
+      const response = conn.request('GET', 'API_ROUTE.RECORD_GET_TEST', {app: 1});
+      const expectProxy = API_ROUTE.USER_AGENT;
+      return response.catch((err) => {
+        expect(err.config.headers['User-Agent']).toEqual(expectProxy);
+      });
+    });
   });
 
   describe('setProxy function - Valid request', () => {
