@@ -1,4 +1,6 @@
-# kintone-basejs-sdk
+# kintone-basejs-sdk (Deprecated)
+
+## This sdk has been deprecated. Please use [@kintone/kintone-js-sdk](https://www.npmjs.com/package/@kintone/kintone-js-sdk)
 
 > The SDK of kintone REST API client use for kintone-nodejs-sdk and kintone-js-sdk
 
